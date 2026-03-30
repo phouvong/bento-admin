@@ -73,13 +73,7 @@ class CommonConditionController extends Controller
 
     public function get_products($id, Request $request)
     {
-        if (!$request->hasHeader('zoneId')) {
-            $errors = [];
-            array_push($errors, ['code' => 'zoneId', 'message' => translate('messages.zone_id_required')]);
-            return response()->json([
-                'errors' => $errors
-            ], 403);
-        }
+        Helpers::setZoneIds($request);
         $validator = Validator::make($request->all(), [
             'limit' => 'required',
             'offset' => 'required',

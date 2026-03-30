@@ -41,8 +41,8 @@ class POSController extends Controller
             Toastr::error(translate('messages.Store_is_not_available'));
             return back();
         }
-        $keyword = $request->query('keyword', false);
-        $key = explode(' ', $keyword);
+        $search = $request->query('search', false);
+        $key = explode(' ', $search);
 
         if ($request->session()->has('cart')) {
             $cart = $request->session()->get('cart', collect([]));
@@ -67,7 +67,7 @@ class POSController extends Controller
                 return $q->whereId($category)->orWhere('parent_id', $category);
             });
         })
-        ->when($keyword, function($query)use($key){
+        ->when($search, function($query)use($key){
             return $query->where(function ($q) use ($key) {
                 foreach ($key as $value) {
                     $q->orWhere('name', 'like', "%{$value}%");
@@ -81,7 +81,7 @@ class POSController extends Controller
             $products=  $products->available($time);
         }
         $products=  $products->latest()->paginate(10);
-        return view('admin-views.pos.index', compact('categories', 'products','category', 'keyword', 'store', 'module_id'));
+        return view('admin-views.pos.index', compact('categories', 'products','category', 'search', 'store', 'module_id'));
     }
 
     public function quick_view(Request $request)
@@ -859,10 +859,10 @@ class POSController extends Controller
             try{
                 if($order->order_status == 'pending' && config('mail.status') && Helpers::get_mail_status('place_order_mail_status_user') == '1' &&  Helpers::getNotificationStatusData('customer','customer_order_notification','mail_status'))
                 {
-                    Mail::to($order->customer->email)->send(new PlaceOrder($order->id));
+                    Mail::to($order->customer?->getRawOriginal('email'))->send(new PlaceOrder($order->id));
                 }
                 if ($order->order_status == 'pending' && config('order_delivery_verification') == 1 && Helpers::get_mail_status('order_verification_mail_status_user') == '1' && Helpers::getNotificationStatusData('customer','customer_delivery_verification','mail_status')) {
-                    Mail::to($order->customer->email)->send(new OrderVerificationMail($order->otp,$order->customer->f_name));
+                    Mail::to($order->customer?->getRawOriginal('email'))->send(new OrderVerificationMail($order->otp,$order->customer->f_name));
                 }
             }catch (\Exception $ex) {
                 info($ex->getMessage());

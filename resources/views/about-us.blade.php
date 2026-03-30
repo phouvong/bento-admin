@@ -4,8 +4,7 @@
 
 @section('content')
         <!-- ==== About Section ==== -->
-        @php($landing_page_text = \App\Models\BusinessSetting::where(['key' => 'landing_page_text'])->first())
-        @php($landing_page_text = isset($landing_page_text->value) ? json_decode($landing_page_text->value, true) : null)
+ 
         <section class="about-section">
             <div class="container">
                 <div class="row gy-5">

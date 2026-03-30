@@ -41,9 +41,10 @@ class BusinessSettingsController extends Controller
         $store->logo = $request->has('logo') ? Helpers::update(dir:'store/', old_image:$store->logo, format:'png', image:$request->file('logo')) : $store->logo;
         $store->cover_photo = $request->has('cover_photo') ? Helpers::update(dir:'store/cover/', old_image:$store->cover_photo,format: 'png', image:$request->file('cover_photo')) : $store->cover_photo;
 
-        $store->meta_title = $data_trans[2]['value'];
-        $store->meta_description = $data_trans[3]['value'];
+        $store->meta_title = $request->meta_title;
+        $store->meta_description = $request->meta_description;
         $store->meta_image = $request->has('meta_image') ? Helpers::update(dir:'store/', old_image: $store->meta_image, format: 'png', image: $request->file('meta_image')) : $store->meta_image;
+        $store->meta_data = Helpers::formatMetaData($request->all(), $store->meta_data);
 
         $store->save();
 

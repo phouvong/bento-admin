@@ -129,9 +129,7 @@ class Banner extends Model
      */
     public function scopeActive($query): mixed
     {
-        return $query->where('status', '=', 1)->whereHas('store', function ($query) {
-            $query->active();
-        });
+        return $query->where('status', '=', 1);
     }
 
     /**

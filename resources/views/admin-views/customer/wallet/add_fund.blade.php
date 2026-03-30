@@ -51,9 +51,9 @@
                         </div>
                         <div class="col-12">
                             <div class="form-group">
-                                <label class="input-label" for="referance">{{translate('messages.reference')}} <small>({{translate('messages.optional')}})</small></label>
+                                <label class="input-label" for="reference">{{translate('messages.reference')}} <small>({{translate('messages.optional')}})</small></label>
 
-                                <input type="text" placeholder="{{ translate('Ex: 123') }}" class="form-control" name="referance" id="referance">
+                                <input type="text" placeholder="{{ translate('Ex: 123') }}" class="form-control" name="reference" id="reference">
                             </div>
                         </div>
                     </div>

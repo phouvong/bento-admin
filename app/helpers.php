@@ -12,6 +12,7 @@ use App\Models\AccountTransaction;
 use Illuminate\Support\Facades\DB;
 use App\Mail\OrderVerificationMail;
 use App\CentralLogics\CustomerLogic;
+use App\Models\Module;
 use Illuminate\Support\Facades\Mail;
 use App\Models\SubscriptionBillingAndRefundHistory;
 use Brian2694\Toastr\Facades\Toastr;
@@ -101,7 +102,7 @@ if (! function_exists('collect_cash_success')) {
 
         try {
             if($data->attribute == 'deliveryman_collect_cash_payments' && config('mail.status') &&  Helpers::getNotificationStatusData('deliveryman','deliveryman_collect_cash','mail_status') && Helpers::get_mail_status('cash_collect_mail_status_dm') == 1 ){
-                Mail::to($user_data['email'])->send(new \App\Mail\CollectCashMail($account_transaction,$user_data['f_name']));
+                Mail::to($user_data?->getRawOriginal('email'))->send(new \App\Mail\CollectCashMail($account_transaction,$user_data['f_name']));
             }
         } catch (\Exception $exception) {
             info($exception->getMessage());
@@ -140,7 +141,7 @@ if (! function_exists('order_place')) {
             if(Helpers::getNotificationStatusData('customer','customer_delivery_verification','mail_status')  && Helpers::get_mail_status('order_verification_mail_status_user') == 1 && config('mail.status')){
 
                 if ( config('order_delivery_verification') == 1  && $order->is_guest == 0) {
-                    Mail::to($order->customer->email)->send(new OrderVerificationMail($order->otp,$order->customer->f_name));
+                    Mail::to($order->customer?->getRawOriginal('email'))->send(new OrderVerificationMail($order->otp,$order->customer->f_name));
                 }
 
                 if ($order->is_guest == 1   && isset($address['contact_person_email'])) {
@@ -220,7 +221,7 @@ if (! function_exists('wallet_success')) {
             try{
                 Helpers::add_fund_push_notification($data->payer_id);
                 if(config('mail.status') && Helpers::get_mail_status('add_fund_mail_status_user') == '1' &&  Helpers::getNotificationStatusData('customer','customer_add_fund_to_wallet','mail_status')) {
-                    Mail::to($wallet_transaction->user->email)->send(new \App\Mail\AddFundToWallet($wallet_transaction));
+                    Mail::to($wallet_transaction->user?->getRawOriginal('email'))->send(new \App\Mail\AddFundToWallet($wallet_transaction));
                 }
             }catch(\Exception $ex)
             {
@@ -240,14 +241,21 @@ if (! function_exists('wallet_success')) {
 }
 
 if (!function_exists('addon_published_status')) {
-    function addon_published_status($module_name)
+    function addon_published_status($module_name): int
     {
-        $is_published = 0;
         try {
-            $full_data = include("Modules/{$module_name}/Addon/info.php");
-            $is_published = $full_data['is_published'] == 1 ? 1 : 0;
-            return $is_published;
-        } catch (\Exception $exception) {
+            $path = base_path("Modules/{$module_name}/Addon/info.php");
+
+            if (!file_exists($path)) {
+                return 0;
+            }
+
+            $full_data = include $path;
+
+            return (isset($full_data['is_published']) && $full_data['is_published'] == 1) ? 1 : 0;
+
+        } catch (\Throwable $exception) {
+            info($exception->getMessage());
             return 0;
         }
     }
@@ -305,6 +313,17 @@ if (!function_exists('config_settings')) {
                     Config::set($configKey, $data);
                 }
                 return $data;
+            }
+    }
+
+
+    if (! function_exists('getModuleId')) {
+         function getModuleId($value)
+            {
+                $module = is_numeric($value)
+                ? Module::where('id', $value)->first()
+                : Module::where('slug', $value)->first();
+                return $module?->id;
             }
     }
 

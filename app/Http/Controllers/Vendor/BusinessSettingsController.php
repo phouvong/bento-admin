@@ -82,72 +82,16 @@ class BusinessSettingsController extends Controller
     }
     public function updateStoreMetaData(Store $store, Request $request)
     {
-        $request->validate([
-            'meta_title.0' => 'required',
-            'meta_description.0' => 'required',
-        ],[
-            'meta_title.0.required'=>translate('default_meta_title_is_required'),
-            'meta_description.0.required'=>translate('default_meta_description_is_required'),
-        ]);
-
-        $store->meta_image = $request->has('meta_image') ? Helpers::update('store/', $store->meta_image, 'png', $request->file('meta_image')) : $store->meta_image;
-
-        $store->meta_title = $request->meta_title[array_search('default', $request->lang)];
-        $store->meta_description = $request->meta_description[array_search('default', $request->lang)];
-
-        $store->save();
-        $default_lang = str_replace('_', '-', app()->getLocale());
-        foreach($request->lang as $index=>$key)
-        {
-            if($default_lang == $key && !($request->meta_title[$index])){
-                if ($key != 'default') {
-                    Translation::updateOrInsert(
-                        [
-                            'translationable_type' => 'App\Models\Store',
-                            'translationable_id' => $store->id,
-                            'locale' => $key,
-                            'key' => 'meta_title'
-                        ],
-                        ['value' => $store->meta_title]
-                    );
-                }
-            }else{
-
-                if ($request->meta_title[$index] && $key != 'default') {
-                    Translation::updateOrInsert(
-                        ['translationable_type'  => 'App\Models\Store',
-                            'translationable_id'    => $store->id,
-                            'locale'                => $key,
-                            'key'                   => 'meta_title'],
-                        ['value'                 => $request->meta_title[$index]]
-                    );
-                }
-            }
-            if($default_lang == $key && !($request->meta_description[$index])){
-                if ($key != 'default') {
-                    Translation::updateOrInsert(
-                        [
-                            'translationable_type' => 'App\Models\Store',
-                            'translationable_id' => $store->id,
-                            'locale' => $key,
-                            'key' => 'meta_description'
-                        ],
-                        ['value' => $store->meta_description]
-                    );
-                }
-            }else{
-
-                if ($request->meta_description[$index] && $key != 'default') {
-                    Translation::updateOrInsert(
-                        ['translationable_type'  => 'App\Models\Store',
-                            'translationable_id'    => $store->id,
-                            'locale'                => $key,
-                            'key'                   => 'meta_description'],
-                        ['value'                 => $request->meta_description[$index]]
-                    );
-                }
-            }
+        if ($request->has('meta_image_deleted') && $request->meta_image_deleted == 1) {
+            Helpers::check_and_delete('store/', $store->meta_image);
+            $store->meta_image = null;
         }
+        $store->meta_image = $request->has('meta_image') ? Helpers::update('store/', $store->meta_image, 'png', $request->file('meta_image')) : $store->meta_image;
+        
+        $store->meta_title = $request->meta_title;
+        $store->meta_description = $request->meta_description;
+        $store->meta_data = Helpers::formatMetaData($request->all(), $store->meta_data);
+        $store->save();
         if($store->module->module_type == 'rental' && addon_published_status('Rental')){
             Toastr::success(translate('messages.provider_meta_data_updated!'));
         }else{

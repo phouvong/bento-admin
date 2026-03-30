@@ -2,9 +2,9 @@
 
 namespace App\Services;
 use App\CentralLogics\Helpers;
+use App\Models\DeliveryMan;
 use App\Traits\FileManagerTrait;
-use Illuminate\Support\Facades\Storage;
-use PhpParser\Node\Expr\Cast\Object_;
+
 
 class DeliveryManService
 {
@@ -29,6 +29,11 @@ class DeliveryManService
             $identityImage = json_encode([]);
         }
 
+        if($request->referral_code){
+            $referal_user = DeliveryMan::where('ref_code',$request->referral_code)->first();
+            Helpers::deliverymanReferralNotification($referal_user);
+        }
+
         return [
             'f_name' => $request->f_name,
             'l_name' => $request->l_name,
@@ -43,6 +48,8 @@ class DeliveryManService
             'active' => 0,
             'earning' => $request->earning,
             'password' => bcrypt($request->password),
+            'ref_by' =>  $request->earning ? $referal_user?->id??null : null,
+            'ref_code' => Helpers::generate_referer_code('deliveryman'),
         ];
     }
 
@@ -54,21 +61,29 @@ class DeliveryManService
             $imageName = $deliveryMan['image'];
         }
 
-        if ($request->has('identity_image')){
-            foreach (json_decode($deliveryMan['identity_image'], true) as $img) {
-                
-                Helpers::check_and_delete('delivery-man/' , $img);
-                
+        $currentImages = json_decode($deliveryMan['identity_image'], true) ?? [];
+
+        if ($request->has('delete_identity_image')) {
+            foreach ($request->delete_identity_image as $delImg) {
+                foreach ($currentImages as $key => $imgData) {
+                    $imgName = is_array($imgData) ? $imgData['img'] : $imgData;
+                    if ($imgName === $delImg) {
+                        Helpers::check_and_delete('delivery-man/' , $imgData);
+                        unset($currentImages[$key]);
+                    }
+                }
             }
-            $imgKeeper = [];
+            $currentImages = array_values($currentImages);
+        }
+
+        if ($request->has('identity_image')){
             foreach ($request->identity_image as $img) {
                 $identityImage = $this->upload('delivery-man/', 'png', $img);
-                array_push($imgKeeper, ['img'=>$identityImage, 'storage'=> Helpers::getDisk()]);
+                array_push($currentImages, ['img'=>$identityImage, 'storage'=> Helpers::getDisk()]);
             }
-            $identityImage = json_encode($imgKeeper);
-        } else {
-            $identityImage = $deliveryMan['identity_image'];
         }
+
+        $identityImage = json_encode($currentImages);
 
         return [
             "f_name" => $request->f_name,

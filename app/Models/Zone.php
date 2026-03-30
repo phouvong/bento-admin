@@ -33,6 +33,7 @@ use App\Scopes\ZoneScope;
  * @property int $increased_delivery_fee_status
  * @property string|null $increase_delivery_charge_message
  * @property int $offline_payment
+ * @property boolean $is_default
  */
 class Zone extends Model
 {
@@ -60,6 +61,7 @@ class Zone extends Model
         'increased_delivery_fee_status',
         'increase_delivery_charge_message',
         'offline_payment',
+        'is_default'
     ];
 
     protected $casts = [
@@ -71,6 +73,7 @@ class Zone extends Model
         'offline_payment' => 'boolean',
         'fixed_shipping_charge' => 'float',
         'coordinates' => Polygon::class,
+        'is_default' => 'boolean',
     ];
 
     public function translations(): MorphMany

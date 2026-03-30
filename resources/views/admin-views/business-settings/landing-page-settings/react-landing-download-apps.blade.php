@@ -633,7 +633,7 @@
                 <div class="custom-offcanvas-body custom-offcanvas-body-100  p-20">
                     <section class="common-section-view bg-white border rounded-10 my-xl-2 mx-xl-2">
                         <div
-                            class="common-section-inner d-flex flex-xl-nowrap justify-content-xl-between justify-content-center flex-wrap align-items-center gap-x-xl-20 cus-gradient rounded-10 p-3">
+                            class="common-section-inner d-flex flex-xl-nowrap justify-content-xl-between justify-content-center flex-wrap align-items-center gap-xxl-20 cus-gradient rounded-10 p-3">
                             <div>
                                 <div class="mb-xl-4 mb-3">
                                     <h2 class="mb-1 fs-20">
@@ -644,7 +644,7 @@
                                     </p>
                                 </div>
                                 <div
-                                    class="bg-white rounded-10 px-xl-3 px-1 py-3 border d-flex flex-xl-nowrap flex-wrap justify-content-xl-start justify-content-center align-items-center gap-x-xl-20">
+                                    class="bg-white rounded-10 px-xl-3 px-1 py-3 border d-flex flex-xl-nowrap flex-wrap justify-content-xl-start justify-content-center align-items-center gap-xxl-20">
                                     <div class="scan-wrap mb-xl-0 mb-3 w-xl-auto w-100">
                                         <div class="scan d-center border w-100px h-100px mx-auto rounded p-1">
                                             <img src="{{ asset('/public/assets/admin/img/400x400/app-scan.png') }}"

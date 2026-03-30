@@ -43,7 +43,7 @@ Route::get('shipping-policy', 'HomeController@shipping_policy')->name('shipping-
 Route::post('newsletter/subscribe', 'NewsletterController@newsLetterSubscribe')->name('newsletter.subscribe');
 Route::get('subscription-invoice/{id}', 'HomeController@subscription_invoice')->name('subscription_invoice');
 Route::get('order-invoice/{id}', 'HomeController@order_invoice')->name('order_invoice');
-Route::get('deliveryman-earning-report-invoice/{id}', 'HomeController@earningReportInvoice')->name('delivery_earning_invoice');
+Route::get('deliveryman-earning-report-invoice/{id}', 'HomeController@earningReportInvoice')->name('delivery_earning_invoice')->middleware('localization');
 Route::get('activation-check', 'HomeController@getActivationCheckView')->name('system.activation-check');
 Route::post('activation-check', 'HomeController@activationCheck');
 
@@ -173,12 +173,10 @@ if (!$is_published) {
         });
 
         //MERCADOPAGO
-
-        Route::group(['prefix' => 'mercadopago', 'as' => 'mercadopago.'], function () {
+          Route::group(['prefix' => 'mercadopago', 'as' => 'mercadopago.'], function () {
             Route::get('pay', [MercadoPagoController::class, 'index'])->name('index');
-            Route::any('make-payment', [MercadoPagoController::class, 'make_payment'])->name('make_payment')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
-            Route::get('success', [MercadoPagoController::class, 'success'])->name('success');
-            Route::get('failed', [MercadoPagoController::class, 'failed'])->name('failed');
+            Route::post('make-payment', [MercadoPagoController::class, 'make_payment'])->name('make_payment')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);;
+            Route::any('callback', [MercadoPagoController::class, 'callback'])->name('callback')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);;
         });
 
         //PAYMOB
@@ -210,6 +208,7 @@ Route::group(['prefix' => 'vendor', 'as' => 'restaurant.'], function () {
     Route::post('apply', 'VendorController@store')->name('store');
     Route::get('get-all-modules', 'VendorController@get_all_modules')->name('get-all-modules');
     Route::get('get-module-type', 'VendorController@get_modules_type')->name('get-module-type');
+    Route::get('check-module-type', 'VendorController@check_module_type')->name('check-module-type');
 
     Route::get('back', 'VendorController@back')->name('back');
     Route::post('business-plan', 'VendorController@business_plan')->name('business_plan');

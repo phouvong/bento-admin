@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\ConfigController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -82,7 +83,6 @@ Route::group(['namespace' => 'Api\V1', 'middleware'=>'localization'], function (
     // Module
     Route::get('module', 'ModuleController@index');
     Route::post('newsletter/subscribe','NewsletterController@index');
-    Route::get('landing-page', 'ConfigController@landing_page');
     Route::get('react-landing-page', 'ConfigController@react_landing_page')->middleware('actch:react_web');
     Route::get('flutter-landing-page', 'ConfigController@flutter_landing_page');
 
@@ -97,10 +97,12 @@ Route::group(['namespace' => 'Api\V1', 'middleware'=>'localization'], function (
         });
         Route::group(['middleware'=>['dm.api']], function () {
             Route::get('profile', 'DeliverymanController@get_profile');
+            Route::get('convert-loyalty-points', 'DeliverymanController@convertLoyaltyPoints');
             Route::get('notifications', 'DeliverymanController@get_notifications');
             Route::put('update-profile', 'DeliverymanController@update_profile');
             Route::post('update-active-status', 'DeliverymanController@activeStatus');
             Route::get('current-orders', 'DeliverymanController@get_current_orders');
+            Route::get('orders-count', 'DeliverymanController@get_order_status_count');
             Route::get('latest-orders', 'DeliverymanController@get_latest_orders');
             Route::post('record-location-data', 'DeliverymanController@record_location_data');
             Route::get('all-orders', 'DeliverymanController@get_all_orders');
@@ -117,6 +119,11 @@ Route::group(['namespace' => 'Api\V1', 'middleware'=>'localization'], function (
             Route::delete('remove-account', 'DeliverymanController@remove_account');
 
             Route::get('earning-report', 'DeliverymanController@earningReport');
+            Route::get('loyalty-report', 'DeliverymanController@loyaltyReport');
+            Route::get('referral-report', 'DeliverymanController@referralEarningReport');
+            Route::get('loyalty-point-list', 'DeliverymanController@loyaltyPointlist');
+            Route::get('referral-earning-list', 'DeliverymanController@referralEarninglist');
+            Route::get('parcel-return-earning-list', 'DeliverymanController@parcelReturnEarningList');
 
             Route::get('get-withdraw-method-list', 'DeliverymanController@withdraw_method_list');
             Route::get('get-disbursement-report', 'DeliverymanController@disbursement_report');
@@ -406,6 +413,8 @@ Route::group(['namespace' => 'Api\V1', 'middleware'=>'localization'], function (
                 Route::put('offline-payment-update', 'OrderController@update_offline_payment_info');
                 Route::post('get-surge-price', 'OrderController@getSurgePriceAmount');
                 Route::post('parcel-return', 'OrderController@parcelReturn');
+                Route::post('wallet-payment', 'OrderController@walletPayment');
+                Route::get('payment-failed', 'CustomerController@orderPaymentFailed');
 
             });
 
@@ -519,5 +528,7 @@ Route::group(['namespace' => 'Api\V1', 'middleware'=>'localization'], function (
     Route::get('vehicle/extra_charge', 'ConfigController@extra_charge');
     Route::get('get-vehicles', 'ConfigController@get_vehicles');
     Route::get('get-parcel-cancellation-reasons', 'ConfigController@parcel_cancellation_reason');
+
+    Route::get('get-page-meta-data', [ConfigController::class, 'getPageMetaData']);
 });
 

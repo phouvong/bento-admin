@@ -225,6 +225,25 @@ if(copyText){
     });
 }
 
+//Just toggle 
+$(".view_toggle_btn").on("click", function () {
+    var container = $(this).closest(".card-container");
+    var details = container.find(".card-details-body");
+    var icon = $(this).find("i");
+
+    $(this).toggleClass("active");
+
+    if (details.hasClass("d-none")) {
+        details.removeClass("d-none").hide().slideDown(300);
+    } else {
+        details.slideUp(300, function () {
+            details.addClass("d-none");
+        });
+    }
+    icon.toggleClass("rotate-180deg");
+});
+
+
 
 
 $(document).on("ready", function () {

@@ -100,7 +100,7 @@
                                     <div class="form-group mb-0 error-wrapper" id="store_wise">
                                         <label class="input-label" for="exampleFormControlSelect1">{{translate('messages.store')}}<span
                                                 class="input-label-secondary"></span></label>
-                                        <select name="store_id" id="store_id" class="js-data-example-ajax" id="resturant_ids"  title="Select Restaurant">
+                                        <select name="store_id" id="store_id" class="js-data-example-ajax"  title="Select Restaurant">
                                         @if($banner->type=='store_wise')
                                         @php($store = \App\Models\Store::where('id', $banner->data)->first())
                                             @if($store)
@@ -191,11 +191,11 @@
                 if($(this).val())
                 {
                     zone_id = $(this).val();
-                    // get_items();
+                    get_items();
                 }
                 else
                 {
-                    zone_id = true;
+                    zone_id = [];
                 }
             });
 
@@ -276,6 +276,7 @@
                     }
                 }
             });
+            
         });
     </script>
 @endpush

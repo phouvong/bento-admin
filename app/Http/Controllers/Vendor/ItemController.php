@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Vendor;
 
+use App\Models\ItemSeoData;
 use Carbon\Carbon;
 use App\Models\Tag;
 use App\Models\Item;
@@ -453,6 +454,10 @@ class ItemController extends Controller
             return response()->json(['product_approval' => translate('messages.The_product_will_be_published_once_it_receives_approval_from_the_admin.')], 200);
         }
 
+        if ($module_type == 'ecommerce') {
+            $this->addOrUpdateMetaData($request,$item->id);
+        }
+
 
         return response()->json(['success' => translate('messages.product_added_successfully')], 200);
     }
@@ -590,6 +595,7 @@ class ItemController extends Controller
                 array_push($tag_ids, $tag->id);
             }
         }
+        
 
         $nutrition_ids = [];
         if ($request->nutritions != null) {
@@ -628,6 +634,7 @@ class ItemController extends Controller
         }
 
         $p = Item::find($id);
+
         $p->name = $request->name[array_search('default', $request->lang)];
         $p->unit_id = $request?->unit;
         $category = [];
@@ -809,6 +816,7 @@ class ItemController extends Controller
         }
 
         if ($p->module->module_type == 'ecommerce') {
+
             DB::table('ecommerce_item_details')
                 ->updateOrInsert(
                     ['item_id' => $p->id],
@@ -841,12 +849,6 @@ class ItemController extends Controller
             }
         }
 
-
-
-
-
-
-
         $p->save();
         $p->tags()->sync($tag_ids);
         $p->nutritions()->sync($nutrition_ids);
@@ -855,7 +857,9 @@ class ItemController extends Controller
 
         Helpers::add_or_update_translations(request: $request, key_data: 'name', name_field: 'name', model_name: 'Item', data_id: $p->id, data_value: $p->name);
         Helpers::add_or_update_translations(request: $request, key_data: 'description', name_field: 'description', model_name: 'Item', data_id: $p->id, data_value: $p->description);
-
+        if ($p->module->module_type == 'ecommerce') {
+            $this->addOrUpdateMetaData($request,$p->id);
+        }
         return response()->json(['success' => translate('messages.product_updated_successfully')], 200);
     }
 
@@ -1141,7 +1145,7 @@ class ItemController extends Controller
                         'image' => $collection['Image'],
                         'images' => $collection['Images'] ?? json_encode([]),
                         'category_id' => $collection['SubCategoryId'] ? $collection['SubCategoryId'] : $collection['CategoryId'],
-                        'category_ids' => json_encode([['id' => $collection['CategoryId'], 'position' => 0], ['id' => $collection['SubCategoryId'], 'position' => 1]]),
+                        'category_ids' => json_encode([['id' => $collection['CategoryId'], 'position' => 1], ['id' => $collection['SubCategoryId'], 'position' => 2]]),
 
                         'unit_id' => is_int($collection['UnitId']) ? $collection['UnitId'] : null,
                         'stock' => is_numeric($collection['Stock']) ? abs($collection['Stock']) : 0,
@@ -1332,7 +1336,7 @@ class ItemController extends Controller
                     'image' => $collection['Image'],
                     'images' => $collection['Images'] ?? json_encode([]),
                     'category_id' => $collection['SubCategoryId'] ? $collection['SubCategoryId'] : $collection['CategoryId'],
-                    'category_ids' => json_encode([['id' => $collection['CategoryId'], 'position' => 0], ['id' => $collection['SubCategoryId'], 'position' => 1]]),
+                    'category_ids' => json_encode([['id' => $collection['CategoryId'], 'position' => 1], ['id' => $collection['SubCategoryId'], 'position' => 2]]),
                     'unit_id' => is_int($collection['UnitId']) ? $collection['UnitId'] : null,
                     'stock' => is_numeric($collection['Stock']) ? abs($collection['Stock']) : 0,
                     'price' => $collection['Price'],
@@ -1847,6 +1851,7 @@ class ItemController extends Controller
                         'item_id' => null
                     ]
                 );
+            $this->addOrUpdateMetaData($request,$temp_item->id,temp:true);
         }
 
         if (addon_published_status('TaxModule')) {
@@ -1928,5 +1933,46 @@ class ItemController extends Controller
             ->paginate(config('default_pagination'));
 
         return view('vendor-views.product.flash_sale.list', compact('items'));
+    }
+
+    private function addOrUpdateMetaData(Request $request, $item_id, $temp = false)
+    {
+        if ($temp) {
+            $itemMetaData = ItemSeoData::updateOrCreate([
+                'temp_item_id' => $item_id,
+            ], [
+                'item_id' => null,
+            ]);
+
+            if (!$itemMetaData->image && !$request->hasFile('meta_image')) {
+                $tempProduct = TempProduct::find($item_id);
+                if ($tempProduct && $tempProduct->item_id) {
+                    $originalSeoData = ItemSeoData::where('item_id', $tempProduct->item_id)->first();
+                    if ($originalSeoData) {
+                        $itemMetaData->image = $originalSeoData->image;
+                    }
+                }
+            }
+        } else {
+        $itemMetaData = ItemSeoData::updateOrCreate([
+            'item_id' => $item_id,
+        ]);
+        }
+
+        $imageFile = $request->hasFile('meta_image') ? $request->file('meta_image') : $itemMetaData->image;
+        $originalExtension = $request->hasFile('meta_image') ? $imageFile->getClientOriginalExtension() : 'png';
+        if ($request->has('meta_image_deleted') && $request->meta_image_deleted == 1) {
+            Helpers::check_and_delete('item_meta_data/', $itemMetaData->image);
+            $itemMetaData->image = null;
+        }
+
+        $itemMetaData->title = $request->meta_title;
+        $itemMetaData->description = $request->meta_description;
+        $itemMetaData->image = $request->file('meta_image') ? Helpers::upload(dir: 'item_meta_data/', format: $originalExtension, image: $imageFile) : $itemMetaData->image;
+        $itemMetaData->meta_data = Helpers::formatMetaData($request->all(), $itemMetaData->meta_data);
+
+        $itemMetaData->save();
+
+        return true;
     }
 }

@@ -11,6 +11,12 @@ use Brian2694\Toastr\Facades\Toastr;
 class OrderCancelReasonController extends Controller
 {
  
+    public function edit($id)
+    {
+        $reason = OrderCancelReason::withoutGlobalScope('translate')->with('translations')->find($id);
+        return response()->json(['view' => view('admin-views.business-settings.settings.partials._order-cancel-reason-edit', compact('reason'))->render()]);
+    }
+
     public function store(Request $request)
     {
         $request->validate([

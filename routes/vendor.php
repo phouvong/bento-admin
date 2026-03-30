@@ -49,7 +49,7 @@ Route::group(['namespace' => 'Vendor', 'as' => 'vendor.'], function () {
         });
 
 
-        Route::group(['prefix' => 'subscription' , 'as' => 'subscriptionackage.' , 'middleware' => ['module:business_plan', 'subscription:business_plan']], function () {
+        Route::group(['prefix' => 'subscription' , 'as' => 'subscriptionackage.' , 'middleware' => ['module:business_plan']], function () {
             Route::get('/subscriber-detail',  [SubscriptionController::class, 'subscriberDetail'])->name('subscriberDetail');
             Route::get('/invoice/{id}',  [SubscriptionController::class, 'invoice'])->name('invoice');
             Route::post('/cancel-subscription/{id}',  [SubscriptionController::class, 'cancelSubscription'])->name('cancelSubscription');

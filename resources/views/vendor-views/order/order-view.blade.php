@@ -212,7 +212,7 @@
                                 </h6>
                                 @if ($order->order_attachment)
                                         @php
-                                            $order_images = json_decode($order->order_attachment,true);
+                                            $order_images = json_decode($order->order_attachment,true) ?? [];
                                         @endphp
                                     {{-- @if (is_array($order_images)) --}}
                                         <h5 class="text-dark">

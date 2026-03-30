@@ -226,7 +226,7 @@
                                         <span class="text-truncate sidebar--badge-container">
                                         {{ translate('messages.Offline_Payments') }}
                                         <span class="badge badge-soft-danger bg-light badge-pill ml-1">
-                                            {{ \App\Models\Order::has('offline_payments')->StoreOrder()->module(Config::get('module.current_module_id'))->count() }}
+                                            {{ \App\Models\Order::where('payment_method', 'offline_payment')->whereHas('offline_payments')->StoreOrder()->module(Config::get('module.current_module_id'))->count() }}
                                         </span>
                                     </span>
                                     </a>
@@ -261,17 +261,6 @@
                                 </span>
                                     </a>
                                 </li>
-
-                                {{-- <li class="nav-item {{ Request::is('admin/refund/settings') ? 'active' : '' }}">
-                                   <a class="nav-link " href="{{ route('admin.refund.refund_settings') }}"
-                                       title="{{ translate('refund_settings') }}">
-                                       <span class="tio-circle nav-indicator-icon"></span>
-                                       <span class="text-truncate sidebar--badge-container">
-                                           {{ translate('refund_settings') }}
-
-                                       </span>
-                                   </a>
-                               </li> --}}
                             </ul>
                         </li>
                         <!-- Order refund End-->

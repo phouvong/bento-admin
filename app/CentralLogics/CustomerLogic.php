@@ -13,7 +13,7 @@ use Illuminate\Support\Str;
 class CustomerLogic
 {
 
-    public static function create_wallet_transaction($user_id, float $amount, $transaction_type, $referance)
+    public static function create_wallet_transaction($user_id, float $amount, $transaction_type, $reference)
     {
         if (BusinessSetting::where('key', 'wallet_status')->first()->value != 1) return false;
         $user = User::find($user_id);
@@ -22,7 +22,7 @@ class CustomerLogic
         $wallet_transaction = new WalletTransaction();
         $wallet_transaction->user_id = $user->id;
         $wallet_transaction->transaction_id = Str::uuid();
-        $wallet_transaction->reference = $referance;
+        $wallet_transaction->reference = $reference;
         $wallet_transaction->transaction_type = $transaction_type;
 
         $debit = 0.0;
@@ -79,7 +79,7 @@ class CustomerLogic
         return false;
     }
 
-    public static function create_loyalty_point_transaction($user_id, $referance, $amount, $transaction_type)
+    public static function create_loyalty_point_transaction($user_id, $reference, $amount, $transaction_type)
     {
         $settings = array_column(BusinessSetting::whereIn('key', ['loyalty_point_status', 'loyalty_point_exchange_rate', 'loyalty_point_item_purchase_point'])->get()->toArray(), 'value', 'key');
         if ($settings['loyalty_point_status'] != 1) {
@@ -93,7 +93,7 @@ class CustomerLogic
         $loyalty_point_transaction = new LoyaltyPointTransaction();
         $loyalty_point_transaction->user_id = $user->id;
         $loyalty_point_transaction->transaction_id = Str::uuid();
-        $loyalty_point_transaction->reference = $referance;
+        $loyalty_point_transaction->reference = $reference;
         $loyalty_point_transaction->transaction_type = $transaction_type;
 
         if ( in_array($transaction_type, ['order_place','trip_booking']) ) {

@@ -402,7 +402,7 @@
                             class="common-section-inner highlight-gradient rounded-20 py-sm-4 py-3 px-xxl-5 px-xl-3 px-sm-3 px-3">
                             <div
                                 class="d-flex align-items-center gap-3 flex-wrap justify-content-xl-between justify-content-center text-xl-start text-center flex-xl-nowrap">
-                                <div class="d-flex gap-x-xl-20 align-items-center flex-xl-nowrap flex-wrap">
+                                <div class="d-flex gap-xxl-20 align-items-center flex-xl-nowrap flex-wrap">
                                     <div class="w-100px min-w-100px h-100px d-center mb-xl-0 mb-2 mx-auto">
                                         <img src="{{ $highlight_image?->value
     ? \App\CentralLogics\Helpers::get_full_url('highlight_section', $highlight_image->value, $highlight_image->storage[0]?->value ?? 'public', 'aspect_1')

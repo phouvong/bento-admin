@@ -16,13 +16,7 @@ class SearchController extends Controller
 {
     public function get_searched_products(Request $request)
     {
-        if (!$request->hasHeader('zoneId')) {
-            $errors = [];
-            array_push($errors, ['code' => 'zoneId', 'message' => translate('messages.zone_id_required')]);
-            return response()->json([
-                'errors' => $errors
-            ], 403);
-        }
+        Helpers::setZoneIds($request);
         $validator = Validator::make($request->all(), [
             'name' => 'required'
         ]);
@@ -171,10 +165,7 @@ class SearchController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => Helpers::error_processor($validator)], 403);
         }
-        if (!$request->hasHeader('zoneId')) {
-            $errors = [['code' => 'zoneId', 'message' => translate('messages.zone_id_required')]];
-            return response()->json(['errors' => $errors], 403);
-        }
+        Helpers::setZoneIds($request);
         $zone_id = $request->header('zoneId');
         $data_type = $request->query('data_type', 'all');
         $type = $request->query('type', 'all');

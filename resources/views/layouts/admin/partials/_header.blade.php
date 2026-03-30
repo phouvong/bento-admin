@@ -94,7 +94,7 @@
 
                                     @if (\App\CentralLogics\Helpers::module_permission_check('settings'))
                                         <li>
-                                            <a href="{{ route('admin.business-settings.third-party.payment-method') }}"
+                                            <a href="{{ route('admin.business-settings.third-party.sms-module') }}"
                                                class="next-tour">
                                                 <img
                                                     src="{{asset('/public/assets/admin/img/navbar-setting-icon/third-party.svg')}}"
@@ -313,9 +313,19 @@
         <span class="w-32 h-32px  min-w-32 d-flex align-items-center justify-content-center  bg-primary rounded-8"><img src="{{ asset('public/assets/admin/img/solar_multiple-forward-right-line-duotone.svg') }}" alt=""></span>
     </button>
     <div class="d-flex flex-column">
+ 
+        @if (Request::isAny([
+            'taxvat*',
+            'admin/business-settings/seo-settings/page-meta-data*',
+            'admin/business-settings/pages/react-landing-page-settings/meta-data*',
+            'admin/business-settings/pages/admin-landing-page-settings/meta-data*',
+            'admin/business-settings/business-setup*',
+            'admin/store/view/*/meta-data'
+        ]))
 
-    @if (Request::is('taxvat*'))
-        <div class="tour-guide-items offcanvas-trigger text-capitalize fs-14 text-title cursor-pointer" data-target="#global_guideline_offcanvas">{{ translate('Guideline') }}</div>
+
+            <div class="tour-guide-items offcanvas-trigger text-capitalize fs-14 text-title cursor-pointer"
+                data-target="#global_guideline_offcanvas">{{ translate('Guideline') }}</div>
     @endif
 
         <div class="tour-guide-items">

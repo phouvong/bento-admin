@@ -99,7 +99,8 @@ class Item extends Model
 
     public function scopeActive($query)
     {
-        return $query->where('status', 1)->where('is_approved', 1)
+        return $query
+        ->where('status', 1)->where('is_approved', 1)
             ->whereHas('store', function ($query) {
                 $query->where('status', 1)
                     ->where(function ($query) {
@@ -365,5 +366,9 @@ class Item extends Model
     public function taxVats()
     {
         return $this->morphMany(Taxable::class, 'taxable');
+    }
+
+    public function seoData(){
+        return $this->hasOne(ItemSeoData::class,'item_id');
     }
 }

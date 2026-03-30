@@ -178,7 +178,7 @@ class CustomerController extends Controller
         if (!$request->hasHeader('X-localization')) {
 
             $errors = [];
-            array_push($errors, ['code' => 'current_language_key', 'message' => translate('messages.current_language_key_required')]);
+            $errors[] = ['code' => 'current_language_key', 'message' => translate('messages.current_language_key_required')];
             return response()->json([
                 'errors' => $errors
             ], 200);
@@ -205,6 +205,73 @@ class CustomerController extends Controller
         return response()->json($data, 200);
     }
 
+    public function orderPaymentFailed(Request $request)
+    {
+        $user_id = $request->user ? $request->user->id : $request->input('guest_id');
+        $orderId = $request->input('order_id');
+
+        if ($orderId) {
+            $unpaidOrder = Order::where('id', $orderId)->first();
+        }
+        else {
+            $unpaidOrder = Order::where('user_id', $user_id)
+                ->where('created_at', '>=', now()->subMonths(1))
+                ->whereIn('order_status', ['pending','failed'])
+                ->whereNotIn('payment_method', ['cash_on_delivery', 'wallet'])
+                ->where(function ($q) {
+                    // CASE 1: partial_payments
+                    $q->where(function ($q2) {
+                        $q2->where('payment_method', 'partial_payment')
+                            ->whereHas('payments', function ($p) {
+                                $p->where('payment_status', 'unpaid')
+                                    ->whereNotIn('payment_method', ['cash_on_delivery', 'wallet']);
+                            });
+                    })
+                    // CASE 2: offline_payment
+                    ->orWhere(function ($q3) {
+                        $q3->where('payment_method', 'offline_payment')
+                            ->whereDoesntHave('offline_payments');
+                    })
+                    // CASE 3: other online methods
+                    ->orWhere(function ($q4) {
+                        $q4->whereNotIn('payment_method', [
+                            'cash_on_delivery', 'wallet', 'partial_payment', 'offline_payment'
+                        ]);
+                    });
+                })
+                ->first();
+        }
+
+        if (!$unpaidOrder) {
+            return response()->json([], 200);
+        }
+        $zone = $unpaidOrder->zone;
+        $module = $unpaidOrder->module;
+        $moduleZone = $module?->zones()?->where('zone_id', $zone->id)?->first();
+        $maxCodAmount = $moduleZone?->pivot?->maximum_cod_order_amount ?? 0;
+        $isCashOnDelivery = (Helpers::get_business_settings('cash_on_delivery')['status'] && $zone->cash_on_delivery) ?? false ;
+        $isDigitalPayment = (Helpers::get_business_settings('digital_payment')['status'] && $zone->digital_payment) ?? false ;
+        $isOfflinePayment = (Helpers::get_business_settings('offline_payment_status') == 1 && $zone->offline_payment) ?? false ;
+
+
+        $data = [
+            'cash_on_delivery'            => (bool) $isCashOnDelivery,
+            'digital_payment'             => (bool) $isDigitalPayment,
+            'offline_payment'             => (bool) $isOfflinePayment,
+            'maximum_cod_order_amount'    => $maxCodAmount,
+            'order_id'                    => $unpaidOrder->id,
+            'order_amount'                => $unpaidOrder->order_amount,
+            'partially_paid_amount'       => $unpaidOrder->partially_paid_amount,
+            'order_type'                  => $unpaidOrder->order_type,
+            'user_id'                     => $unpaidOrder->user_id,
+            'zone_id'                     => $unpaidOrder->zone_id,
+            'payment_status'              => $unpaidOrder->payment_status,
+            'payment_method'              => $unpaidOrder->payment_method,
+            'contact_person_number'       => json_decode($unpaidOrder->delivery_address)->contact_person_number,
+        ];
+
+        return response()->json($data, 200);
+    }
 
     public function update_interest(Request $request)
     {
@@ -218,7 +285,7 @@ class CustomerController extends Controller
 
         $user = User::where(['id' => $request->user()->id])->first();
         $module_ids = $user?->module_ids ? json_decode($user?->module_ids, true) : [];
-        array_push($module_ids, $request->header('moduleId'));
+        array_push($module_ids, getModuleId($request->header('moduleId')));
         $module_ids = array_unique($module_ids);
 
         $interest = $user?->interest ? json_decode($user?->interest, true) : [];
@@ -250,15 +317,7 @@ class CustomerController extends Controller
 
     public function get_suggested_item(Request $request)
     {
-        if (!$request->hasHeader('zoneId')) {
-            $errors = [];
-            array_push($errors, ['code' => 'zoneId', 'message' => 'Zone id is required!']);
-            return response()->json([
-                'errors' => $errors
-            ], 403);
-        }
-
-
+       Helpers::setZoneIds($request);
         $zone_id = $request->header('zoneId');
 
         $interest = $request->user()->interest;
@@ -294,17 +353,20 @@ class CustomerController extends Controller
 
     public function update_zone(Request $request)
     {
-        if (!$request->hasHeader('zoneId') && is_numeric($request->header('zoneId'))) {
-            $errors = [];
-            array_push($errors, ['code' => 'zoneId', 'message' => translate('messages.zone_id_required')]);
-            return response()->json([
-                'errors' => $errors
-            ], 403);
-        }
+        $longitude = (float)$request->header('longitude') ?? 0;
+        $latitude = (float)$request->header('latitude') ?? 0;
 
-        $customer = $request->user();
-        $customer->zone_id = (integer)$request->header('zoneId');
-        $customer->save();
+        if ($longitude && $latitude) {
+            try {
+             $zoneId = Zone::where('status',1)->whereContains('coordinates', new Point($longitude, $latitude, POINT_SRID))
+            ->selectRaw('zones.*, ABS(ST_Area(coordinates)) as area')->orderBy('area', 'asc')->first()?->id;
+                $customer = $request->user();
+                $customer->zone_id = $zoneId;
+                $customer->save();
+
+            } catch (\Exception $e) {
+            }
+        }
         return response()->json([], 200);
     }
 

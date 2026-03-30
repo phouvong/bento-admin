@@ -224,7 +224,7 @@ class SubscriptionController extends Controller
                     }
 
                         if(config('mail.status') && Helpers::get_mail_status('rental_subscription_plan_upadte_mail_status_provider') == '1' &&  Helpers::getRentalNotificationStatusData('provider','provider_subscription_plan_update','mail_status' ,$subscriber?->store?->id)){
-                            Mail::to($subscriber?->store?->email)->send(new ProviderSubscriptionPlanUpdate($subscriber?->store?->name));
+                            Mail::to($subscriber?->store?->getRawOriginal('email'))->send(new ProviderSubscriptionPlanUpdate($subscriber?->store?->name));
                         }
 
                 } else{
@@ -248,7 +248,7 @@ class SubscriptionController extends Controller
                     }
 
                         if(config('mail.status') && Helpers::get_mail_status('subscription_plan_upadte_mail_status_store') == '1' &&  Helpers::getNotificationStatusData('store','store_subscription_plan_update','mail_status' ,$subscriber?->store?->id)){
-                            Mail::to($subscriber?->store?->email)->send(new SubscriptionPlanUpdate($subscriber?->store?->name));
+                            Mail::to($subscriber?->store?->getRawOriginal('email'))->send(new SubscriptionPlanUpdate($subscriber?->store?->name));
                         }
                     }
                 }
@@ -572,7 +572,7 @@ class SubscriptionController extends Controller
                     ]);
                 }
                 if (config('mail.status') && Helpers::get_mail_status('rental_subscription_cancel_mail_status_provider') == '1' &&  Helpers::getRentalNotificationStatusData('provider','provider_subscription_cancel','mail_status' ,$store?->id)) {
-                    Mail::to($store->email)->send(new ProviderSubscriptionCancel($store->name));
+                    Mail::to($store?->getRawOriginal('email'))->send(new ProviderSubscriptionCancel($store->name));
                 }
             } else{
                 if( Helpers::getNotificationStatusData('store','store_subscription_cancel','push_notification_status',$store->id)  &&  $store?->vendor?->firebase_token){
@@ -593,7 +593,7 @@ class SubscriptionController extends Controller
                     ]);
                 }
                 if (config('mail.status') && Helpers::get_mail_status('subscription_cancel_mail_status_store') == '1' &&  Helpers::getNotificationStatusData('store','store_subscription_cancel','mail_status' ,$store?->id)) {
-                    Mail::to($store->email)->send(new SubscriptionCancel($store->name));
+                    Mail::to($store?->getRawOriginal('email'))->send(new SubscriptionCancel($store->name));
                 }
             }
         } catch (\Exception $ex) {

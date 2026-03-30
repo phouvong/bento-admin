@@ -46,7 +46,6 @@ class OrderController extends Controller
     use PlaceNewOrder;
     public function list($status, Request $request)
     {
-        // dd($status);
         $key = explode(' ', $request['search']);
         if (session()->has('zone_filter') == false) {
             session()->put('zone_filter', 0);
@@ -138,6 +137,7 @@ class OrderController extends Controller
             ->module(Config::get('module.current_module_id'))
             ->orderBy('schedule_at', 'desc')
             ->paginate(config('default_pagination'));
+
         $orderstatus = isset($request->orderStatus) ? $request->orderStatus : [];
         $scheduled = isset($request->scheduled) ? $request->scheduled : 0;
         $vendor_ids = isset($request->vendor) ? $request->vendor : [];
@@ -227,10 +227,43 @@ class OrderController extends Controller
             return $query->withoutGlobalScope(StoreScope::class);
         }])->where(['id' => $id])->first();
         if (isset($order)) {
+            $isUnpaid = false;
+
+            if (
+                in_array($order->order_status, ['pending','failed']) &&
+                !in_array($order->payment_method, ['cash_on_delivery', 'wallet'])
+            ) {
+                // CASE 1: partial payment
+                if ($order->payment_method == 'partial_payment') {
+                    if ($order->payment_method === 'partial_payment') {
+                        $isUnpaid = $order->payments()
+                            ->where('payment_status', 'unpaid')
+                            ->whereNotIn('payment_method', ['cash_on_delivery', 'wallet'])
+                            ->exists();
+                    }
+
+                }
+
+                // CASE 2: offline payment
+                elseif ($order->payment_method == 'offline_payment') {
+                    if ($order?->offline_payments?->count() == 0) {
+                        $isUnpaid = true;
+                    }
+                }
+
+                // CASE 3: other online payments
+                else {
+                    $isUnpaid = true;
+                }
+            }
+
+            $order->is_unpaid_order = $isUnpaid ? true : false;
+
             if($order->order_type == 'parcel'){
                 return to_route('admin.parcel.order.details', $id);
             }
             $excludeDm = $order->delivery_man_id;
+
             if (isset($order->store)) {
                 $deliveryMen = DeliveryMan::where('zone_id', $order->store->zone_id)
                 ->where(function($query)use($order){
@@ -295,6 +328,49 @@ class OrderController extends Controller
             return back();
         }
     }
+    public function switch_to_cod($id){
+        $order = Order::where('id', $id)->first();
+        if($order){
+            if($order->payment_method == 'cash_on_delivery'){
+                Toastr::error(translate('messages.order_already_switched_to_cod'));
+                return back();
+            }
+
+            $order?->offline_payments()->delete();
+
+            if($order?->payment_method == 'partial_payment'){
+                $order?->payments()->where('payment_status','unpaid')->update([
+                    'payment_method'=> 'cash_on_delivery',
+                ]);
+            }
+
+            if($order?->store?->is_valid_subscription == 1 && $order?->store?->store_sub?->max_order != "unlimited" &&
+                $order?->store?->store_sub?->max_order > 0) {
+                $order?->store?->store_sub?->decrement('max_order' , 1);
+            }
+
+            Helpers::send_order_notification($order);
+
+            if($order->order_status != 'pending'){
+                $order->order_status = 'pending';
+            }
+
+            $order->payment_method = 'cash_on_delivery';
+            $order->save();
+
+            if($order?->is_guest == 0){
+                $this->sent_mail_on_offline_payment(status:'COD', name:$order?->customer?->f_name .' '.$order?->customer?->l_name,
+                    email:  $order?->customer?->email ,order_id: $order->id);
+            }
+
+            Toastr::success(translate('messages.order_switched_to_cod'));
+            return back();
+        }
+
+        Toastr::error(translate('messages.order_not_found'));
+        return back();
+    }
+
     public function all_details(Request $request, $id)
     {
         $order = Order::with(['details','offline_payments' ,'refund', 'store' => function ($query) {
@@ -397,7 +473,7 @@ class OrderController extends Controller
             return back();
         }
 
-        if (in_array($order->order_status, ['refunded', 'failed'])) {
+        if (in_array($order->order_status, ['refunded'])) {
             Toastr::warning(translate('messages.you_can_not_change_the_status_of_a_completed_order'));
             return back();
         }
@@ -411,13 +487,11 @@ class OrderController extends Controller
             return back();
         }
 
-        if ($request->order_status == 'delivered' && $order['transaction_reference'] == null && $order['payment_method'] != 'cash_on_delivery') {
+        if ($request->order_status == 'delivered' && $order['transaction_reference'] == null && !in_array($order['payment_method'], ['cash_on_delivery', 'wallet'])) {
             Toastr::warning(translate('messages.add_your_paymen_ref_first'));
             return back();
         }
-
         if ($request->order_status == 'delivered') {
-
             if ($order->transaction  == null) {
                 $unpaid_payment = OrderPayment::where('payment_status','unpaid')->where('order_id',$order->id)->first()?->payment_method;
                 $unpaid_pay_method = 'digital_payment';
@@ -438,6 +512,11 @@ class OrderController extends Controller
                 if (!$ol) {
                     Toastr::warning(translate('messages.faield_to_create_order_transaction'));
                     return back();
+                } else {
+                    if($order->delivery_man_id){
+                        Helpers::deliverymanLoyaltyPointHistory(deliveryManId:$order->delivery_man_id, amount: $order->order_amount, transactionType:'earn_on_order_completion' ,pointConversionType :'credit', reference: $order->id);
+                    }
+
                 }
             } else if ($order->delivery_man_id) {
                 $order->transaction->update(['delivery_man_id' => $order->delivery_man_id]);
@@ -465,7 +544,8 @@ class OrderController extends Controller
 
             OrderLogic::update_unpaid_order_payment(order_id:$order->id, payment_method:$order->payment_method);
 
-        } else if ($request->order_status == 'refunded' && BusinessSetting::where('key', 'refund_active_status')->first()->value == 1) {
+        }
+        else if ($request->order_status == 'refunded' && BusinessSetting::where('key', 'refund_active_status')->first()->value == 1) {
             if ($order->payment_status == "unpaid") {
                 Toastr::warning(translate('messages.you_can_not_refund_a_cod_order'));
                 return back();
@@ -527,17 +607,19 @@ class OrderController extends Controller
 
 
                 if(config('mail.status') && $order?->customer?->email && Helpers::get_mail_status('refund_order_mail_status_user') == '1'  &&  Helpers::getNotificationStatusData('customer','customer_refund_request_approval','mail_status') ){
-                    Mail::to($order->customer->email)->send(new \App\Mail\RefundedOrderMail($order->id));
+                    Mail::to($order->customer?->getRawOriginal('email'))->send(new \App\Mail\RefundedOrderMail($order->id));
                 }
             } catch (\Throwable $th) {
                 info($th->getMessage());
                 Toastr::error(translate('messages.Failed_to_send_mail'));
             }
-        } else if ($request->order_status == 'canceled') {
-            if (in_array($order->order_status, ['delivered', 'canceled', 'refund_requested', 'refunded', 'failed'])) {
+        }
+        else if ($request->order_status == 'canceled') {
+            if (in_array($order->order_status, ['delivered', 'canceled', 'refund_requested', 'refunded'])) {
                 Toastr::warning(translate('messages.you_can_not_cancel_a_completed_order'));
                 return back();
             }
+
             $order->cancellation_reason = $request->reason;
             $order->canceled_by = 'admin';
 
@@ -562,7 +644,8 @@ class OrderController extends Controller
 
                 OrderLogic::refund_before_delivered($order);
             }
-        } else if ( $order->order_type != 'parcel' && in_array($request->order_status, ['picked_up']) ) {
+        }
+        else if ( $order->order_type != 'parcel' && in_array($request->order_status, ['picked_up']) ) {
             Helpers::sendOrderDeliveryVerificationOtp($order);
         }
         $order->order_status = $request->order_status;
@@ -598,10 +681,11 @@ class OrderController extends Controller
 
             $payments = $order->payments()->where('payment_method','cash_on_delivery')->exists();
             $cash_in_hand = $deliveryman?->wallet?->collected_cash ?? 0;
+            $cash_in_hand_overflow_status = BusinessSetting::where('key', 'cash_in_hand_overflow_delivery_man')->first()?->value;
             $dm_max_cash=BusinessSetting::where('key','dm_max_cash_in_hand')->first();
             $value=  $dm_max_cash?->value ?? 0;
 
-            if(($order->payment_method == "cash_on_delivery" || $payments) && (($cash_in_hand+$order->order_amount) >= $value)){
+            if($cash_in_hand_overflow_status && ($order->payment_method == "cash_on_delivery" || $payments) && $cash_in_hand+$order->order_amount >= $value){
                 return response()->json(['message'=> \App\CentralLogics\Helpers::format_currency($value) ." ".translate('max_cash_in_hand_exceeds')  ], 400);
             }
 
@@ -1069,6 +1153,10 @@ class OrderController extends Controller
             $details['status'] = true;
             $cart->push($details);
         }
+        if($cart->isEmpty()){
+            Toastr::error(translate('messages.cart_is_empty'));
+            return back();
+        }
 
         if ($request->session()->has('order_cart')) {
             session()->forget('order_cart');
@@ -1099,6 +1187,11 @@ class OrderController extends Controller
         }
         $cart = $request->session()->get('order_cart', collect([]));
         $store = $order->store;
+        $validity = $this->checkValidity($cart, $store, $request);
+        if ($validity['status_code'] != 200) {
+            Toastr::error($validity['message']);
+            return back();
+        }
         $coupon = null;
         $total_addon_price = 0;
         $product_price = 0;
@@ -1355,6 +1448,85 @@ class OrderController extends Controller
         return back();
     }
 
+    public function checkValidity($carts, $store, $request)
+    {
+        if ($carts->isEmpty()) {
+            return [
+                'status_code' => 403,
+                'code' => 'not_found',
+                'message' => translate('Cart is empty'),
+            ];
+        }
+        foreach ($carts as $c) {
+            if (!isset($c['status']) || $c['status'] !== false) {
+                if (isset($c['item_type']) && ($c['item_type'] === 'App\Models\ItemCampaign' || $c['item_type'] === 'AppModelsItemCampaign')) {
+                    $product = ItemCampaign::with('module')->active()->find($c['item_id']);
+                } else {
+                    $product = Item::with('module')->active()->find($c['item_id'] ?? $c['id']);
+                }
+
+                if ($product) {
+                    if ($product->store_id != $store->id) {
+                        return [
+                            'status_code' => 403,
+                            'code' => 'different_stores',
+                            'message' => translate('messages.Please_select_items_from_the_same_store'),
+                        ];
+                    }
+
+                    if ($product?->pharmacy_item_details?->is_prescription_required == '1' && empty($request->file('order_attachment'))) {
+                        return [
+                            'status_code' => 403,
+                            'code' => 'prescription',
+                            'message' => translate('messages.prescription_is_required_for_this_order'),
+                        ];
+                    }
+
+                    if ($product?->maximum_cart_quantity && $c['quantity'] > $product?->maximum_cart_quantity) {
+                        return [
+                            'status_code' => 403,
+                            'code' => 'quantity',
+                            'message' => translate('messages.maximum_cart_quantity_limit_over'),
+                        ];
+                    }
+
+                    if ($product?->module?->module_type != 'food') {
+                        if (
+                            is_array(json_decode($product['variations'], true)) && count(json_decode($product['variations'], true)) > 0 &&
+                            is_array($c['variation']) && count($c['variation']) > 0
+                        ) {
+                            $variant_data = Helpers::variation_price($product, json_encode($c['variation']));
+                            $stock = $variant_data['stock'];
+                        } else {
+                            $stock = $product?->stock;
+                        }
+
+                        if (config('module.' . $product->module->module_type)['stock']) {
+                            if ($c['quantity'] > $stock) {
+                                return [
+                                    'status_code' => 403,
+                                    'code' => 'stock',
+                                    'message' => $product?->name . ' ' . translate('messages.is_out_of_stock')
+                                ];
+                            }
+                        }
+                    }
+                } else {
+                    return[
+                        'status_code' => 403,
+                        'code' => 'not_found',
+                        'message' => translate('messages.product_not_found'),
+                    ];
+                }
+            }
+        }
+        return [
+            'status_code' => 200,
+            'code' => 'success',
+            'message' => translate('messages.order_updated_successfully'),
+        ];
+    }
+
     public function quick_view(Request $request)
     {
 
@@ -1499,12 +1671,6 @@ class OrderController extends Controller
         } else if ($file_type == 'csv') {
             return Excel::download(new OrderExport($data), 'Orders.csv');
         }
-        // if ($file_type == 'excel') {
-        //     return (new FastExcel(OrderLogic::format_export_data($orders, $type)))->download('Orders.xlsx');
-        // } else if ($file_type == 'csv') {
-        //     return (new FastExcel(OrderLogic::format_export_data($orders, $type)))->download('Orders.csv');
-        // }
-        return (new FastExcel(OrderLogic::format_export_data($orders, $type)))->download('Orders.xlsx');
     }
 
     public function store_order_search(Request $request)
@@ -1544,25 +1710,8 @@ class OrderController extends Controller
             return Excel::download(new StoreOrderlistExport($data), 'OrderList.csv');
         }
         return Excel::download(new StoreOrderlistExport($data), 'OrderList.xlsx');
-
-
-
-        // if ($type == 'excel') {
-        //     return (new FastExcel(OrderLogic::format_export_data($orders, $type)))->download('Orders.xlsx');
-        // } else if ($type == 'csv') {
-        //     return (new FastExcel(OrderLogic::format_export_data($orders, $type)))->download('Orders.csv');
-        // }
-        // return (new FastExcel(OrderLogic::format_export_data($orders, $type)))->download('Orders.xlsx');
     }
 
-
-    public function refund_settings()
-    {
-        $refund_active_status = BusinessSetting::where(['key' => 'refund_active_status'])->first();
-        $reasons = RefundReason::orderBy('id', 'desc')
-            ->paginate(config('default_pagination'));
-        return view('admin-views.refund.index', compact('refund_active_status', 'reasons'));
-    }
 
     public function refund_reason(Request $request)
     {
@@ -1576,36 +1725,22 @@ class OrderController extends Controller
         $reason = new RefundReason();
         $reason->reason = $request->reason[array_search('default', $request->lang)];
         $reason->save();
-        $data = [];
-        $default_lang = str_replace('_', '-', app()->getLocale());
-        foreach ($request->lang as $index => $key) {
-            if($default_lang == $key && !($request->reason[$index])){
-                if ($key != 'default') {
-                    array_push($data, array(
-                        'translationable_type' => 'App\Models\RefundReason',
-                        'translationable_id' => $reason->id,
-                        'locale' => $key,
-                        'key' => 'reason',
-                        'value' => $reason->reason,
-                    ));
-                }
-            }else{
-                if ($request->reason[$index] && $key != 'default') {
-                    array_push($data, array(
-                        'translationable_type' => 'App\Models\RefundReason',
-                        'translationable_id' => $reason->id,
-                        'locale' => $key,
-                        'key' => 'reason',
-                        'value' => $request->reason[$index],
-                    ));
-                }
-            }
-        }
-        Translation::insert($data);
+         Helpers::add_or_update_translations(request: $request, key_data:'reason' , name_field:'reason' , model_name: 'RefundReason' ,data_id: $reason->id,data_value: $reason->reason);
         Toastr::success(translate('Refund Reason Added Successfully'));
         return back();
     }
-    public function reason_edit(Request $request)
+
+    public function reasonEdit($id)
+    {
+        $reason =RefundReason::withoutGlobalScope('translate')->with('translations')->find($id);
+        $language = getWebConfig('language');
+        return response()->json([
+            'view' => view('admin-views.business-settings.settings.partials._refund_reason_edit', compact('reason','language'))->render(),
+        ]);
+    }
+
+
+    public function reasonUpdate(Request $request)
     {
         $request->validate([
             'reason' => 'required|max:191',
@@ -1613,39 +1748,11 @@ class OrderController extends Controller
         ],[
             'reason.0.required'=>translate('default_reason_is_required'),
         ]);
-        $refund_reason = RefundReason::findOrFail($request->reason_id);
-        $refund_reason->reason = $request->reason[array_search('default', $request->lang1)];
-        $refund_reason->save();
+        $reason = RefundReason::findOrFail($request->reason_id);
+        $reason->reason = $request->reason[array_search('default', $request->lang)];
+        $reason->save();
 
-        $default_lang = str_replace('_', '-', app()->getLocale());
-        foreach ($request->lang1 as $index => $key) {
-            if($default_lang == $key && !($request->reason[$index])){
-                if ($key != 'default') {
-                    Translation::updateOrInsert(
-                        [
-                            'translationable_type' => 'App\Models\RefundReason',
-                            'translationable_id' => $refund_reason->id,
-                            'locale' => $key,
-                            'key' => 'reason'
-                        ],
-                        ['value' => $refund_reason->reason]
-                    );
-                }
-            }else{
-                if ($request->reason[$index] && $key != 'default') {
-                    Translation::updateOrInsert(
-                        [
-                            'translationable_type' => 'App\Models\RefundReason',
-                            'translationable_id' => $refund_reason->id,
-                            'locale' => $key,
-                            'key' => 'reason'
-                        ],
-                        ['value' => $request->reason[$index]]
-                    );
-                }
-            }
-        }
-
+        Helpers::add_or_update_translations(request: $request, key_data:'reason' , name_field:'reason' , model_name: 'RefundReason' ,data_id: $reason->id,data_value: $reason->reason);
 
         Toastr::success(translate('Refund Reason Updated Successfully'));
         return back();
@@ -1708,7 +1815,7 @@ class OrderController extends Controller
             }
 
             if(config('mail.status') && $order?->customer?->email && Helpers::get_mail_status('refund_request_deny_mail_status_user') == '1' &&  Helpers::getNotificationStatusData('customer','customer_refund_request_rejaction','mail_status')){
-                Mail::to($order->customer->email)->send(new RefundRejected($order->id));
+                Mail::to($order->customer?->getRawOriginal('email'))->send(new RefundRejected($order->id));
             }
         } catch (\Throwable $th) {
             info($th->getMessage());
@@ -1890,7 +1997,9 @@ class OrderController extends Controller
     public function offline_verification_list(Request $request, $status)
     {
         $key = explode(' ', $request['search']);
-        $orders = Order::with(['customer', 'store'])->has('offline_payments')
+        $orders = Order::with(['customer', 'store'])
+        ->where('payment_method', 'offline_payment')
+        ->whereHas('offline_payments')
             ->when(isset($key), function ($query) use ($key) {
                 return $query->where(function ($q) use ($key) {
                     foreach ($key as $value) {
@@ -1915,7 +2024,13 @@ class OrderController extends Controller
                     return $query->where('status', 'verified');
                 });
             })
-            ->StoreOrder()
+
+            ->when(Config::get('module.current_module_type') == 'parcel', function ($query) {
+                return $query->ParcelOrder();
+            } , function ($query) {
+                return $query->StoreOrder();
+            })
+
             ->module(Config::get('module.current_module_id'))
             ->orderBy('schedule_at', 'desc')
             ->paginate(config('default_pagination'));

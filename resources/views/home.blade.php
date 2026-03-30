@@ -4,7 +4,6 @@
 @section('content')
 
     <!-- Basic Settings -->
-    @php($landing_page_links =   \App\CentralLogics\Helpers::get_business_settings('landing_page_links'))
     <!-- ==== Banner Section Starts Here ==== -->
     <section class="banner-section position-relative">
         <div class="container">
@@ -1875,7 +1874,7 @@
     @if (
         (isset($landing_page_links['playstore_url_status']) && $landing_page_links['playstore_url_status'] == '1') ||
             (isset($landing_page_links['apple_store_url_status']) && $landing_page_links['apple_store_url_status'] == '1'))
-        <section class="download-app-section">
+       <section class="download-app-section">
             <div class="container">
                 <div class="row justify-content-center align-items-center g-4">
                     <div class="col-lg-6 col-md-9">

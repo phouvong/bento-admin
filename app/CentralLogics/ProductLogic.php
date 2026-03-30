@@ -36,6 +36,7 @@ class ProductLogic
         $latest_items_sort_by_general =PriorityList::where('name', 'latest_items_sort_by_general')->where('type','general')->first()?->value ?? '';
         $latest_items_sort_by_unavailable =PriorityList::where('name', 'latest_items_sort_by_unavailable')->where('type','unavailable')->first()?->value ?? '';
         $latest_items_sort_by_temp_closed =PriorityList::where('name', 'latest_items_sort_by_temp_closed')->where('type','temp_closed')->first()?->value ?? '';
+        $zones = !empty($zone_id) ? json_decode($zone_id, true) : null;
 
 
         if($category_id != 0){
@@ -54,15 +55,21 @@ class ProductLogic
         ->when(isset($product_id), function($q)use($product_id){
             $q->where('id', '!=', $product_id);
         })
-        ->whereHas('module.zones', function($query)use($zone_id){
-            $query->whereIn('zones.id', json_decode($zone_id, true));
-        })
-        ->whereHas('store', function($query)use($zone_id){
-            $query->when(config('module.current_module_data'), function($query){
-                $query->where('module_id', config('module.current_module_data')['id'])->whereHas('zone.modules',function($query){
-                    $query->where('modules.id', config('module.current_module_data')['id']);
+
+        ->when(empty($store_id), function ($q) use ($zones) {
+                $q->whereHas('store', function ($query) use ($zones) {
+
+                    $query->when(config('module.current_module_data'), function ($query) {
+                        $query->where('module_id', config('module.current_module_data')['id'])
+                            ->whereHas('zone.modules', function ($query) {
+                                $query->where('modules.id', config('module.current_module_data')['id']);
+                            });
+                    });
+
+                    $query->when(!empty($zones), function ($query) use ($zones) {
+                        $query->whereIn('zone_id', $zones);
+                    });
                 });
-            })->whereIn('zone_id', json_decode($zone_id, true));
         })
         ->when($min && $max, function($query)use($min,$max){
             $query->whereBetween('price',[$min,$max]);
@@ -152,16 +159,29 @@ class ProductLogic
         ->when(isset($product_id), function($q)use($product_id){
             $q->where('id', '!=', $product_id);
         })
-        ->whereHas('module.zones', function($query)use($zone_id){
-            $query->whereIn('zones.id', json_decode($zone_id, true));
-        })
-        ->whereHas('store', function($query)use($zone_id){
-            $query->when(config('module.current_module_data'), function($query){
-                $query->where('module_id', config('module.current_module_data')['id'])->whereHas('zone.modules',function($query){
-                    $query->where('modules.id', config('module.current_module_data')['id']);
+            ->when(empty($store_id), function ($q) use ($zones) {
+
+                $q->when(!empty($zones), function ($q) use ($zones) {
+                    $q->whereHas('module.zones', function ($query) use ($zones) {
+                        $query->whereIn('zones.id', $zones);
+                    });
                 });
-            })->whereIn('zone_id', json_decode($zone_id, true));
-        })
+
+                $q->whereHas('store', function ($query) use ($zones) {
+
+                    $query->when(config('module.current_module_data'), function ($query) {
+                        $query->where('module_id', config('module.current_module_data')['id'])
+                            ->whereHas('zone.modules', function ($query) {
+                                $query->where('modules.id', config('module.current_module_data')['id']);
+                            });
+                    });
+
+                    $query->when(!empty($zones), function ($query) use ($zones) {
+                        $query->whereIn('zone_id', $zones);
+                    });
+                });
+            })
+
         ->when($min && $max, function($query)use($min,$max){
             $query->whereBetween('price',[$min,$max]);
         })
@@ -414,62 +434,123 @@ class ProductLogic
         ->get();
     }
 
-    public static function recommended_items($zone_id,$store_id=null,$limit = null, $offset = null, $type='all', $filter='all')
-    {
-        $data =[];
-        if($limit != null && $offset != null)
-        {
-            $paginator = Item::
-            when(isset($store_id), function($q)use($store_id){
+    // public static function recommended_items($zone_id,$store_id=null,$limit = null, $offset = null, $type='all', $filter='all')
+    // {
+    //     $data =[];
+    //     if($limit != null && $offset != null)
+    //     {
+    //         $paginator = Item::
+    //         when(isset($store_id), function($q)use($store_id){
+    //             $q->where('store_id', $store_id);
+    //         })
+    //         ->whereHas('store', function($query)use($zone_id){
+    //             $query->when(config('module.current_module_data'), function($query){
+    //                 $query->where('module_id', config('module.current_module_data')['id'])->whereHas('zone.modules',function($query){
+    //                     $query->where('modules.id', config('module.current_module_data')['id']);
+    //                 });
+    //             })->whereIn('zone_id', json_decode($zone_id, true));
+    //         })->active()->type($type)->Recommended()
+    //         ->when($filter == 'new_arrival',function ($qurey){
+    //             $qurey->latest();
+    //         })
+    //         ->when($filter == 'top_rated',function ($qurey){
+    //             $qurey->withCount('reviews')->orderBy('reviews_count','desc');
+    //         })
+    //         ->when($filter == 'best_selling',function ($qurey){
+    //             $qurey->popular();
+    //         })
+    //         ->paginate($limit, ['*'], 'page', $offset);
+    //             $data = $paginator->items();
+    //     }
+    //     else{
+    //         $paginator = Item::when(isset($store_id), function($q)use($store_id){
+    //             $q->where('store_id', $store_id);
+    //         })
+    //         ->active()
+    //         ->type($type)
+    //         ->whereHas('store', function($query)use($zone_id){
+    //             $query->when(config('module.current_module_data'), function($query){
+    //                 $query->where('module_id', config('module.current_module_data')['id'])->whereHas('zone.modules',function($query){
+    //                     $query->where('modules.id', config('module.current_module_data')['id']);
+    //                 });
+    //             })->whereIn('zone_id', json_decode($zone_id, true));
+    //         })
+    //         ->Recommended()
+    //         ->when($filter == 'new_arrival',function ($qurey){
+    //             $qurey->latest();
+    //         })
+    //         ->when($filter == 'top_rated',function ($qurey){
+    //             $qurey->withCount('reviews')->orderBy('reviews_count','desc');
+    //         })
+    //         ->when($filter == 'best_selling',function ($qurey){
+    //             $qurey->popular();
+    //         })
+    //         ->limit(50)->get();
+    //         $data =$paginator;
+    //     }
+
+    //     return [
+    //         'total_size' => $paginator->count(),
+    //         'limit' => $limit,
+    //         'offset' => $offset,
+    //         'items' => $data
+    //     ];
+    // }
+
+
+    public static function recommended_items(
+        $zone_id,
+        $store_id = null,
+        $limit = null,
+        $offset = null,
+        $type = 'all',
+        $filter = 'all'
+    ) {
+        $zones = !empty($zone_id) ? json_decode($zone_id, true) : null;
+
+        $query = Item::query()
+            ->when(isset($store_id), function ($q) use ($store_id) {
                 $q->where('store_id', $store_id);
             })
-            ->whereHas('store', function($query)use($zone_id){
-                $query->when(config('module.current_module_data'), function($query){
-                    $query->where('module_id', config('module.current_module_data')['id'])->whereHas('zone.modules',function($query){
-                        $query->where('modules.id', config('module.current_module_data')['id']);
+
+            ->when(empty($store_id), function ($q) use ($zones) {
+                $q->whereHas('store', function ($query) use ($zones) {
+
+                    $query->when(config('module.current_module_data'), function ($query) {
+                        $query->where('module_id', config('module.current_module_data')['id'])
+                            ->whereHas('zone.modules', function ($query) {
+                                $query->where('modules.id', config('module.current_module_data')['id']);
+                            });
                     });
-                })->whereIn('zone_id', json_decode($zone_id, true));
-            })->active()->type($type)->Recommended()
-            ->when($filter == 'new_arrival',function ($qurey){
-                $qurey->latest();
-            })
-            ->when($filter == 'top_rated',function ($qurey){
-                $qurey->withCount('reviews')->orderBy('reviews_count','desc');
-            })
-            ->when($filter == 'best_selling',function ($qurey){
-                $qurey->popular();
-            })
-            ->paginate($limit, ['*'], 'page', $offset);
-                $data = $paginator->items();
-        }
-        else{
-            $paginator = Item::when(isset($store_id), function($q)use($store_id){
-                $q->where('store_id', $store_id);
-            })->active()->type($type)->whereHas('store', function($query)use($zone_id){
-                $query->when(config('module.current_module_data'), function($query){
-                    $query->where('module_id', config('module.current_module_data')['id'])->whereHas('zone.modules',function($query){
-                        $query->where('modules.id', config('module.current_module_data')['id']);
+
+                    $query->when(!empty($zones), function ($query) use ($zones) {
+                        $query->whereIn('zone_id', $zones);
                     });
-                })->whereIn('zone_id', json_decode($zone_id, true));
-            })->Recommended()
-            ->when($filter == 'new_arrival',function ($qurey){
-                $qurey->latest();
+                });
             })
-            ->when($filter == 'new_arrival',function ($qurey){
-                $qurey->withCount('reviews')->orderBy('reviews_count','desc');
-            })
-            ->when($filter == 'best_selling',function ($qurey){
-                $qurey->popular();
-            })
-            ->limit(50)->get();
-            $data =$paginator;
+
+            ->active()
+            ->type($type)
+            ->Recommended()
+
+            ->when($filter === 'new_arrival', fn($q) => $q->latest())
+            ->when($filter === 'top_rated', fn($q) => $q->withCount('reviews')->orderBy('reviews_count', 'desc'))
+            ->when($filter === 'best_selling', fn($q) => $q->popular());
+
+        if ($limit !== null && $offset !== null) {
+            $paginator = $query->paginate($limit, ['*'], 'page', $offset);
+            $items = $paginator->items();
+            $total = $paginator->total();
+        } else {
+            $items = $query->limit(50)->get();
+            $total = $items->count();
         }
 
         return [
-            'total_size' => $paginator->count(),
+            'total_size' => $total,
             'limit' => $limit,
             'offset' => $offset,
-            'items' => $data
+            'items' => $items
         ];
     }
 
@@ -987,6 +1068,14 @@ class ProductLogic
                 'Veg'=>$item->veg == 1 ? 'yes' : 'no',
                 'Recommended'=>$item->recommended == 1 ? 'yes' : 'no',
             ];
+            if ($module_type === 'pharmacy') {
+                $storage[count($storage) - 1]['IsPrescriptionRequired']
+                    = $item?->pharmacy_item_details?->is_prescription_required ?? 0;
+                $storage[count($storage) - 1]['CommonConditions']
+                    = $item?->pharmacy_item_details?->common_condition_id ?? 0;
+                $storage[count($storage) - 1]['IsBasic']
+                    = $item?->pharmacy_item_details?->is_basic ?? 0;
+            }
         }
 
         return $storage;

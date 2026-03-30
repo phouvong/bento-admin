@@ -39,7 +39,7 @@
 
      <form class="custom-validation" id="zone-setup-form" action="{{ route('admin.business-settings.react-landing-page-settings', 'meta-data') }}" method="POST" enctype="multipart/form-data">
         @csrf
-         @include('admin-views.business-settings.landing-page-settings.partial._meta_data')
+         @include('admin-views.business-settings.landing-page-settings.partial._meta_data',['submit' => true])
     </form>
 
 </div>

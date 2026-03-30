@@ -72,13 +72,7 @@ class WishlistController extends Controller
 
     public function wish_list(Request $request)
     {
-        if (!$request->hasHeader('zoneId')) {
-            $errors = [];
-            array_push($errors, ['code' => 'zoneId', 'message' => 'Zone id is required!']);
-            return response()->json([
-                'errors' => $errors
-            ], 403);
-        }
+        Helpers::setZoneIds($request);
         $zone_id= $request->header('zoneId');
         $longitude= $request->header('longitude');
         $latitude= $request->header('latitude');

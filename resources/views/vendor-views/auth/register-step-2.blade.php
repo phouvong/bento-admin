@@ -45,7 +45,7 @@
                             @if (\App\CentralLogics\Helpers::commission_check())
                                 <div class="col-sm-6">
                                     <label class="plan-check-item pb-3 pb-sm-0">
-                                        <input type="radio" name="business_plan" value="commission-base" class="d-none"
+                                        <input id="commission-base" type="radio" name="business_plan" value="commission-base" class="d-none"
                                             checked>
                                         <div class="plan-check-item-inner">
                                             <div class="d-flex gap-3 justify-content-between align-items-center mb-10">
@@ -69,7 +69,7 @@
                             @endif
                             <div class="col-sm-6">
                                 <label class="plan-check-item">
-                                    <input type="radio" name="business_plan" value="subscription-base" class="d-none">
+                                    <input id="subscription-base" type="radio" name="business_plan" value="subscription-base" class="d-none">
                                     <div class="plan-check-item-inner">
                                         <div class="d-flex gap-3 justify-content-between align-items-center mb-10">
                                             <h5 class="mb-0">{{ translate('Subscription_Base') }}</h5>

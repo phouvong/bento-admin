@@ -101,22 +101,6 @@
 
                     </div>
                 </div>
-                    @if($category->position != 0)
-                        <div class="form-group mb-3">
-                            <label class="input-label"
-                                   for="exampleFormControlSelect1">{{translate('messages.main_category')}}
-                                <span class="input-label-secondary">*</span></label>
-                            <select id="exampleFormControlSelect1" name="parent_id" class="custom-select"
-                                    required>
-                                <option value="" selected disabled>{{translate('Select Main Category')}}</option>
-                                @foreach($mainCategories as $mainCategory)
-                                    <option value="{{$mainCategory['id']}}" {{$category->parent_id == $mainCategory['id'] ? 'selected' : ''}}>{{$mainCategory['name']}}
-                                        ({{Str::limit($mainCategory->module->module_name, 15, '...')}})
-                                    </option>
-                                @endforeach
-                            </select>
-                        </div>
-                    @endif
 
                 <div class="form-group mb-3">
                     <label class="input-label" for="">

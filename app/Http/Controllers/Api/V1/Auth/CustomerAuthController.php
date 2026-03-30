@@ -1214,6 +1214,16 @@ class CustomerAuthController extends Controller
     }
 
     private function send_otp($request_data){
+        $user = User::where('phone', $request_data['phone'])->first();
+        if($user  && !$user->status)
+        {
+            $errors = [];
+            $errors[] = ['code' => 'auth-003', 'message' => translate('messages.your_account_is_blocked')];
+            return response()->json([
+                'errors' => $errors
+            ], 403);
+        }
+
         $verification_check = $this->verification_check($request_data);
         if(is_array($verification_check))
         {

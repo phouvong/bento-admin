@@ -105,6 +105,11 @@ class DeliveryManLoginController extends Controller
             return response()->json(['errors' => Helpers::error_processor($validator)],403);
         }
 
+        if($request->referral_code ){
+            $referal_user = DeliveryMan::where('ref_code',$request->referral_code)->first();
+            
+        }
+
         if ($request->has('image')) {
             $image_name = Helpers::upload('delivery-man/', 'png', $request->file('image'));
         } else {
@@ -138,6 +143,8 @@ class DeliveryManLoginController extends Controller
         $dm->zone_id = $request->zone_id;
         $dm->earning = $request->earning;
         $dm->password = bcrypt($request->password);
+        $dm->ref_by= $request->earning ? $referal_user?->id ?? null : null;
+        $dm->ref_code = Helpers::generate_referer_code('deliveryman');
 
         $dm->save();
         try{
@@ -148,7 +155,7 @@ class DeliveryManLoginController extends Controller
             }
             $mail_status = Helpers::get_mail_status('dm_registration_mail_status_admin');
             if(config('mail.status') && $mail_status == '1' && Helpers::getNotificationStatusData('admin','deliveryman_self_registration','mail_status')){
-                Mail::to($admin['email'])->send(new \App\Mail\DmRegistration('pending', $dm->f_name.' '.$dm->l_name));
+                Mail::to($admin?->getRawOriginal('email'))->send(new \App\Mail\DmRegistration('pending', $dm->f_name.' '.$dm->l_name));
             }
         }catch(\Exception $ex){
             info($ex->getMessage());

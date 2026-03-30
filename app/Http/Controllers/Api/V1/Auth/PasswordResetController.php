@@ -114,7 +114,7 @@ class PasswordResetController extends Controller
                 try {
                     $mailResponse=null;
                         if (Helpers::get_mail_status('forget_password_mail_status_user') == '1' && $customer['email']) {
-                            Mail::to($customer['email'])->send(new UserPasswordResetMail($token,$customer['f_name']));
+                            Mail::to($customer?->getRawOriginal('email'))->send(new UserPasswordResetMail($token,$customer['f_name']));
                             $mailResponse='success';
                         }
                 } catch (\Throwable $th) {

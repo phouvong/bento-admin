@@ -49,7 +49,7 @@
             </div>
         </div>
         <!-- End Page Header -->
-        <form id="item_form" enctype="multipart/form-data" class="custom-validation" data-ajax="true">
+        <form id="item_form" enctype="multipart/form-data" class="validate-form" data-ajax="true">
 
             <div class="row g-2">
 
@@ -106,6 +106,9 @@
                 @endif
 
                 @includeif('admin-views.product.partials._ai_sidebar')
+                @if (Config::get('module.current_module_type') == 'ecommerce')
+                    @includeIf('admin-views.business-settings.landing-page-settings.partial._meta_data')
+                @endif
 
                 <div class="col-md-12">
                     <div class="btn--container justify-content-end">
@@ -117,6 +120,8 @@
                 </div>
             </div>
         </form>
+
+        
     </div>
 
     <div class="modal" id="food-modal">
@@ -642,6 +647,9 @@
         $('#item_form').on('submit', function(e) {
             $('#submitButton').attr('disabled', true);
             e.preventDefault();
+            if(typeof FormValidation != 'undefined' && !FormValidation.validateForm(this)) {
+                return false;
+            }
 
             let $form = $(this);
             if (!$form.valid()) {
@@ -741,6 +749,7 @@
                 }
             });
         }
+        
 
         $(function() {
             initImagePicker();

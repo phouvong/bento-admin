@@ -394,3 +394,28 @@ document.addEventListener("DOMContentLoaded", function () {
     });
     // ---- tabindex priority set logic ends
 });
+
+//New Character Count code ,
+function initTextMaxLimit(selector = 'input[data-maxlength], textarea[data-maxlength], input[maxlength], textarea[maxlength]') {
+    const fields = document.querySelectorAll(selector);
+
+    fields.forEach(function (field) {
+        const maxLength = parseInt(field.getAttribute('data-maxlength') || field.getAttribute('maxlength'), 10);
+        const counter = field.parentElement.querySelector('.text-counting');
+
+        const updateCounter = () => {
+            if (field.value.length > maxLength) {
+                field.value = field.value.slice(0, maxLength);
+            }
+            if (counter) {
+                counter.textContent = `${field.value.length}/${maxLength}`;
+            }
+        };
+
+        field.addEventListener('input', updateCounter);
+        updateCounter();
+    });
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        initTextMaxLimit();
+    });

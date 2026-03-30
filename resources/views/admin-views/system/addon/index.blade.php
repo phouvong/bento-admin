@@ -122,7 +122,7 @@
                         <div class="col-12">
                             <div class="d-flex justify-content-end mt-3">
                                 <button type="button"
-                                    class="btn btn--primary px-4 zip-upload" id="upload_theme">{{translate('upload')}}</button>
+                                    class="btn btn--primary px-4 {{ getEnvMode() == 'demo' ? 'call-demo' : 'zip-upload' }}" id="upload_theme">{{translate('upload')}}</button>
                             </div>
                         </div>
                     </div>

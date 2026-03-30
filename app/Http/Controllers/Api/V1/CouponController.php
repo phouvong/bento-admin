@@ -6,7 +6,6 @@ use App\CentralLogics\Helpers;
 use App\CentralLogics\CouponLogic;
 use App\Http\Controllers\Controller;
 use App\Models\Coupon;
-use App\Models\Order;
 use App\Models\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -16,13 +15,7 @@ class CouponController extends Controller
 {
     public function list(Request $request)
     {
-        if (!$request->hasHeader('zoneId')) {
-            $errors = [];
-            array_push($errors, ['code' => 'zoneId', 'message' => translate('messages.zone_id_required')]);
-            return response()->json([
-                'errors' => $errors
-            ], 403);
-        }
+       Helpers::setZoneIds($request);
         $customer_id=Auth::user()?->id ?? $request->customer_id ?? null;
         $zone_id= $request->header('zoneId');
         $data = [];

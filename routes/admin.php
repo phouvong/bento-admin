@@ -22,13 +22,25 @@ Route::group(['namespace' => 'Admin', 'as' => 'admin.'], function () {
 
             //React Landing New Page
             // return view('admin-views.test.React_Landing.trust-section');
-            return view('admin-views.test.React_Landing.popular-clients');
+            // return view('admin-views.test.React_Landing.popular-clients');
             // return view('admin-views.test.React_Landing.seller-app-download');
             // return view('admin-views.test.React_Landing.deliveryman-app-download');
             // return view('admin-views.test.React_Landing.banners-section');
             // return view('admin-views.test.React_Landing.gallery-section');
             // return view('admin-views.test.React_Landing.high-light-section');
             // return view('admin-views.test.React_Landing.faq-section');
+
+
+            //DeliveryMan Details > Loyalty Poing & Refer & Earn
+            // return view('admin-views.test.deliveryman-details.loyalty-point');
+            // return view('admin-views.test.deliveryman-details.refer-earn');
+
+
+            //SEO Settings Page
+            // return view('admin-views.test.seo-setting.seo-setup-list');
+            // return view('admin-views.test.seo-setting.seo-content-page');
+            // return view('admin-views.test.business-setting.business-settins-payment');
+            // return view('admin-views.test.business-setting.deliveryman-index');
 
 
         });
@@ -298,6 +310,7 @@ Route::group(['namespace' => 'Admin', 'as' => 'admin.'], function () {
             Route::get('quick-view', 'OrderController@quick_view')->name('quick-view');
             Route::get('quick-view-cart-item', 'OrderController@quick_view_cart_item')->name('quick-view-cart-item');
             Route::get('export-orders/{file_type}/{status}/{type}', 'OrderController@export_orders')->name('export');
+            Route::post('switch-to-cod/{order}', 'OrderController@switch_to_cod')->name('switch_to_cod');
 
             Route::get('offline/payment/list/{status}', 'OrderController@offline_verification_list')->name('offline_verification_list');
             Route::get('parcel-cancelation-reasons', 'OrderController@parcelCancellationReason')->name('parcelCancellationReason');
@@ -308,11 +321,11 @@ Route::group(['namespace' => 'Admin', 'as' => 'admin.'], function () {
         });
         // Refund
         Route::group(['prefix' => 'refund', 'as' => 'refund.', 'middleware' => ['module:order']], function () {
-            Route::get('settings', 'OrderController@refund_settings')->name('refund_settings');
             Route::get('refund_mode', 'OrderController@refund_mode')->name('refund_mode');
             Route::post('refund_reason', 'OrderController@refund_reason')->name('refund_reason');
             Route::get('/status/{id}/{status}', 'OrderController@reason_status')->name('reason_status');
-            Route::put('reason_edit/', 'OrderController@reason_edit')->name('reason_edit');
+            Route::put('reason-update/', 'OrderController@reasonUpdate')->name('reason-update');
+            Route::get('reason-edit/{id}', 'OrderController@reasonEdit')->name('reason-edit');
             Route::delete('reason_delete/{id}', 'OrderController@reason_delete')->name('reason_delete');
             Route::put('order_refund_rejection/', 'OrderController@order_refund_rejection')->name('order_refund_rejection');
             Route::get('/{status}', 'OrderController@list')->name('refund_attr');
@@ -324,16 +337,18 @@ Route::group(['namespace' => 'Admin', 'as' => 'admin.'], function () {
             Route::get('react-setup', 'BusinessSettingsController@react_setup')->name('react-setup');
             Route::post('react-update', 'BusinessSettingsController@react_update')->name('react-update');
             Route::post('update-setup', 'BusinessSettingsController@business_setup')->name('update-setup');
+            Route::post('update-payment-setup', 'BusinessSettingsController@updatePaymentSetup')->name('update-payment-setup');
             Route::post('update-landing-setup', 'BusinessSettingsController@landing_page_settings_update')->name('update-landing-setup');
             Route::delete('delete-custom-landing-page', 'BusinessSettingsController@delete_custom_landing_page')->name('delete-custom-landing-page');
             Route::post('update-dm', 'BusinessSettingsController@update_dm')->name('update-dm');
             Route::post('update-disbursement', 'BusinessSettingsController@update_disbursement')->name('update-disbursement');
-            Route::post('update-websocket', 'BusinessSettingsController@update_websocket')->name('update-websocket');
             Route::post('update-store', 'BusinessSettingsController@update_store')->name('update-store');
             Route::post('update-order', 'BusinessSettingsController@update_order')->name('update-order');
             Route::post('update-priority', 'BusinessSettingsController@update_priority')->name('update-priority');
             Route::get('app-settings', 'BusinessSettingsController@app_settings')->name('app-settings');
             Route::POST('app-settings', 'BusinessSettingsController@update_app_settings')->name('app-settings');
+            Route::get('websocket', 'BusinessSettingsController@websocket')->name('websocket');
+            Route::post('update-websocket', 'BusinessSettingsController@update_websocket')->name('update-websocket');
             Route::get('pages/admin-landing-page-settings/{tab?}', 'BusinessSettingsController@admin_landing_page_settings')->name('admin-landing-page-settings');
             Route::POST('pages/admin-landing-page-settings/{tab}', 'BusinessSettingsController@update_admin_landing_page_settings')->name('admin-landing-page-settings');
             Route::get('promotional-status/{id}/{status}', 'BusinessSettingsController@promotional_status')->name('promotional-status');
@@ -381,9 +396,6 @@ Route::group(['namespace' => 'Admin', 'as' => 'admin.'], function () {
             Route::get('pages/flutter-landing-page-settings/special-criteria/edit/{id}', 'BusinessSettingsController@flutter_criteria_edit')->name('flutter-criteria-edit');
             Route::post('flutter-criteria-section/update/{id}', 'BusinessSettingsController@flutter_criteria_update')->name('flutter-criteria-update');
             Route::delete('flutter/criteria/delete/{criteria}', 'BusinessSettingsController@flutter_criteria_destroy')->name('flutter-criteria-delete');
-            Route::get('landing-page-settings/{tab?}', 'BusinessSettingsController@landing_page_settings')->name('landing-page-settings');
-            Route::POST('landing-page-settings/{tab}', 'BusinessSettingsController@update_landing_page_settings')->name('landing-page-settings');
-            Route::DELETE('landing-page-settings/{tab}/{key}', 'BusinessSettingsController@delete_landing_page_settings')->name('landing-page-settings-delete');
 
             Route::group(['prefix' => 'marketing', 'as' => 'marketing.'], function () {
                 Route::get('analytic-setup', 'Marketing\AnalyticScriptController@analyticSetup')->name('analytic');
@@ -398,7 +410,11 @@ Route::group(['namespace' => 'Admin', 'as' => 'admin.'], function () {
             Route::get('open-ai-config-status', 'BusinessSettingsController@openAIConfigStatus')->name('openAIConfigStatus');
             Route::post('openai-update', 'BusinessSettingsController@openAIConfigUpdate')->name('openAIConfigUpdate');
 
-
+            // Page Meta Data
+            Route::group(['prefix' => 'seo-settings', 'as' => 'seo-settings.'], function () {
+                Route::get('/page-meta-data', 'BusinessSettingsController@pageMetaData')->name('pageMetaData');
+                Route::post('/page-meta-data-update', 'BusinessSettingsController@pageMetaDataUpdate')->name('pageMetaDataUpdate');
+            });
             // Centerlize login
             Route::group(['prefix' => 'login-settings', 'as' => 'login-settings.'], function () {
                 Route::get('login-setup', 'BusinessSettingsController@login_settings')->name('index');
@@ -533,6 +549,7 @@ Route::group(['namespace' => 'Admin', 'as' => 'admin.'], function () {
             });
 
             Route::get('order-cancel-reasons/status/{id}/{status}', 'OrderCancelReasonController@status')->name('order-cancel-reasons.status');
+            Route::get('order-cancel-reasons/edit/{id}', 'OrderCancelReasonController@edit')->name('order-cancel-reasons.edit');
             Route::post('order-cancel-reasons/store', 'OrderCancelReasonController@store')->name('order-cancel-reasons.store');
             Route::put('order-cancel-reasons/update', 'OrderCancelReasonController@update')->name('order-cancel-reasons.update');
             Route::delete('order-cancel-reasons/destroy/{id}', 'OrderCancelReasonController@destroy')->name('order-cancel-reasons.destroy');
@@ -541,6 +558,7 @@ Route::group(['namespace' => 'Admin', 'as' => 'admin.'], function () {
             Route::put('automated-message/update', 'AutomatedMessageController@update')->name('automated_message.update');
             Route::get('automated-message/status/{id}/{status}', 'AutomatedMessageController@status')->name('automated_message.status');
             Route::delete('automated-message/destroy/{id}', 'AutomatedMessageController@destroy')->name('automated_message.destroy');
+            Route::get('automated-message/edit/{id}', 'AutomatedMessageController@edit')->name('automated_message.edit');
 
             Route::group(['namespace' => 'System', 'prefix' => 'system-addon', 'as' => 'system-addon.', 'middleware' => ['module:user_management']], function () {
                 Route::get('/', 'AddonController@index')->name('index');

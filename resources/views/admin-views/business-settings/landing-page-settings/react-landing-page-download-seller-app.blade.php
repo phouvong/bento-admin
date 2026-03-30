@@ -606,8 +606,8 @@
                 </div>
                 <div class="custom-offcanvas-body custom-offcanvas-body-100  p-20">
                     <section class="common-section-view bg-white border rounded-10 my-xl-2 mx-xl-2">
-                        <div class="common-section-inner d-flex flex-xxl-nowrap justify-content-lg-between justify-content-center flex-wrap align-items-center gap-x-xl-20">
-                            <div class="d-flex align-items-center flex-md-nowrap flex-wrap gap-x-xl-20 max-w-490 mb-xxl-0 mb-3 text-md-start text-center">
+                        <div class="common-section-inner d-flex flex-xxl-nowrap justify-content-lg-between justify-content-center flex-wrap align-items-center gap-xxl-20">
+                            <div class="d-flex align-items-center flex-md-nowrap flex-wrap gap-xxl-20 max-w-490 mb-xxl-0 mb-3 text-md-start text-center">
                                 <div class="selling-thumb min-w-150 max-w-165 mr-xl-0 mr-md-3 mx-auto">
                                     <img width="160" src="{{ $download_seller_app_image?->value
     ? \App\CentralLogics\Helpers::get_full_url('download_seller_app_section', $download_seller_app_image->value, $download_seller_app_image->storage[0]?->value ?? 'public', 'aspect_1')
@@ -626,7 +626,7 @@
                                 </div>
                             </div>
                             <div>
-                                <div class="__bg-FAFAFA rounded-10 px-xl-3 px-1 py-3 d-flex flex-xl-nowrap flex-wrap justify-content-xl-start justify-content-center align-items-center gap-x-xl-20">
+                                <div class="__bg-FAFAFA rounded-10 px-xl-3 px-1 py-3 d-flex flex-xl-nowrap flex-wrap justify-content-xl-start justify-content-center align-items-center gap-xxl-20">
                                     <div class="scan-wrap bg-white max-w-138 rounded px-xl-2 px-1 py-3 mb-xl-0 mb-3 w-xl-auto w-100">
                                         <div class="scan d-center border w-80px h-80px mx-auto rounded p-1">
                                             <img src="{{ asset('/public/assets/admin/img/400x400/app-scan.png') }}" alt="Google Play" class="object-cover w-100 h-100">

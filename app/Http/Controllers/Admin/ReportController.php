@@ -177,8 +177,10 @@ class ReportController extends Controller
             })
             ->when(isset($filter) && $filter == 'this_week', function ($query) {
                 return $query->whereBetween('created_at', [now()->startOfWeek()->format('Y-m-d H:i:s'), now()->endOfWeek()->format('Y-m-d H:i:s')]);
-            })->orderBy('created_at', 'desc')
-            ->sum('delivery_fee_comission');
+            })
+            ->orderBy('created_at', 'desc')
+            ->sum(DB::raw('case when delivery_man_id is null then original_delivery_charge else delivery_fee_comission end'));
+
 
         $store_earned = OrderTransaction::with('order', 'order.details', 'order.customer', 'order.store')->when(isset($zone), function ($query) use ($zone) {
             return $query->where('zone_id', $zone->id);
@@ -255,7 +257,9 @@ class ReportController extends Controller
             })
             ->when(isset($filter) && $filter == 'this_week', function ($query) {
                 return $query->whereBetween('created_at', [now()->startOfWeek()->format('Y-m-d H:i:s'), now()->endOfWeek()->format('Y-m-d H:i:s')]);
-            })->orderBy('created_at', 'desc')
+            })
+            ->whereNotNull('delivery_man_id')
+            ->orderBy('created_at', 'desc')
             ->sum(DB::raw('original_delivery_charge + dm_tips'));
         return view('admin-views.report.day-wise-report', compact('order_transactions', 'zone', 'store', 'filter', 'admin_earned', 'admin_earned_delivery_commission', 'store_earned', 'deliveryman_earned','key','from','to'));
     }
@@ -390,7 +394,7 @@ class ReportController extends Controller
                 ->when(isset($filter) && $filter == 'this_week', function ($query) {
                     return $query->whereBetween('created_at', [now()->startOfWeek()->format('Y-m-d H:i:s'), now()->endOfWeek()->format('Y-m-d H:i:s')]);
                 })->orderBy('created_at', 'desc')
-                ->sum('delivery_fee_comission');
+                ->sum(DB::raw('case when delivery_man_id is null then original_delivery_charge else delivery_fee_comission end'));
 
             $store_earned = OrderTransaction::with('order', 'order.details', 'order.customer', 'order.store')->when(isset($zone), function ($query) use ($zone) {
                 return $query->where('zone_id', $zone->id);
@@ -467,7 +471,9 @@ class ReportController extends Controller
                 })
                 ->when(isset($filter) && $filter == 'this_week', function ($query) {
                     return $query->whereBetween('created_at', [now()->startOfWeek()->format('Y-m-d H:i:s'), now()->endOfWeek()->format('Y-m-d H:i:s')]);
-                })->orderBy('created_at', 'desc')
+                })
+                ->whereNotNull('delivery_man_id')
+                ->orderBy('created_at', 'desc')
                 ->sum(DB::raw('original_delivery_charge + dm_tips'));
 
                 $delivered = Order::when(isset($zone), function ($query) use ($zone) {
@@ -556,6 +562,7 @@ class ReportController extends Controller
                                 ->format('Y-m-d H:i:s'),
                         ]);
                     })
+                    ->whereNotNull('delivery_man_id')
                     ->Notpos()
                     // ->sum(DB::raw('order_amount - original_delivery_charge'));
                     ->sum(DB::raw('order_amount - delivery_charge - dm_tips'));
@@ -2142,12 +2149,6 @@ class ReportController extends Controller
             return Excel::download(new StoreOrderReportExport($data), 'StoreOrderReport.xlsx');
         } else if ($request->type == 'csv') {
             return Excel::download(new StoreOrderReportExport($data), 'StoreOrderReport.csv');
-        }
-
-        if ($request->type == 'excel') {
-            return (new FastExcel(OrderLogic::format_store_order_export_data($orders)))->download('Orders.xlsx');
-        } elseif ($request->type == 'csv') {
-            return (new FastExcel(OrderLogic::format_store_order_export_data($orders)))->download('Orders.csv');
         }
     }
 

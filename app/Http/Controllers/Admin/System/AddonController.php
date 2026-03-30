@@ -146,6 +146,11 @@ class AddonController extends Controller
         }
 
         $file = $request->file('file_upload');
+        try {
+            Helpers::validateFile($file);
+        } catch (\App\Exceptions\InvalidUploadException $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()]);
+        }
         $filename = $file->getClientOriginalName();
         $tempPath = $file->storeAs('temp', $filename);
         $zip = new \ZipArchive();
@@ -153,6 +158,11 @@ class AddonController extends Controller
         if ($zip->open(storage_path('app/' . $tempPath)) === TRUE) {
             // Extract the contents to a directory
             $extractPath = base_path('Modules/');
+            if (!File::isWritable($extractPath)) {
+                        $status = 'error';
+                        $message = translate('messages.File is not writable. Please check your file permissions.');
+                        return response()->json(['status' => $status, 'message' => $message]);
+                    }
             $zip->extractTo($extractPath);
             $zip->close();
             if(File::exists($extractPath.'/'.explode('.', $filename)[0].'/Addon/info.php')){
@@ -204,14 +214,24 @@ class AddonController extends Controller
     //helper functions
     function getDirectories(string $path): array
     {
-        $directories = [];
-        $items = scandir($path);
-        foreach ($items as $item) {
-            if ($item == '..' || $item == '.')
-                continue;
-            if (is_dir($path . '/' . $item))
-                $directories[] = $item;
+        $fullPath = base_path($path);
+
+        if (!is_dir($fullPath)) {
+            return [];
         }
+
+        $directories = [];
+
+        foreach (scandir($fullPath) as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            if (is_dir($fullPath . DIRECTORY_SEPARATOR . $item)) {
+                $directories[] = $item;
+            }
+        }
+
         return $directories;
     }
 

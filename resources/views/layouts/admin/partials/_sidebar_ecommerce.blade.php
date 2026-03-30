@@ -230,7 +230,7 @@
                                         <span class="text-truncate sidebar--badge-container">
                                         {{ translate('messages.Offline_Payments') }}
                                         <span class="badge badge-soft-danger bg-light badge-pill ml-1">
-                                            {{ \App\Models\Order::has('offline_payments')->StoreOrder()->module(Config::get('module.current_module_id'))->count() }}
+                                            {{ \App\Models\Order::where('payment_method', 'offline_payment')->whereHas('offline_payments')->StoreOrder()->module(Config::get('module.current_module_id'))->count() }}
                                         </span>
                                     </span>
                                     </a>

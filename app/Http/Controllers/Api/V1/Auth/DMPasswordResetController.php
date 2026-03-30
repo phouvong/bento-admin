@@ -62,7 +62,7 @@ class DMPasswordResetController extends Controller
             try {
                 $mailResponse=null;
                 if (config('mail.status') && Helpers::get_mail_status('forget_password_mail_status_dm') == '1' && Helpers::getNotificationStatusData('deliveryman','deliveryman_forget_password','mail_status')) {
-                    Mail::to($deliveryman['email'])->send(new \App\Mail\DmPasswordResetMail($token,$deliveryman['f_name']));
+                    Mail::to($deliveryman?->getRawOriginal('email'))->send(new \App\Mail\DmPasswordResetMail($token,$deliveryman['f_name']));
                 $mailResponse='success';
                 }
             }catch(\Exception $ex){

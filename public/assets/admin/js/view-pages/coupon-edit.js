@@ -79,9 +79,13 @@ function coupon_type_change(coupon_type) {
     if (coupon_type === 'free_delivery') {
         $('#discount_type').attr("disabled", true).val("").trigger("change");
         $('#max_discount, #discount').val(0).attr("readonly", true);
+        $('#discount').removeAttr("required");
+        $('#discount').removeAttr("min");
     } else {
         $('#discount_type').removeAttr("disabled").attr("required", true);
         $('#max_discount, #discount').removeAttr("readonly");
+        $('#discount').attr("required", true);
+        $('#discount').attr("min", 1);
     }
 
     if ($('#discount_type').val() === 'amount') {

@@ -2,6 +2,10 @@
 
 @section('title', translate('messages.settings'))
 
+@push('css_or_js')
+<link rel="stylesheet" href="{{asset('public/assets/admin/css/custom.css')}}">
+<link rel="stylesheet" href="{{asset('public/assets/admin/css/upload-single-image.css')}}">
+@endpush
 
 
 @section('content')
@@ -450,176 +454,7 @@
                 <form action="{{ route('vendor.business-settings.update-meta-data', [$store['id']]) }}" method="post"
                     enctype="multipart/form-data" class="col-12">
                     @csrf
-                    <div class="row g-2">
-                        <div class="col-lg-6">
-                            <div class="card shadow--card-2">
-                                <div class="card-body">
-                                    @if ($language)
-                                        <ul class="nav nav-tabs mb-4">
-                                            <li class="nav-item">
-                                                <a class="nav-link lang_link active" href="#"
-                                                    id="default-link">{{ translate('Default') }}</a>
-                                            </li>
-                                            @foreach (json_decode($language) as $lang)
-                                                <li class="nav-item">
-                                                    <a class="nav-link lang_link" href="#"
-                                                        id="{{ $lang }}-link">{{ \App\CentralLogics\Helpers::get_language_name($lang) . '(' . strtoupper($lang) . ')' }}</a>
-                                                </li>
-                                            @endforeach
-                                        </ul>
-                                    @endif
-                                    @if ($language)
-                                        <div class="lang_form" id="default-form">
-                                            <div class=" ">
-                                                <label class="input-label"
-                                                    for="default_title">{{ translate('messages.meta_title') }}
-                                                    ({{ translate('messages.Default') }})
-                                                    <span class="form-label-secondary" data-toggle="tooltip"
-                                                        data-placement="right"
-                                                        data-original-title="{{ translate('This title appears in browser tabs, search results, and link previews.Use a short, clear, and keyword-focused title (recommended: 50–60 characters)') }}">
-                                                        <img src="{{ asset('public/assets/admin/img/info-circle.svg') }}"
-                                                            alt="">
-                                                    </span>
-                                                </label>
-                                                <input type="text" name="meta_title[]" id="default_title"
-                                                    class="form-control" maxlength="60"
-                                                    placeholder="{{ translate('messages.meta_title') }}"
-                                                    value="{{ $store->getRawOriginal('meta_title') }}">
-                                            </div>
-                                            <input type="hidden" name="lang[]" value="default">
-                                            <div class="mt-2">
-                                                <label class="input-label"
-                                                    for="meta_description">{{ translate('messages.meta_description') }}
-                                                    ({{ translate('messages.default') }})
-                                                    <span class="form-label-secondary" data-toggle="tooltip"
-                                                        data-placement="right"
-                                                        data-original-title="{{ translate('A brief summary that appears under your page title in search results.Keep it compelling and relevant (recommended: 120–160 characters)') }}">
-                                                        <img src="{{ asset('public/assets/admin/img/info-circle.svg') }}"
-                                                            alt="">
-                                                    </span>
-                                                </label>
-                                                <textarea type="text" maxlength="160" id="meta_description" name="meta_description[]"
-                                                    placeholder="{{ translate('messages.meta_description') }}" class="form-control min-h-90px ckeditor">{{ $store->getRawOriginal('meta_description') }}</textarea>
-                                            </div>
-                                        </div>
-                                        @foreach (json_decode($language) as $lang)
-                                            <?php
-                                            if (count($store['translations'])) {
-                                                $translate = [];
-                                                foreach ($store['translations'] as $t) {
-                                                    if ($t->locale == $lang && $t->key == 'meta_title') {
-                                                        $translate[$lang]['meta_title'] = $t->value;
-                                                    }
-                                                    if ($t->locale == $lang && $t->key == 'meta_description') {
-                                                        $translate[$lang]['meta_description'] = $t->value;
-                                                    }
-                                                }
-                                            }
-                                            ?>
-                                            <div class="d-none lang_form" id="{{ $lang }}-form">
-                                                <div class=" ">
-                                                    <label class="input-label"
-                                                        for="{{ $lang }}_title">{{ translate('messages.meta_title') }}
-                                                        ({{ strtoupper($lang) }})
-                                                        <span class="form-label-secondary" data-toggle="tooltip"
-                                                            data-placement="right"
-                                                            data-original-title="{{ translate('This title appears in browser tabs, search results, and link previews.Use a short, clear, and keyword-focused title (recommended: 50–60 characters)') }}">
-                                                            <img src="{{ asset('public/assets/admin/img/info-circle.svg') }}"
-                                                                alt="">
-                                                        </span>
-                                                    </label>
-                                                    <input type="text" name="meta_title[]" maxlength="60"
-                                                        id="{{ $lang }}_title" class="form-control"
-                                                        value="{{ $translate[$lang]['meta_title'] ?? '' }}"
-                                                        placeholder="{{ translate('messages.meta_title') }}">
-                                                </div>
-                                                <input type="hidden" name="lang[]" value="{{ $lang }}">
-                                                <div class="mt-2">
-                                                    <label class="input-label"
-                                                        for="meta_description{{ $lang }}">{{ translate('messages.meta_description') }}
-                                                        ({{ strtoupper($lang) }})
-                                                        <span class="form-label-secondary" data-toggle="tooltip"
-                                                            data-placement="right"
-                                                            data-original-title="{{ translate('A brief summary that appears under your page title in search results.Keep it compelling and relevant (recommended: 120–160 characters)') }}">
-                                                            <img src="{{ asset('public/assets/admin/img/info-circle.svg') }}"
-                                                                alt="">
-                                                        </span>
-                                                    </label>
-                                                    <textarea maxlength="160" id="meta_description{{ $lang }}" type="text" name="meta_description[]"
-                                                        placeholder="{{ translate('messages.meta_description') }}" class="form-control min-h-90px ckeditor">{{ $translate[$lang]['meta_description'] ?? '' }}</textarea>
-                                                </div>
-                                            </div>
-                                        @endforeach
-                                    @else
-                                        <div id="default-form">
-                                            <div class=" ">
-                                                <label class="input-label"
-                                                    for="meta_title">{{ translate('messages.meta_title') }}
-                                                    ({{ translate('messages.default') }})</label>
-                                                <input type="text" id="meta_title" name="meta_title[]"
-                                                    class="form-control"
-                                                    placeholder="{{ translate('messages.meta_title') }}">
-                                            </div>
-                                            <input type="hidden" name="lang[]" value="default">
-                                            <div class="">
-                                                <label class="input-label"
-                                                    for="meta_description">{{ translate('messages.meta_description') }}
-                                                </label>
-                                                <textarea type="text" id="meta_description" name="meta_description[]"
-                                                    placeholder="{{ translate('messages.meta_description') }}" class="form-control min-h-90px ckeditor"></textarea>
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-6">
-                            <div class="card shadow--card-2">
-                                <div class="card-header">
-                                    <h5 class="card-title">
-                                        <span class="card-header-icon mr-1"><i class="tio-dashboard"></i></span>
-                                        <span>{{ translate('store_meta_image') }}</span>
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <div class="d-flex justify-content-center flex-wrap flex-sm-nowrap __gap-12px">
-                                        <label class="__custom-upload-img mr-lg-5">
-                                            <label class="form-label">
-                                                {{ translate('meta_image') }} <span
-                                                    class="text--primary">({{ translate('2:1') }})</span>
-                                                <span class="form-label-secondary" data-toggle="tooltip"
-                                                    data-placement="right"
-                                                    data-original-title="{{ translate('This image is used as a preview thumbnail when the page link is shared on social media or messaging platforms.') }}">
-                                                    <img src="{{ asset('public/assets/admin/img/info-circle.svg') }}"
-                                                        alt="">
-                                                </span>
-                                            </label>
-                                            <div class="text-center">
-                                                <img class="img--110 min-height-170px min-width-170px onerror-image"
-                                                    id="viewer"
-                                                    data-onerror-image="{{ asset('public/assets/admin/img/upload.png') }}"
-                                                    src="{{ $store->meta_image_full_url }}"
-                                                    alt="{{ translate('meta_image') }}" />
-                                            </div>
-                                            <input type="file" name="meta_image" id="customFileEg1"
-                                                class="custom-file-input"
-                                                accept=".jpg, .png, .jpeg, .gif, .bmp, .tif, .tiff|image/*">
-                                        </label>
-                                    </div>
-                                    <div class="d-flex justify-content-center">
-                                        <div class="text-center">
-                                            <small>{{ translate('Upload a rectangular image (recommended size: 800×400 px, format: JPG or PNG)') }}</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-12">
-                            <div class="justify-content-end btn--container">
-                                <button type="submit" class="btn btn--primary">{{ translate('save_changes') }}</button>
-                            </div>
-                        </div>
-                    </div>
+                    @include('admin-views.business-settings.landing-page-settings.partial._meta_data', ['submit' => true])
                 </form>
             </div>
         </div>
@@ -683,6 +518,7 @@
 @endsection
 
 @push('script_2')
+    <script src="{{asset('public/assets/admin/js/upload-single-image.js')}}"></script>
     <script>
         "use strict";
 

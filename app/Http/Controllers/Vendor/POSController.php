@@ -714,7 +714,7 @@ class POSController extends Controller
                 try{
                     if($order->order_status == 'pending' && config('mail.status') && $mail_status == '1' && Helpers::getNotificationStatusData('customer','customer_order_notification','mail_status'))
                     {
-                        Mail::to($order->customer->email)->send(new PlaceOrder($order->id));
+                        Mail::to($order->customer?->getRawOriginal('email'))->send(new PlaceOrder($order->id));
                     }
                 }catch (\Exception $ex) {
                     info($ex->getMessage());

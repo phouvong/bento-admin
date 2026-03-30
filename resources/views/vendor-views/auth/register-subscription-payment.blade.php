@@ -95,8 +95,8 @@
                             @endforeach
                         </div>
                         <div class="text-end pt-5 d-flex flex-wrap justify-content-end gap-3">
-                            <a  href="{{ route('restaurant.back',['store_id' => $store_id] ) }}" type="button" class="cmn--btn btn--secondary shadow-none rounded-md border-0 outline-0">{{ translate('Back')
-                                }}</a>
+                            {{-- <a  href="{{ route('restaurant.back',['store_id' => $store_id] ) }}" type="button" class="cmn--btn btn--secondary shadow-none rounded-md border-0 outline-0">{{ translate('Back')
+                                }}</a> --}}
                             <button type="submit" class="cmn--btn rounded-md border-0 outline-0">{{ translate('Next')
                                 }}</button>
                         </div>

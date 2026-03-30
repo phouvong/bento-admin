@@ -308,7 +308,11 @@
                                         </div>
                                     </td>
                                     <td class="text-center mw--85px">
-                                        {{ \App\CentralLogics\Helpers::number_format_short($order->details()->sum(DB::raw('discount_on_item * quantity')) + $order['flash_admin_discount_amount'] +$order['flash_store_discount_amount'] ) }}
+                                        @if ($order->discount_type == 'flash_sale')
+                                        {{ \App\CentralLogics\Helpers::number_format_short($order['flash_admin_discount_amount'] +$order['flash_store_discount_amount'] ) }}
+                                    @else
+                                        {{ \App\CentralLogics\Helpers::number_format_short($order->details()->sum(DB::raw('discount_on_item * quantity')) ) }}
+                                    @endif
                                     </td>
                                     <td class="text-center mw--85px">
                                         {{ \App\CentralLogics\Helpers::number_format_short($order['coupon_discount_amount']) }}

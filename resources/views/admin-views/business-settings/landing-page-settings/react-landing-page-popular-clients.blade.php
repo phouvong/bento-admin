@@ -115,7 +115,7 @@
                         ->get()
                         ->map(function ($item) {
                             return [
-                                'url' => Helpers::get_full_url('popular_client_section/', $item->value, 'react_landing_page'),
+                                'url' => Helpers::get_full_url('popular_client_section', $item->value,$item?->storage[0]?->value ?? 'public' ,'react_landing_page'),
                                 'filename' => $item->value,
                                 'path' => 'popular_client_section/'
                             ];

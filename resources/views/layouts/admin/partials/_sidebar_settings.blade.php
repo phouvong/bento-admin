@@ -107,7 +107,7 @@
                     @endif
                     @if (\App\CentralLogics\Helpers::module_permission_check('settings'))
                         <li
-                            class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/business-setup*') || Request::is('admin/business-settings/language*') ? 'active' : '' }}">
+                            class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/business-setup*') ? 'active' : '' }}">
                             <a class="nav-link " href="{{ route('admin.business-settings.business-setup') }}"
                                 title="{{ translate('messages.business_setup') }}">
                                 <span class="tio-settings nav-icon"></span>
@@ -226,7 +226,7 @@
                                 <li
                                     class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/pages/admin-landing-page-settings*') ? 'active' : '' }}">
                                     <a class="nav-link "
-                                        href="{{ route('admin.business-settings.admin-landing-page-settings', 'fixed-data') }}"
+                                        href="{{ route('admin.business-settings.admin-landing-page-settings', 'setup') }}"
                                         title="{{ translate('messages.admin_landing_page_settings') }}">
                                         <span class="tio-circle nav-indicator-icon"></span>
                                         <span
@@ -354,9 +354,9 @@
                             <ul class="js-navbar-vertical-aside-submenu nav nav-sub"
                                 style="display:{{ Request::is('admin/business-settings/third-party*') || Request::is('admin/business-settings/fcm*') || Request::is('admin/business-settings/login-url-setup*') || Request::is('admin/business-settings/offline-payment*')|| Request::is('admin/business-settings/marketing/*') || Request::is('admin/business-settings/open-ai') || Request::is('admin/business-settings/open-ai-settings') ? 'block' : 'none' }}">
                                 <li
-                                    class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/third-party*') ? 'active' : '' }}">
+                                    class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/third-party*') && !Request::is('admin/business-settings/third-party/payment-method*') ? 'active' : '' }}">
                                     <a class="nav-link "
-                                        href="{{ route('admin.business-settings.third-party.payment-method') }}"
+                                        href="{{ route('admin.business-settings.third-party.sms-module') }}"
                                         title="{{ translate('messages.3rd_party') }}">
                                         <span class="tio-circle nav-indicator-icon"></span>
                                         <span class="text-truncate">{{ translate('messages.3rd_party') }}</span>
@@ -371,18 +371,17 @@
                                             class="text-truncate">{{ translate('messages.firebase_notification') }}</span>
                                     </a>
                                 </li>
-
-                                @if (\App\CentralLogics\Helpers::get_mail_status('offline_payment_status'))
-                                    <li
-                                        class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/offline*') ? 'active' : '' }}">
-                                        <a class="nav-link " href="{{ route('admin.business-settings.offline') }}"
-                                            title="{{ translate('messages.Offline_Payment_Setup') }}">
+                                
+                                <li
+                                        class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/third-party/payment-method') || Request::is('admin/business-settings/offline-payment') ? 'active' : '' }}">
+                                        <a class="nav-link " href="{{ route('admin.business-settings.third-party.payment-method') }}"
+                                            title="{{ translate('Payment Setup') }}">
                                             <span class="tio-circle nav-indicator-icon"></span>
                                             <span
-                                                class="text-truncate">{{ translate('messages.Offline_Payment_Setup') }}</span>
+                                                class="text-truncate">{{ translate('Payment Setup') }}</span>
                                         </a>
-                                    </li>
-                                @endif
+                                </li>
+                                
 
                                 <li class="nav-item @yield('analytics_Script')">
                                     <a class="nav-link " href="{{ route('admin.business-settings.marketing.analytic') }}"
@@ -404,6 +403,14 @@
                             </ul>
                         </li>
                         <li
+                            class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/language*') ?'active':'' }}">
+                            <a class="nav-link " href="{{route('admin.business-settings.language.index')}}"
+                                title="{{ translate('Language Setup') }}">
+                                <span class="tio-keyboard nav-icon"></span>
+                                <span class="text-truncate">{{ translate('Language Setup') }}</span>
+                            </a>
+                        </li>
+                        <li
                             class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/login-settings*') || Request::is('admin/business-settings/login-url-setup*') ? 'active' : '' }}">
                             <a class="nav-link " href="{{ route('admin.business-settings.login-settings.index') }}"
                                 title="{{ translate('messages.login_setup') }}">
@@ -412,6 +419,7 @@
                                     class="text-truncate text-capitalize">{{ translate('messages.login_setup') }}</span>
                             </a>
                         </li>
+                        
 
                         @if (addon_published_status('Rental'))
                             <li
@@ -461,11 +469,30 @@
                         @endif
 
                         <li
+                            class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/page-meta-data*') || Request::is('admin/business-settings/login-url-setup*') ? 'active' : '' }}">
+                            <a class="nav-link " href="{{ route('admin.business-settings.seo-settings.pageMetaData') }}"
+                                title="{{ translate('messages.page_meta_data') }}">
+                                <span class="tio-share-message nav-icon"></span>
+                                <span
+                                    class="text-truncate text-capitalize">{{ translate('messages.page_meta_data') }}</span>
+                            </a>
+                        </li>
+
+                        <li
                             class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/app-settings*') ? 'active' : '' }}">
                             <a class="nav-link " href="{{ route('admin.business-settings.app-settings') }}"
                                 title="{{ translate('messages.app_settings') }}">
                                 <span class="tio-android nav-icon"></span>
                                 <span class="text-truncate">{{ translate('messages.app_settings') }}</span>
+                            </a>
+                        </li>
+
+                        <li
+                            class="navbar-vertical-aside-has-menu {{ Request::is('admin/business-settings/websocket') ? 'active' : '' }}">
+                            <a class="nav-link " href="{{ route('admin.business-settings.websocket') }}"
+                                title="{{ translate('messages.websocket') }}">
+                                <span class="tio-link nav-icon"></span>
+                                <span class="text-truncate">{{ translate('messages.websocket') }}</span>
                             </a>
                         </li>
 

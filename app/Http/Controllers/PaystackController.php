@@ -70,7 +70,7 @@ class PaystackController extends Controller
         $fields = [
             'email' => $payer['email'] ?? "customer@email.com",
             'amount' => ($data['payment_amount'] ?? 0) * 100,
-            'currency' => $data['currency'] ?? 'XOF',
+            'currency' => $data['currency_code'] ?? 'XOF',
             'reference' => (string)('REF' . time() . 'RANDOM'),
             'callback_url' => route('paystack.callback', ['payment_id' => $data['id']]),
             'metadata' => [

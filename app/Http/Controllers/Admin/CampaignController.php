@@ -909,7 +909,7 @@ class CampaignController extends Controller
                 }
 
             if(config('mail.status') && Helpers::get_mail_status('campaign_deny_mail_status_store') == '1' &&  Helpers::getNotificationStatusData('store','store_campaign_join_rejaction','mail_status',$store->id )) {
-                Mail::to($store->vendor->email)->send(new \App\Mail\VendorCampaignRequestMail($store->name,'denied'));
+                Mail::to($store->vendor?->getRawOriginal('email'))->send(new \App\Mail\VendorCampaignRequestMail($store->name,'denied'));
             }
         }
         catch(\Exception $e)
@@ -970,11 +970,11 @@ class CampaignController extends Controller
 
 
             if(config('mail.status') && Helpers::get_mail_status('campaign_deny_mail_status_store') == '1' && $status == 'rejected' &&  Helpers::getNotificationStatusData('store','store_campaign_join_rejaction','mail_status',$store->id )) {
-                Mail::to($store->vendor->email)->send(new \App\Mail\VendorCampaignRequestMail($store->name,'denied'));
+                Mail::to($store->vendor?->getRawOriginal('email'))->send(new \App\Mail\VendorCampaignRequestMail($store->name,'denied'));
             }
 
             if(config('mail.status') && Helpers::get_mail_status('campaign_approve_mail_status_store') == '1' && $status == 'confirmed' &&  Helpers::getNotificationStatusData('store','store_campaign_join_approval','mail_status',$store->id )) {
-                Mail::to($store->vendor->email)->send(new \App\Mail\VendorCampaignRequestMail($store->name,'approved'));
+                Mail::to($store->vendor?->getRawOriginal('email'))->send(new \App\Mail\VendorCampaignRequestMail($store->name,'approved'));
             }
         }
         catch(\Exception $e)

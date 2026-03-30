@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\PharmacyItemDetails;
 use App\Http\Controllers\Controller;
 use App\Models\EcommerceItemDetails;
+use App\Models\ItemSeoData;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
@@ -400,6 +401,10 @@ class ItemController extends Controller
             $item->save();
             return response()->json(['message' => translate('messages.The_product_will_be_published_once_it_receives_approval_from_the_admin.')], 200);
 
+        }
+
+        if ($request['vendor']->stores[0]->module->module_type == 'ecommerce') {
+            $this->addOrUpdateMetaData($request,$item->id);
         }
 
 
@@ -783,6 +788,10 @@ class ItemController extends Controller
             );
         }
 
+        if ($p->module->module_type == 'ecommerce') {
+            $this->addOrUpdateMetaData($request,$p->id);
+        }
+
         return response()->json(['message'=>translate('messages.product_updated_successfully')], 200);
     }
 
@@ -1134,6 +1143,7 @@ class ItemController extends Controller
                         'brand_id' => $request->brand_id,
                     ]
                 );
+            $this->addOrUpdateMetaData($request,$item->id,temp:true);
         }
 
 
@@ -1318,6 +1328,47 @@ class ItemController extends Controller
         ];
 
         return response()->json($data,200);
+    }
+
+    private function addOrUpdateMetaData(Request $request, $item_id, $temp = false)
+    {
+        if ($temp) {
+            $itemMetaData = ItemSeoData::updateOrCreate([
+                'temp_item_id' => $item_id,
+            ], [
+                'item_id' => null,
+            ]);
+
+            if (!$itemMetaData->image && !$request->hasFile('meta_image')) {
+                $tempProduct = TempProduct::find($item_id);
+                if ($tempProduct && $tempProduct->item_id) {
+                    $originalSeoData = ItemSeoData::where('item_id', $tempProduct->item_id)->first();
+                    if ($originalSeoData) {
+                        $itemMetaData->image = $originalSeoData->image;
+                    }
+                }
+            }
+        } else {
+        $itemMetaData = ItemSeoData::updateOrCreate([
+            'item_id' => $item_id,
+        ]);
+        }
+
+        $imageFile = $request->hasFile('meta_image') ? $request->file('meta_image') : $itemMetaData->image;
+        $originalExtension = $request->hasFile('meta_image') ? $imageFile->getClientOriginalExtension() : 'png';
+        if ($request->has('meta_image_deleted') && $request->meta_image_deleted == 1) {
+            Helpers::check_and_delete('item_meta_data/', $itemMetaData->image);
+            $itemMetaData->image = null;
+        }
+
+        $itemMetaData->title = $request->meta_title;
+        $itemMetaData->description = $request->meta_description;
+        $itemMetaData->image = $request->file('meta_image') ? Helpers::upload(dir: 'item_meta_data/', format: $originalExtension, image: $imageFile) : $itemMetaData->image;
+        $itemMetaData->meta_data = Helpers::formatMetaData($request->all(), $itemMetaData->meta_data);
+
+        $itemMetaData->save();
+
+        return true;
     }
 
 }

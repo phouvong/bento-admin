@@ -16,8 +16,7 @@
                 <h2 class="title mb-2">{{$contact_us_title}}</h2>
                 <div class="text">{{$contact_us_sub_title}}</div>
             </div>
-            @php($landing_page_images = \app\CentralLogics\Helpers::get_business_settings('landing_page_images'))
-            @php($landing_page_images_value = isset($landing_page_images) ? $landing_page_images :null)
+ 
             <div class="contact-img">
                 <img src="{{\App\CentralLogics\Helpers::get_full_url('contact_us_image',$contact_us_image?->value,$contact_us_image?->storage[0]?->value ?? 'public')}}" alt="">
             </div>

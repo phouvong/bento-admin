@@ -138,7 +138,7 @@ class AccountTransactionController extends Controller
 
 
             if($request['type']=='deliveryman' && $request['deliveryman_id'] && config('mail.status') &&  Helpers::get_mail_status('cash_collect_mail_status_dm') == '1'  &&  Helpers::getNotificationStatusData('deliveryman','deliveryman_collect_cash','mail_status')){
-                Mail::to($data['email'])->send(new \App\Mail\CollectCashMail($account_transaction,$data['f_name']));
+                Mail::to($data?->getRawOriginal('email'))->send(new \App\Mail\CollectCashMail($account_transaction,$data['f_name']));
             }
         } catch (\Throwable $th) {
 

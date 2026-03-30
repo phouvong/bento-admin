@@ -189,4 +189,8 @@ class TempProduct extends Model
     {
         return $this->morphMany(Taxable::class, 'taxable');
     }
+
+    public function seoData(){
+        return $this->hasOne(ItemSeoData::class,'temp_item_id');
+    }
 }

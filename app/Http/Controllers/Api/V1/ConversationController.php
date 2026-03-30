@@ -663,7 +663,19 @@ class ConversationController extends Controller
         }
 
 
-        $conversations = Conversation::with('sender','receiver','last_message')->where(['sender_id' => $sender->id])->orWhere(['receiver_id' => $sender->id])->orderBy('last_message_time', 'DESC')->paginate($limit, ['*'], 'page', $offset);
+        $conversations = Conversation::with('sender','receiver','last_message')
+        ->where(function($q) use($sender){
+                    $q->where(['sender_id' => $sender->id])->orWhere(['receiver_id' => $sender->id]);
+                })
+        ->when(isset($request->type) , function($query) use($request) {
+            $query->where(function($q) use($request){
+                $q->where('receiver_type', $request->type)->where('sender_type','delivery_man')
+                    ->orWhere(function($q) use($request){
+                        $q->where('sender_type', $request->type)->where('receiver_type','delivery_man');
+                });
+            });
+        })
+        ->orderBy('last_message_time', 'DESC')->paginate($limit, ['*'], 'page', $offset);
 
 
         $data =  [
@@ -705,7 +717,17 @@ class ConversationController extends Controller
             $sender->save();
         }
 
-        $conversations = Conversation::with('sender','receiver','last_message')->WhereUser($sender->id)->where(function($qu)use($key){
+        $conversations = Conversation::with('sender','receiver','last_message')
+        ->WhereUser($sender->id)
+        ->when(isset($request->type) , function($query) use($request) {
+            $query->where(function($q) use($request){
+                $q->where('receiver_type', $request->type)->where('sender_type','delivery_man')
+                    ->orWhere(function($q) use($request){
+                        $q->where('sender_type', $request->type)->where('receiver_type','delivery_man');
+                });
+            });
+        })
+        ->where(function($qu)use($key){
                     $qu->whereHas('sender',function($query)use($key){
                     foreach ($key as $value) {
                         $query->where('f_name', 'like', "%{$value}%")->orWhere('l_name', 'like', "%{$value}%");

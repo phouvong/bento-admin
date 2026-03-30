@@ -5,6 +5,7 @@ namespace App\Models;
 use App\CentralLogics\Helpers;
 use App\Scopes\StoreScope;
 use App\Scopes\ZoneScope;
+use App\Traits\DemoMaskable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -16,7 +17,7 @@ use Modules\Rental\Entities\Trips;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasFactory, Notifiable, HasApiTokens, DemoMaskable;
 
     /**
      * The attributes that are mass assignable.

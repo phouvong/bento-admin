@@ -40,17 +40,36 @@
                                 <div class="card-body p-0" style="overflow-y: scroll;height: 600px" id="vendor-conversation-list">
                                     <div class="border-bottom"></div>
                                     @include('admin-views.vendor.view.partials._conversation_list')
+
+                                    <div class="h-98p d-center">
+                                        <div class="empty--data">
+                                            <img width="64" class="mb-2" src="{{asset('/public/assets/admin/img/no-vendor-list.svg')}}" alt="public">
+                                            <p class="fs-16 mb-20">
+                                                {{translate('No Conversation List')}}
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                                 <!-- End Body -->
                             </div>
                             <!-- End Card -->
                         </div>
                         <div class="col-lg-8 col-nd-6" id="vendor-view-conversation">
-                            <div class="text-center mt-2">
-                                <h4 class="initial-29">{{ translate('messages.view_conversation') }}
-                                </h4>
+                            <div class="card h-100">
+                                <!-- <div class="text-center mt-2">
+                                    <h4 class="initial-29">{{ translate('messages.view_conversation') }}
+                                    </h4>
+                                </div>
+                                {{-- view here --}} -->
+                                <div class="h-98p d-center">
+                                    <div class="empty--data">
+                                        <img width="64" class="mb-3" src="{{asset('/public/assets/admin/img/conversation-no-data.svg')}}" alt="public">
+                                        <p class="fs-16 mb-20">
+                                            {{translate('Select a user to view the Conversation.')}}
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                            {{-- view here --}}
                         </div>
                     </div>
                     <!-- End Row -->

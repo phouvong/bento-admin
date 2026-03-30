@@ -122,29 +122,30 @@ $countryCode= strtolower($country?$country:'auto');
 
 
     <div class="modal fade" id="toggle-modal">
-        <div class="modal-dialog status-warning-modal">
+        <div class="modal-dialog modal-dialog-centered status-warning-modal">
             <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span aria-hidden="true" class="tio-clear"></span>
+                <div class="modal-header px-2 pt-2">
+                    <button type="button" class="close btn btn--reset btn-circle" data-dismiss="modal">
+                        <span aria-hidden="true" class="tio-clear fs-20 opacity-70"></span>
                     </button>
                 </div>
-                <div class="modal-body pb-5 pt-0">
-                    <div class="max-349 mx-auto mb-20">
-                        <div>
-                            <div class="text-center">
+                <div class="modal-body pb-4">
+                    <div class="max-349 mx-auto mb-20 mt-2">
+                        <div class="mb-30">
+                            <div class="text-center mb-1">
                                 <img id="toggle-image" alt="" class="mb-20 initial--10">
-                                <h5 class="modal-title" id="toggle-title"></h5>
+                                <h3 class="modal-title" id="toggle-title"></h3>
                             </div>
-                            <div class="text-center" id="toggle-message">
+                            <div class="text-center fs-14" id="toggle-message">
                             </div>
                         </div>
                         <div class="btn--container justify-content-center">
-                            <button type="button" id="toggle-ok-button" class="btn btn--primary min-w-120 confirm-Toggle" data-dismiss="modal" >{{translate('Ok')}}</button>
-                            <button id="reset_btn" type="reset" class="btn btn--cancel min-w-120" data-dismiss="modal">
-                                {{translate("Cancel")}}
+                            <button id="reset_btn" type="reset" class="btn btn--reset min-w-120" data-dismiss="modal">
+                                {{translate("No")}}
                             </button>
+                            <button type="button" id="toggle-ok-button" class="btn btn--primary min-w-120 confirm-Toggle" data-dismiss="modal" >{{translate('Yes')}}</button>
                         </div>
+                        <div class="text-center mt-3" id="toggle-footer"></div>
                     </div>
                 </div>
             </div>
@@ -152,16 +153,16 @@ $countryCode= strtolower($country?$country:'auto');
     </div>
 
     <div class="modal fade" id="toggle-status-modal">
-        <div class="modal-dialog status-warning-modal">
+        <div class="modal-dialog modal-dialog-centered status-warning-modal">
             <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">
-                        <span aria-hidden="true" class="tio-clear"></span>
+                <div class="modal-header px-2 pt-2">
+                    <button type="button" class="close btn btn--reset btn-circle" data-dismiss="modal">
+                        <span aria-hidden="true" class="tio-clear fs-20 opacity-70"></span>
                     </button>
                 </div>
-                <div class="modal-body pb-5 pt-0">
+                <div class="modal-body pb-3 pt-0">
                     <div class="max-349 mx-auto mb-20">
-                        <div>
+                        <div class="mb-3">
                             <div class="text-center">
                                 <img id="toggle-status-image" alt="" class="mb-20 initial--10">
                                 <h5 class="modal-title" id="toggle-status-title"></h5>
@@ -170,10 +171,10 @@ $countryCode= strtolower($country?$country:'auto');
                             </div>
                         </div>
                         <div class="btn--container justify-content-center">
-                            <button type="button" id="toggle-status-ok-button" class="btn btn--primary min-w-120 confirm-Status-Toggle" data-dismiss="modal" >{{translate('Ok')}}</button>
-                            <button id="reset_btn" type="reset" class="btn btn--cancel min-w-120" data-dismiss="modal">
-                                {{translate("Cancel")}}
+                            <button id="reset_btn" type="reset" class="btn btn--reset min-w-120" data-dismiss="modal">
+                                {{translate("No")}}
                             </button>
+                            <button type="button" id="toggle-status-ok-button" class="btn btn--primary min-w-120 confirm-Status-Toggle" data-dismiss="modal" >{{translate('Yes')}}</button>
                         </div>
                     </div>
                 </div>
@@ -181,7 +182,7 @@ $countryCode= strtolower($country?$country:'auto');
         </div>
     </div>
     <div class="modal" id="instruction-modal">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-body">
                     <button type="button" class="close instruction-Modal-Close" data-dismiss="modal" aria-label="Close">
@@ -195,7 +196,7 @@ $countryCode= strtolower($country?$country:'auto');
         </div>
     </div>
     <div class="modal" id="email-modal">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
                 <div class="modal-body">
                     <button type="button" class="close email-Modal-Close" data-dismiss="modal" aria-label="Close">
@@ -212,7 +213,7 @@ $countryCode= strtolower($country?$country:'auto');
 
 
     <div class="modal fade" id="new-dynamic-submit-model">
-        <div class="modal-dialog modal-dialog-centered status-warning-modal">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-centered status-warning-modal">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">
@@ -266,8 +267,8 @@ $countryCode= strtolower($country?$country:'auto');
                 <div class="modal-body text-center p-3 pt-0">
                     <div class="imageModal_img_wrapper">
                         <img src="" class="img-fluid imageModal_img" alt="{{ translate('Preview_Image') }}">
-                        <div class="imageModal_btn_wrapper">
-                            <a href="javascript:" class="btn icon-btn download_btn" title="{{ translate('Download') }}" download>
+                        <div class="imageModal_btn_wrapper m-1">
+                            <a href="javascript:" class="btn icon-btn px-1 py-1 download_btn" title="{{ translate('Download') }}" download>
                                 <i class="tio-arrow-large-downward"></i>
                             </a>
                         </div>
@@ -312,6 +313,7 @@ if(in_array(config('module.current_module_type'),config('module.module_type') ))
 <script src="{{asset('public/assets/admin/js/app-blade/admin.js')}}"></script>
 <script src="{{asset('public/assets/admin/js/form-validate.js')}}"></script>
 <script src="{{asset('public/assets/admin/js/upload-single-image.js')}}"></script>
+<script src="{{asset('public/assets/admin/js/multiple-file-upload.js')}}"></script>
 
 
 {!! Toastr::message() !!}
@@ -402,25 +404,46 @@ if(in_array(config('module.current_module_type'),config('module.module_type') ))
         })
     }
 
-    $('.form-alert').on('click',function (){
-        let id = $(this).data('id')
-        let message = $(this).data('message')
+    $('.form-alert').on('click', function () {
+        let id = $(this).data('id');
+        let title = $(this).data('title');
+        let message = $(this).data('message');
+        let image = $(this).data('image-url');
+        let cancel = $(this).data('cancel-btn');
+        let confirm = $(this).data('confirm-btn');
+
+        if (!title || title === "") {
+            title = '{{ translate('messages.Are you sure?') }}';
+        }
+        if (!cancel || cancel === "") {
+            cancel = '{{ translate('messages.no') }}';
+        }
+        if (!confirm || confirm === "") {
+            confirm = '{{ translate('messages.Yes') }}';
+        }
+        if (!image || image === "") {
+            image = "{{ asset('public/assets/admin/img/off-danger.png') }}";
+        }
+
         Swal.fire({
-            title: '{{ translate('messages.Are you sure?') }}',
+            title: title,
+            imageUrl: image,
+            imageWidth: 80,
+            imageHeight: 80,
+            imageAlt: 'Custom icon',
             text: message,
-            type: 'warning',
             showCancelButton: true,
             cancelButtonColor: 'default',
             confirmButtonColor: '#FC6A57',
-            cancelButtonText: '{{ translate('messages.no') }}',
-            confirmButtonText: '{{ translate('messages.Yes') }}',
+            cancelButtonText: cancel,
+            confirmButtonText: confirm,
             reverseButtons: true
         }).then((result) => {
             if (result.value) {
-                $('#'+id).submit()
+                $('#' + id).submit();
             }
-        })
-    })
+        });
+    });
 
     $('.canceled-status').on('click',function (){
         let route = $(this).data('url');
@@ -720,14 +743,15 @@ if(in_array(config('module.current_module_type'),config('module.module_type') ))
     }
 
 
-    $(document).on('click', '.call-demo', function () {
-        @if(env('APP_MODE') =='demo')
-            toastr.info('{{ translate('Update option is disabled for demo!') }}', {
-                CloseButton: true,
-                ProgressBar: true
-            });
-        @endif
-    });
+    $(document).on('click', '.call-demo', function (e) {
+            @if(getEnvMode() == 'demo')
+                toastr.warning('{{ translate('Update option is disabled for demo!') }}', {
+                    CloseButton: true,
+                    ProgressBar: true
+                });
+                e.preventDefault();
+            @endif
+        });
 
     $('.request_alert').on('click', function (event) {
             let url = $(this).data('url');
@@ -1003,7 +1027,7 @@ $(document).on('keyup', 'input[type="tel"]', function () {
         const container = document.querySelector('.tabs-inner');
         const btnPrevWrap = document.querySelector('.button-prev');
         const btnNextWrap = document.querySelector('.button-next');
-        const item = document.querySelector('.tabs-slide_items'); 
+        const item = document.querySelector('.tabs-slide_items');
 
         document.querySelectorAll('.tabs-slide_items').forEach(el => {
             el.style.flex = '0 0 auto';

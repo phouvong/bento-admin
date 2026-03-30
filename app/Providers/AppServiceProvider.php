@@ -7,6 +7,7 @@ use App\Traits\AddonHelper;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Config;
 use App\CentralLogics\Helpers;
+use Illuminate\Http\Request;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -31,6 +32,10 @@ class AppServiceProvider extends ServiceProvider
 
         try
         {
+            Request::macro('isAny', function (array $patterns) {
+                return collect($patterns)->contains(fn ($pattern) => Request::is($pattern));
+            });
+
             Config::set('addon_admin_routes',$this->get_addon_admin_routes());
             Config::set('get_payment_publish_status',$this->get_payment_publish_status());
             Paginator::useBootstrap();

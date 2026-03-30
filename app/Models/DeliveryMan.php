@@ -3,16 +3,16 @@
 namespace App\Models;
 
 use App\CentralLogics\Helpers;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Scopes\ZoneScope;
+use App\Traits\DemoMaskable;
 
 class DeliveryMan extends Authenticatable
 {
-    use Notifiable;
+    use Notifiable,DemoMaskable;
 
     protected $casts = [
         'zone_id' => 'integer',
@@ -23,6 +23,8 @@ class DeliveryMan extends Authenticatable
         'store_id'=>'integer',
         'current_orders'=>'integer',
         'vehicle_id'=>'integer',
+        'ref_by'=>'integer',
+        'loyalty_point'=>'float',
     ];
 
     protected $hidden = [
@@ -37,6 +39,27 @@ class DeliveryMan extends Authenticatable
         return $this->f_name . ' ' . $this->l_name;
     }
 
+    public function getRefCodeAttribute($value)
+    {
+        if ($value) {
+            return $value;
+        }
+
+        $code = Helpers::generate_referer_code('deliveryman');
+
+        $this->newQuery()
+            ->where('id', $this->id)
+            ->update(['ref_code' => $code]);
+
+        $this->attributes['ref_code'] = $code;
+
+        return $code;
+    }
+
+    public function referalHistory()
+    {
+        return $this->hasMany(DeliverymanReferralHistory::class);
+    }
     public function total_canceled_orders()
     {
         return $this->hasMany(Order::class)->where('order_status','canceled');

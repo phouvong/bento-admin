@@ -137,9 +137,9 @@ trait PlaceNewOrder
                 }
             }
 
-            $module_wise_delivery_charge = $zone->modules()->where('modules.id', $request->header('moduleId'))->first();
+            $module_wise_delivery_charge = $zone->modules()->where('modules.id', getModuleId($request->header('moduleId')))->first();
 
-            $deliveryChargeData = $this->getDeliveryCharge($request, $zone, $store, $module_wise_delivery_charge, $delivery_charge, $request->header('moduleId'));
+            $deliveryChargeData = $this->getDeliveryCharge($request, $zone, $store, $module_wise_delivery_charge, $delivery_charge, getModuleId($request->header('moduleId')));
 
             $delivery_charge = data_get($deliveryChargeData, 'delivery_charge', 0);
             $original_delivery_charge = data_get($deliveryChargeData, 'original_delivery_charge', 0);
@@ -178,6 +178,9 @@ trait PlaceNewOrder
             if (($request->partial_payment && $request->payment_method != 'offline_payment') || $request->payment_method == 'wallet') {
                 $order_status = 'confirmed';
             }
+            if (in_array($request->payment_method, ['digital_payment', 'offline_payment'])) {
+                $order_status = 'failed';
+            }
 
             $order->bring_change_amount = $request['bring_change_amount'] ?? 0 ;
 
@@ -202,7 +205,7 @@ trait PlaceNewOrder
             $order->is_guest = $request->user ? 0 : 1;
             $order->otp = rand(1000, 9999);
             $order->zone_id = isset($zone) ? $zone->id : end(json_decode($request->header('zoneId'), true));
-            $order->module_id = $request->header('moduleId');
+            $order->module_id = getModuleId($request->header('moduleId'));
             $order->parcel_category_id = $request->parcel_category_id;
             $order->receiver_details = json_decode($request->receiver_details);
 
@@ -284,7 +287,7 @@ trait PlaceNewOrder
             if ($request->order_type !== 'parcel') {
                 if ($is_prescription === false) {
 
-                    $carts = Cart::where('user_id', $order->user_id)->where('is_guest', $order->is_guest)->where('module_id', $request->header('moduleId'))
+                    $carts = Cart::where('user_id', $order->user_id)->where('is_guest', $order->is_guest)->where('module_id', getModuleId($request->header('moduleId')))
                         ->when(isset($request->is_buy_now) && $request->is_buy_now == 1 && $request->cart_id, function ($query) use ($request) {
                             return $query->where('id', $request->cart_id);
                         })
@@ -1351,6 +1354,13 @@ trait PlaceNewOrder
         $product_data = [];
         $order_details = [];
         $discount_on_product_by = 'vendor';
+        if($carts->isEmpty()){
+            return [
+                'status_code' => 403,
+                'code' => 'not_found',
+                'message' => translate('Cart is empty'),
+            ];
+        }
         foreach ($carts as $c) {
             $variations = [];
 
@@ -1626,7 +1636,7 @@ trait PlaceNewOrder
                     $additionalCharges['tax_on_packaging_charge'] =  $extra_packaging_amount;
                 }
 
-                $carts = Cart::where('user_id', $order->user_id)->where('is_guest', $order->is_guest)->where('module_id', $request->header('moduleId'))
+                $carts = Cart::where('user_id', $order->user_id)->where('is_guest', $order->is_guest)->where('module_id', getModuleId($request->header('moduleId')))
                     ->when(isset($request->is_buy_now) && $request->is_buy_now == 1 && $request->cart_id, function ($query) use ($request) {
                         return $query->where('id', $request->cart_id);
                     })

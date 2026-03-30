@@ -5,6 +5,7 @@
     <link rel="stylesheet" href="{{ asset('public/assets/admin/css/view-pages/vendor-registration.css') }}">
     <link rel="stylesheet" href="{{ asset('public/assets/landing/css/select2.min.css') }}"/>
 
+
     <link rel="stylesheet" href="{{ asset('public/assets/admin/vendor/icon-set/style.css') }}">
 
     <style>
@@ -67,18 +68,34 @@
                             <div class="card __card bg-F8F9FC mb-3">
                                 <div class="card-body p-4">
                                     @if ($language)
-                                        <ul class="nav nav-tabs mb-4 store-apply-navs">
-                                            <li class="nav-item">
-                                                <a class="nav-link lang_link active" href="#"
-                                                   id="default-link">{{ translate('Default') }}</a>
-                                            </li>
-                                            @foreach ($language as $lang)
+                                        <div class="js-nav-scroller tabs-slide-wrap position-relative hs-nav-scroller-horizontal">
+                                            <ul class="nav nav-tabs tabs-inner text-nowrap mb-4 store-apply-navs">
                                                 <li class="nav-item">
-                                                    <a class="nav-link lang_link" href="#"
-                                                       id="{{ $lang }}-link">{{ \App\CentralLogics\Helpers::get_language_name($lang) . '(' . strtoupper($lang) . ')' }}</a>
+                                                    <a class="nav-link lang_link active" href="#"
+                                                       id="default-link">{{ translate('Default') }}</a>
                                                 </li>
-                                            @endforeach
-                                        </ul>
+                                                @foreach ($language as $lang)
+                                                    <li class="nav-item">
+                                                        <a class="nav-link lang_link" href="#"
+                                                           id="{{ $lang }}-link">{{ \App\CentralLogics\Helpers::get_language_name($lang) . '(' . strtoupper($lang) . ')' }}</a>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                            <div class="arrow-area">
+                                                <div class="button-prev align-items-center">
+                                                    <button type="button"
+                                                        class="btn btn-click-prev mr-auto border-0 btn-primary rounded-circle fs-12 p-2 d-center">
+                                                        <i class="tio-chevron-left fs-24"></i>
+                                                    </button>
+                                                </div>
+                                                <div class="button-next align-items-center">
+                                                    <button type="button"
+                                                        class="btn btn-click-next ml-auto border-0 btn-primary rounded-circle fs-12 p-2 d-center">
+                                                        <i class="tio-chevron-right fs-24"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     @endif
                                     <div class="row g-3">
                                         @if ($language)
@@ -188,7 +205,7 @@
                                             @endforeach
                                         </select>
                                     </div>
-                                    <div class="form-group mb-4">
+                                    <div class="form-group mb-4 overflow-hidden">
                                         <label for="module_id"
                                                class="input-label">{{ translate('messages.business_module') }}<span
                                                 class="text-danger">*</span>
@@ -196,7 +213,7 @@
                                                 class="text-danger">({{ translate('messages.Select_zone_first') }}
                                                 )</small></label>
                                         <select name="module_id" required id="module_id"
-                                                class="js-data-example-ajax form-control __form-control"
+                                                class="js-data-example-ajax form-control __form-control overflow-hidden"
                                                 data-placeholder="{{ translate('messages.select_module') }}">
                                         </select>
                                     </div>
@@ -227,31 +244,6 @@
                                                 @endif
                                             @endforeach
                                         </select>
-                                    </div>
-                                    <div class="form-group mb-4">
-                                        <label class="input-label"
-                                               for="latitude">{{ translate('messages.latitude') }}<span
-                                                class="text-danger">*</span>
-                                            <span class="input-label-secondary"
-                                                  title="{{ translate('messages.Pin the business location on the map to auto input latitude of that location') }}"><img
-                                                    src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
-                                                    alt="{{ translate('messages.Pin the business location on the map to auto input latitude of that location') }}"></span></label>
-                                        <input type="text" id="latitude" name="latitude"
-                                               class="form-control __form-control"
-                                               placeholder="{{ translate('messages.Ex:') }} -94.22213"
-                                               value="{{ old('latitude') }}" required readonly>
-                                    </div>
-                                    <div class="form-group mb-4">
-                                        <label class="input-label"
-                                               for="longitude">{{ translate('messages.longitude') }}<span
-                                                class="text-danger">*</span>
-                                            <span class="input-label-secondary"
-                                                  title="{{ translate('messages.Pin the business location on the map to auto input longitude of that location') }}"><img
-                                                    src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
-                                                    alt="{{ translate('messages.Pin the business location on the map to auto input longitude of that location') }}"></span></label>
-                                        <input type="text" name="longitude" class="form-control __form-control"
-                                               placeholder="{{ translate('messages.Ex:') }} 103.344322" id="longitude"
-                                               value="{{ old('longitude') }}" required readonly>
                                     </div>
                                     <div class="form-group">
                                         <label class="input-label module-select-time"
@@ -291,15 +283,26 @@
                                     </div>
                                 </div>
                                 <div class="col-lg-6">
-                                    <div class="rounded mb-3">
-                                        <input id="pac-input" class="controls rounded"
-                                               style="height: 3em;width:fit-content;"
-                                               title="{{ translate('messages.search_your_location_here') }}" type="text"
-                                               placeholder="{{ translate('messages.search_here') }}"/>
+                                    <div class="rounded mb-3 map_custom-controls position-relative">
+                                        <input id="pac-input" class="controls rounded initial-8" title="{{translate('messages.search_your_location_here')}}" type="text" placeholder="{{translate('messages.search_here')}}"/>
                                         <div class="h-280" id="map"></div>
+
+
+                                            <div class="d-flex bg-white align-items-center gap-1 laglng-controller">
+                                                <div id="latlng" class="d-flex">
+                                                    <input type="text" class="border-0 outline-0" id="latitude" name="latitude" placeholder="{{ translate('messages.Ex:_-94.22213') }} " value="{{ old('latitude') }}" required readonly>
+                                                    <span class="text-gray1">|</span>
+                                                    <input type="text" class="border-0 outline-0" name="longitude" placeholder="{{ translate('messages.Ex:_103.344322') }} "   id="longitude" value="{{ old('longitude') }}" required readonly>
+                                                </div>
+                                            </div>
+                                            <div id="outOfZone" class="map-alert bg-dark d-flex align-items-center rounded-8 py-2 px-2 fs-12 text-white mb-2 text-center">
+                                            <img class="" src="{{asset('public/assets/admin/img/icons/warning-cus.png')}}" alt="img"> {{ translate('messages.Please place the marker inside the available zones.') }}
+                                            </div>
+
                                     </div>
-                                    <div class="d-flex flex-column flex-sm-row gap-4">
-                                        <div class="form-group flex-grow-1 d-flex flex-column justify-content-between">
+                                </div>
+                                <div class="d-flex flex-column text-sm-start text-center flex-sm-row align-items-sm-start align-items-center gap-4">
+                                        <div class="form-group col-lg-3 d-flex flex-column justify-content-between">
                                             <label class="input-label pt-2 mb-2">
                                                 <div class="lh-1">{{ translate('messages.cover') }}<span
                                                         class="text-danger">*</span></div>
@@ -309,7 +312,7 @@
                                                     </strong>
                                                 </div>
                                             </label>
-                                            <label class="image--border position-relative h-110 min-w-220">
+                                            <label class="image--border position-relative h-110 min-w-220 max-w-220 mx-mobile-auto">
                                                 <img class="__register-img h-110" id="coverImageViewer"
                                                      src="{{ asset('public/assets/admin/img/upload-img.png') }}"
                                                      alt="Product thumbnail" style="display: none"/>
@@ -346,7 +349,7 @@
                                                 </div>
                                             </label>
                                             <label
-                                                class="image--border position-relative img--100px w-100 h-110 max-w-110">
+                                                class="image--border position-relative img--100px w-100 h-110 max-w-110 mx-mobile-auto">
                                                 <img class="__register-img h-110" id="logoImageViewer"
                                                      src="{{ asset('public/assets/admin/img/upload-img.png') }}"
                                                      alt="Product thumbnail" style="display: none"/>
@@ -373,7 +376,6 @@
                                             </label>
                                         </div>
                                     </div>
-                                </div>
                             </div>
                             <div class="card __card bg-F8F9FC mb-4">
                                 <div class="card-header">
@@ -429,7 +431,7 @@
                             <div class="p-20 mb-3">
                                 <div class="card-body">
                                     <div class="mb-3">
-                                        <h3 class="mb-2">{{ translate('Business TIN') }}</h3>
+                                        <h4 class="fs-5 mb-2">{{ translate('Business TIN') }}</h4>
                                         {{-- <p class="fz-12px mb-0">{{translate('Lorem ipsum dolor sit amet, consectetur adipiscing elit.')}}</p> --}}
                                     </div>
                                     <div class="row g-3">
@@ -459,8 +461,8 @@
                                                 <div
                                                     class="d-flex align-items-center gap-1 justify-content-between mb-20 mb-4">
                                                     <div>
-                                                        <h4 class="mb-2 fz--14px">{{ translate('TIN Certificate') }}</h4>
-                                                        <p class="fz-12px mb-0">
+                                                        <h4 class="mb-2 fs-5">{{ translate('TIN Certificate') }}</h4>
+                                                        <p class="fs-6 mb-0">
                                                             {{ translate('pdf, doc, jpg. File size : max 2 MB') }}</p>
                                                     </div>
                                                     <div class="d-flex gap-3 align-items-center">
@@ -748,272 +750,162 @@
 @endsection
 @push('script_2')
 
+    @php($default_location = \App\Models\BusinessSetting::where('key', 'default_location')->first())
+    @php($default_location = $default_location->value ? json_decode($default_location->value, true) : 0)
+
+    <script>
+         const getAllModules ="{{ route('restaurant.get-all-modules') }}";
+         const getModuleType ="{{ route('restaurant.get-module-type') }}";
+         const checkModuleTypeUrl ="{{ route('restaurant.check-module-type') }}";
+        const estimatedPickupText =
+        "{{ translate('messages.Estimated_pickup_time') }} <span class='text-danger'>*</span>";
+        const approxDeliveryText =
+        "{{ translate('messages.approx_delivery_time') }} <span class='text-danger'>*</span>";
+
+
+
+        window.mapConfig = {
+            mapApiKey: "{{ \App\CentralLogics\Helpers::get_business_settings('map_api_key') }}",
+            defaultLocation: {!! json_encode($default_location) !!},
+            oldLat: parseFloat("{{ old('latitude') }}"),
+            oldLng: parseFloat("{{ old('longitude') }}"),
+            oldZoneId: "{{ old('zone_id') }}",
+            oldAddress: @json(old('address.0')),
+            translations: {
+                selectedLocation: "{{ translate('Selected Location') }}",
+                clickMap: "{{ translate('Click_the_map_inside_the_red_marked_area_to_get_Lat/Lng!!!') }}",
+                selectZone: "{{ translate('Select_Zone_From_The_Dropdown') }}",
+                geolocationError: "{{ translate('Error:_Your_browser_doesnot_support_geolocation.') }}",
+                outOfZone: "{{ translate('messages.out_of_coverage') }}",
+            },
+            urls: {
+                zoneCoordinates: "{{ route('admin.zone.get-coordinates', ['id' => ':coordinatesZoneId']) }}",
+                zoneGetZone: "{{ route('admin.zone.get-zone') }}",
+            }
+        };
+    </script>
+
     <script src="{{ asset('public/assets/admin/js/file-preview/pdf.min.js') }}"></script>
     <script src="{{ asset('public/assets/admin/js/file-preview/pdf-worker.min.js') }}"></script>
     <script src="{{ asset('public/assets/admin/js/file-preview/store-join-us.js') }}"></script>
+    <script src="{{ asset('public/assets/admin/js/view-pages/map-functionality.js') }}"></script>
 
-    {{-- <script src="{{ asset('public/assets/admin/js/spartan-multi-image-picker.js') }}"></script> --}}
     <script
-        src="https://maps.googleapis.com/maps/api/js?key={{ \App\CentralLogics\Helpers::get_business_settings('map_api_key') }}&libraries=drawing,places&v=3.45.8">
+        src="https://maps.googleapis.com/maps/api/js?key={{ \App\CentralLogics\Helpers::get_business_settings('map_api_key') }}&libraries=drawing,places,marker,geometry&v=3.61&language={{ str_replace('_', '-', app()->getLocale()) }}&callback=initMap"
+        async defer>
     </script>
-    <script type="text/javascript">
-        "use strict";
-        let geocoder = null;
 
-        function setAddressFromLatLng(latlng) {
-            if (!geocoder) return;
-            geocoder.geocode({
-                location: latlng
-            }, function (results, status) {
-                if (status === 'OK' && results[0]) {
-                    const addr = results[0].formatted_address;
-                    const visibleAddress = document.querySelector(
-                        '.lang_form:not(.d-none) textarea[name="address[]"]');
-                    if (visibleAddress) {
-                        visibleAddress.value = addr;
-                    } else {
-                        const addressEl = document.getElementById('address');
-                        if (addressEl) addressEl.value = addr;
-                    }
-                    const pacInput = document.getElementById('pac-input');
-                    if (pacInput) pacInput.value = addr;
-                }
-            });
-        }
-
-
-        @php($default_location = \App\CentralLogics\Helpers::get_business_settings('default_location'))
-
-        let myLatlng = {
-            lat: {{ $default_location ? $default_location['lat'] : '23.757989' }},
-            lng: {{ $default_location ? $default_location['lng'] : '90.360587' }}
-        };
-        let map = new google.maps.Map(document.getElementById("map"), {
-            zoom: 13,
-            center: myLatlng,
-        });
-        let zonePolygon = null;
-        let infoWindow = new google.maps.InfoWindow({
-            content: "Click the map to get Lat/Lng!",
-            position: myLatlng,
-        });
-        let bounds = new google.maps.LatLngBounds();
-
-        $('#choice_zones').on('change', function () {
-            let id = $(this).val();
-            $.get({
-                url: '{{ url('/') }}/admin/zone/get-coordinates/' + id,
-                dataType: 'json',
-                success: function (data) {
-                    if (zonePolygon) {
-                        zonePolygon.setMap(null);
-                    }
-                    zonePolygon = new google.maps.Polygon({
-                        paths: data.coordinates,
-                        strokeColor: "#FF0000",
-                        strokeOpacity: 0.8,
-                        strokeWeight: 2,
-                        fillColor: 'white',
-                        fillOpacity: 0,
-                    });
-                    zonePolygon.setMap(map);
-                    zonePolygon.getPaths().forEach(function (path) {
-                        path.forEach(function (latlng) {
-                            bounds.extend(latlng);
-                            map.fitBounds(bounds);
-                        });
-                    });
-                    map.setCenter(data.center);
-                    google.maps.event.addListener(zonePolygon, 'click', function (mapsMouseEvent) {
-                        infoWindow.close();
-                        // Create a new InfoWindow.
-                        infoWindow = new google.maps.InfoWindow({
-                            position: mapsMouseEvent.latLng,
-                            content: JSON.stringify(mapsMouseEvent.latLng.toJSON(),
-                                null, 2),
-                        });
-                        let coordinates;
-                        coordinates = JSON.stringify(mapsMouseEvent.latLng.toJSON(), null,
-                            2);
-                        coordinates = JSON.parse(coordinates);
-
-                        document.getElementById('latitude').value = coordinates['lat'];
-                        document.getElementById('longitude').value = coordinates['lng'];
-                        const oldLatLng = new google.maps.LatLng(coordinates['lat'],
-                            coordinates['lng']);
-                        geocoder = new google.maps.Geocoder();
-                        console.log(oldLatLng);
-                        setAddressFromLatLng(oldLatLng);
-                        infoWindow.open(map);
-                    });
-                },
-            });
-        });
-
-        $(document).ready(function () {
-            $('#module_id').select2({
-                ajax: {
-                    url: '{{ url('/') }}/vendor/get-all-modules/',
-                    data: function (params) {
-                        return {
-                            q: params.term, // search term
-                            page: params.page,
-                            zone_id: zone_id
-                        };
-                    },
-                    processResults: function (data) {
-                        return {
-                            results: data
-                        };
-                    },
-                    __port: function (params, success, failure) {
-                        let $request = $.ajax(params);
-
-                        $request.then(success);
-                        $request.fail(failure);
-
-                        return $request;
-                    }
-                }
-            });
-
-            $('#module_id').on('change', function () {
-                var moduleId = $(this).val();
-                $.ajax({
-                    url: '{{ url('/') }}/vendor/get-module-type',
-                    method: 'GET',
-                    data: {
-                        id: moduleId
-                    },
-                    success: function (response) {
-                        $('#show_sub_packages').empty().html(response.view);
-                        if (response.module_type === 'rental') {
-                            $('#pickup-zone-container').show();
-                            $('.multiple-select2').prop('disabled', false);
-                            $('.module-select-time').html(
-                                '{{ translate('messages.Estimated_pickup_time') }} <span class="text-danger">*</span>'
-                            );
-                        } else {
-                            $('#pickup-zone-container').hide();
-                            $('.multiple-select2').prop('disabled', true);
-                            $('.module-select-time').html(
-                                '{{ translate('messages.approx_delivery_time') }} <span class="text-danger">*</span>'
-                            );
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.log("Error fetching module type:", error);
-                    }
-                });
-            });
-
-            $('.js-multi-select2').select2({
-                placeholder: '{{ translate('messages.select_zone') }}',
-                allowClear: true,
-                width: '100%'
-            });
-        });
-    </script>
-    <script src="{{ asset('public/assets/admin/js/view-pages/vendor-registration.js') }}"></script>
-    @if (isset($recaptcha) && $recaptcha['status'] == 1)
-        <script type="text/javascript">
-            "use strict";
-            let onloadCallback = function () {
-                grecaptcha.render('recaptcha_element', {
-                    'sitekey': '{{ \App\CentralLogics\Helpers::get_business_settings('recaptcha')['site_key'] }}'
-                });
-            };
-        </script>
-        <script src="https://www.google.com/recaptcha/api.js?onload=onloadCallback&render=explicit" async
-                defer></script>
-    @endif
 
     @if (isset($recaptcha) && $recaptcha['status'] == 1)
         <script src="https://www.google.com/recaptcha/api.js?render={{ $recaptcha['site_key'] }}"></script>
     @endif
-    <script>
-        $("#form-id").on('submit', function (e) {
-            e.preventDefault();
-            @if (isset($recaptcha) && $recaptcha['status'] == 1)
-
-            let response = grecaptcha.getResponse();
-
-            if (response.length === 0) {
-                e.preventDefault();
-                toastr.error("{{ translate('messages.Please check the recaptcha') }}");
-            }
-            @endif
-
-            const radios = document.querySelectorAll('input[name="business_plan"]');
-            let selectedValue = null;
 
 
-            for (const radio of radios) {
-                if (radio.checked) {
-                    selectedValue = radio.value;
-                    break;
-                }
+<script>
+$("#form-id").on('submit', function(e) {
+    e.preventDefault();
+
+    @if (isset($recaptcha) && $recaptcha['status'] == 1)
+    grecaptcha.ready(function() {
+        grecaptcha.execute('{{ $recaptcha['site_key'] }}', {action: 'submit'}).then(function(token) {
+
+            if ($("#g-recaptcha-response").length === 0) {
+                $('<input>').attr({
+                    type: 'hidden',
+                    id: 'g-recaptcha-response',
+                    name: 'g-recaptcha-response',
+                    value: token
+                }).appendTo('#form-id');
+            } else {
+                $("#g-recaptcha-response").val(token);
             }
 
-
-            if (selectedValue === 'subscription-base') {
-                const package_radios = document.querySelectorAll('input[name="package_id"]');
-                let selectedpValue = null;
-                for (const pradio of package_radios) {
-                    if (pradio.checked) {
-                        selectedpValue = pradio.value;
-                        break;
-                    }
-                }
-
-                if (!selectedpValue) {
-                    toastr.error("{{ translate('You_must_select_a_package') }}");
-                    e.preventDefault();
-                }
-            }
-
-            $('.btn-disable').attr('disabled', true);
-
-
-            let formData = new FormData(this);
-            $.ajaxSetup({
-                headers: {
-                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                }
-            });
-            $.post({
-                url: '{{ route('restaurant.store') }}',
-                data: $('#form-id').serialize(),
-                data: formData,
-                cache: false,
-                contentType: false,
-                processData: false,
-                beforeSend: function () {
-                    $('#loading').show();
-                },
-                success: function (data) {
-                    $('#loading').hide();
-                    if (data.errors) {
-                        $('.btn-disable').attr('enable', true);
-                        for (let i = 0; i < data.errors.length; i++) {
-                            toastr.error(data.errors[i].message, {
-                                CloseButton: true,
-                                ProgressBar: true
-                            });
-                        }
-                    } else {
-                        toastr.success("{{ translate('your_store_registration_is_successful') }}", {
-                            CloseButton: true,
-                            ProgressBar: true
-                        });
-                        setTimeout(function () {
-                            location.href = data.redirect_url;
-                        }, 1000);
-                    }
-                }
-            });
-
+            submitForm();
         });
+    });
+    @else
+    submitForm();
+    @endif
+});
+
+function submitForm() {
+
+    const radios = document.querySelectorAll('input[name="business_plan"]');
+    let selectedValue = null;
+    for (const radio of radios) {
+        if (radio.checked) {
+            selectedValue = radio.value;
+            break;
+        }
+    }
+
+    if (!selectedValue) {
+        toastr.error("{{ translate('messages.please_select_business_plan') }}");
+        return;
+    }
+
+    if (selectedValue === 'subscription-base') {
+        const package_radios = document.querySelectorAll('input[name="package_id"]');
+        let selectedpValue = null;
+        for (const pradio of package_radios) {
+            if (pradio.checked) {
+                selectedpValue = pradio.value;
+                break;
+            }
+        }
+
+        if (!selectedpValue) {
+            toastr.error("{{ translate('You_must_select_a_package') }}");
+            return;
+        }
+    }
+
+    $('.btn-disable').attr('disabled', true);
+
+    let formData = new FormData(document.getElementById('form-id'));
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': "{{ csrf_token() }}"
+        }
+    });
+
+    $.post({
+        url: '{{ route('restaurant.store') }}',
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        beforeSend: function () {
+            $('#loading').show();
+        },
+        success: function (data) {
+            $('#loading').hide();
+            if (data.errors) {
+                $('.btn-disable').attr('disabled', false);
+                for (let i = 0; i < data.errors.length; i++) {
+                    toastr.error(data.errors[i].message, {
+                        CloseButton: true,
+                        ProgressBar: true
+                    });
+                }
+            } else {
+                toastr.success("{{ translate('your_store_registration_is_successful') }}", {
+                    CloseButton: true,
+                    ProgressBar: true
+                });
+                setTimeout(function () {
+                    location.href = data.redirect_url;
+                }, 1000);
+            }
+        }
+    });
+}
+</script>
+
+
+
+    <script>
+
         $(document).on('keyup', 'input[name="password"]', function () {
             const password = $(this).val();
             const feedback = $('#password-feedback');
@@ -1100,29 +992,65 @@
                 toastr.error("{{ translate('Password format is invalid') }}");
                 e.preventDefault();
             } else {
-                @if (isset($recaptcha) && $recaptcha['status'] == 1)
-                if (typeof grecaptcha === 'undefined') {
-                    toastr.error('Invalid recaptcha key provided. Please check the recaptcha configuration.');
-                    e.preventDefault();
-                    return;
-                }
-                grecaptcha.ready(function () {
-                    grecaptcha.execute('{{ $recaptcha['site_key'] }}', {
-                        action: 'submit'
-                    })
-                        .then(function (token) {
-                            $('#g-recaptcha-response').val(token);
-                        });
-                });
-                @endif
+                e.preventDefault();
+                $.get({
+                    url: '{{ route('admin.zone.check-location') }}',
+                    dataType: 'json',
+                    data: {
+                        zone_id: $('#choice_zones').val(),
+                        latitude: $('#latitude').val(),
+                        longitude: $('#longitude').val()
+                    },
+                    beforeSend: function () {
+                        $('#loading').show();
+                    },
+                    success: function (data) {
+                        $('#loading').hide();
+                        if (data.errors) {
+                            for (let i = 0; i < data.errors.length; i++) {
+                                toastr.error(data.errors[i].message, {
+                                    CloseButton: true,
+                                    ProgressBar: true
+                                });
+                            }
+                        } else {
+                            @if (isset($recaptcha) && $recaptcha['status'] == 1)
+                                if (typeof grecaptcha === 'undefined') {
+                                    toastr.error('Invalid recaptcha key provided. Please check the recaptcha configuration.');
+                                    return;
+                                }
+                                grecaptcha.ready(function () {
+                                    grecaptcha.execute('{{$recaptcha['site_key']}}', {action: 'submit'}).then(function (token) {
+                                        $('#g-recaptcha-response').value = token;
 
-                @if (\App\CentralLogics\Helpers::subscription_check())
-                $('#business-plan-div').removeClass('d-none');
-                $('#reg-form-div').addClass('d-none');
-                $('#show-step2').addClass('active');
-                $('#show-step1').removeClass('active');
-                $(window).scrollTop(0);
-                @endif
+                                    });
+                                });
+                                window.onerror = function (message) {
+                                    var errorMessage = 'An unexpected error occurred. Please check the recaptcha configuration';
+                                    if (message.includes('Invalid site key')) {
+                                        errorMessage = 'Invalid site key provided. Please check the recaptcha configuration.';
+                                    } else if (message.includes('not loaded in api.js')) {
+                                        errorMessage = 'reCAPTCHA API could not be loaded. Please check the recaptcha API configuration.';
+                                    }
+                                    toastr.error(errorMessage)
+                                    return true;
+                                };
+                            @endif
+
+
+                            @if (\App\CentralLogics\Helpers::subscription_check())
+                            $('#business-plan-div').removeClass('d-none');
+                            $('#reg-form-div').addClass('d-none');
+                            $('#show-step2').addClass('active');
+                            $('#show-step1').removeClass('active');
+                            $(window).scrollTop(0);
+                            @endif
+                        }
+                    },
+                    error: function () {
+                        $('#loading').hide();
+                    }
+                });
             }
         });
 
@@ -1148,12 +1076,9 @@
     <script src="{{ asset('public/assets/landing/js/select2.min.js') }}"></script>
 
     <script>
-        // ---- file upload with textbox
         $(document).ready(function () {
             function handleImageUpload(inputSelector, imgViewerSelector, textBoxSelector) {
                 const inputElement = $(inputSelector);
-
-                // Handle input change for file selection
                 inputElement.on('change', function () {
                     const file = this.files[0];
                     if (file) {
@@ -1165,27 +1090,21 @@
                                 validTypes = acceptAttr.split(',').map(type => type.trim().toLowerCase());
                             }
 
-                            // Fallback if nothing found in accept attribute
                             if (validTypes.length === 0) {
                                 validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
                             }
 
-                            // ✅ Check file validity by MIME or extension
                             const fileType = file.type.toLowerCase();
                             const fileExt = '.' + file.name.split('.').pop().toLowerCase();
 
                             const isValidType = validTypes.some(type => {
-                                // Wildcard MIME type (e.g. image/*)
                                 if (type.endsWith('/*')) {
                                     return fileType.startsWith(type.replace('/*', ''));
                                 }
 
-                                // Exact MIME type match
                                 if (type.startsWith('image/') || type.includes('/')) {
                                     return fileType === type;
                                 }
-
-                                // File extension match (e.g. .jpg, .png)
                                 return fileExt === type;
                             });
 
@@ -1259,7 +1178,6 @@
                 });
             }
 
-            // Apply functionality to each upload element
             handleImageUpload(
                 '#coverImageUpload',
                 '#coverImageViewer',
@@ -1272,7 +1190,6 @@
                 '#logoImageViewer ~ .upload-file__textbox'
             );
         });
-        // ---- file upload with textbox ends
     </script>
 
     <script>
@@ -1293,7 +1210,6 @@
                 // Get all selected items
                 var selectedItems = $element.select2("data");
 
-                // Create a temporary container to measure item widths
                 var $tempContainer = $("<div>")
                     .css({
                         display: "inline-block",
@@ -1303,7 +1219,6 @@
                     })
                     .appendTo($container);
 
-                // Calculate the width of items and determine how many fit
                 selectedItems.forEach(function (item) {
                     var $tempItem = $("<span>")
                         .text(item.text)
@@ -1447,5 +1362,60 @@
             });
         };
         $(".multiple-select2").select2DynamicDisplay();
+    </script>
+
+    <script>
+        const container = document.querySelector('.tabs-inner');
+        const btnPrevWrap = document.querySelector('.button-prev');
+        const btnNextWrap = document.querySelector('.button-next');
+        const item = document.querySelector('.tabs-slide_items');
+
+        document.querySelectorAll('.tabs-slide_items').forEach(el => {
+            el.style.flex = '0 0 auto';
+        });
+        function updateArrows() {
+            if (!container || !btnPrevWrap || !btnNextWrap) return;
+
+            const hasOverflow = container.scrollWidth > container.clientWidth;
+            if (!hasOverflow) {
+                btnPrevWrap.style.display = 'none';
+                btnNextWrap.style.display = 'none';
+                return;
+            }
+            const scrollLeft = container.scrollLeft;
+            const maxScroll = container.scrollWidth - container.clientWidth;
+
+            if (scrollLeft > 2) {
+                btnPrevWrap.style.display = 'flex';
+            } else {
+                btnPrevWrap.style.display = 'none';
+            }
+
+            if (scrollLeft < maxScroll - 2) {
+                btnNextWrap.style.display = 'flex';
+            } else {
+                btnNextWrap.style.display = 'none';
+            }
+        }
+        document.querySelector('.btn-click-prev')?.addEventListener('click', () => {
+            const itemWidth = item?.offsetWidth || 100;
+            container.scrollBy({ left: -itemWidth, behavior: 'smooth' });
+        });
+        document.querySelector('.btn-click-next')?.addEventListener('click', () => {
+            const itemWidth = item?.offsetWidth || 100;
+            container.scrollBy({ left: itemWidth, behavior: 'smooth' });
+        });
+
+        container.addEventListener('scroll', updateArrows);
+        ['load', 'resize'].forEach(evt => window.addEventListener(evt, updateArrows));
+        new MutationObserver(updateArrows).observe(container, { childList: true, subtree: true });
+        new ResizeObserver(updateArrows).observe(container);
+
+        // Initial update
+        updateArrows();
+
+
+
+
     </script>
 @endpush

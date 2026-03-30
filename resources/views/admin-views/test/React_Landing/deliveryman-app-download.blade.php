@@ -417,8 +417,8 @@
             </div>
             <div class="custom-offcanvas-body custom-offcanvas-body-100  p-20">
                <section class="common-section-view p-xl-5 p-0 bg-white border rounded-10 my-xl-2 mx-xl-2">
-                    <div class="common-section-inner bg-fafafa p-xxl-4 p-3 d-flex flex-xl-nowrap justify-content-lg-between justify-content-center flex-wrap align-items-center gap-x-xl-20">                        
-                        <div class="d-flex align-items-center justify-content-xl-start justify-content-center flex-xl-nowrap flex-wrap gap-x-xl-20 max-w-650 mb-xxl-0 mb-3">
+                    <div class="common-section-inner bg-fafafa p-xxl-4 p-3 d-flex flex-xl-nowrap justify-content-lg-between justify-content-center flex-wrap align-items-center gap-xxl-20">                        
+                        <div class="d-flex align-items-center justify-content-xl-start justify-content-center flex-xl-nowrap flex-wrap gap-xxl-20 max-w-650 mb-xxl-0 mb-3">
                             <div class="selling-thumb min-w-176px max-w-250">
                                 <img width="180" src="{{ asset('/public/assets/admin/img/400x400/deliveryman-dirver.png') }}" alt="Google Play" class="object-contain w-100 h-100">
                             </div>

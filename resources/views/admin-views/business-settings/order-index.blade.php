@@ -242,9 +242,106 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <div class="col-sm-6 col-lg-4 mt-4 mb-4 access_product_approval">
+                                        @php($order_confirmation_model = \App\Models\BusinessSetting::where('key', 'order_confirmation_model')->first())
+                                        @php($order_confirmation_model = $order_confirmation_model ? $order_confirmation_model->value : 'deliveryman')
+                                        <div class="form-group mb-0">
+                                            <label class="input-label text-capitalize d-flex alig-items-center">
+                                                <span class="line--limit-1">{{ translate('messages.Who_Will_Confirm_Order?') }}
+                                                    <span class="form-label-secondary" data-toggle="tooltip"
+                                                          data-placement="right"
+                                                          data-original-title="{{ translate('messages.After_a_customer_order_placement,_Admin_can_define_who_will_confirm_the_order_first-_Deliveryman_or_Store?_For_example,_if_you_choose_‘Delivery_man’,_the_deliveryman_nearby_will_confirm_the_order_and_forward_it_to_the_related_store_to_process_the_order._It_works_vice-versa_if_you_choose_‘Store’.') }}">
+                                                        <img src="{{asset('public/assets/admin/img/info-circle.svg')}}" alt="">
+                                                    </span>
+                                                </span>
+                                            </label>
+                                            <div class="resturant-type-group border">
+                                                <label class="form-check form--check mr-2 mr-md-4">
+                                                    <input class="form-check-input" type="radio" value="store"
+                                                           name="order_confirmation_model" id="order_confirmation_model" {{ $order_confirmation_model == 'store' ? 'checked' : '' }}>
+                                                    <span class="form-check-label">
+                                                        {{ translate('messages.store') }}
+                                                    </span>
+                                                </label>
+                                                <label class="form-check form--check mr-2 mr-md-4">
+                                                    <input class="form-check-input" type="radio" value="deliveryman"
+                                                           name="order_confirmation_model" id="order_confirmation_model2" {{ $order_confirmation_model == 'deliveryman' ? 'checked' : '' }}>
+                                                    <span class="form-check-label">
+                                                        {{ translate('messages.deliveryman') }}
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6 col-lg-4 mt-4 mb-4 access_product_approval">
+                                        @php($admin_order_notification = \App\Models\BusinessSetting::where('key', 'admin_order_notification')->first())
+                                        @php($admin_order_notification = $admin_order_notification ? $admin_order_notification->value : 0)
+                                        <div class="form-group mb-0">
+
+                                            <label
+                                                class="toggle-switch h--45px toggle-switch-sm d-flex justify-content-between border rounded px-3 py-0 form-control">
+                                        <span class="pr-1 d-flex align-items-center switch--label">
+                                            <span class="line--limit-1">
+                                                {{ translate('messages.Order_Notification_for_Admin') }}
+                                            </span>
+                                            <span class="form-label-secondary text-danger d-flex" data-toggle="tooltip"
+                                                  data-placement="right"
+                                                  data-original-title="{{ translate('messages.Admin_will_get_a_pop-up_notification_with_sounds_for_any_order_placed_by_customers.') }}"><img
+                                                    src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
+                                                    alt="{{ translate('messages.customer_varification_toggle') }}"> *
+                                            </span>
+                                        </span>
+                                                <input type="checkbox" data-id="aon1" data-type="toggle"
+                                                       data-image-on="{{ asset('/public/assets/admin/img/modal/order-notification-on.png') }}"
+                                                       data-image-off="{{ asset('/public/assets/admin/img/modal/order-notification-off.png') }}"
+                                                       data-title-on="{{ translate('messages.Want_to_enable') }} <strong>{{ translate('messages.Order_Notification_for_Admin?') }}</strong>"
+                                                       data-title-off="{{ translate('messages.Want_to_disable') }} <strong>{{ translate('messages.Order_Notification_for_Admin?') }}</strong>"
+                                                       data-text-on="<p>{{ translate('messages.If_you_enable_this,_the_Admin_will_receive_a_Notification_for_every_order_placed.') }}</p>"
+                                                       data-text-off="<p>{{ translate('messages.If_you_disable_this,_the_Admin_will_NOT_receive_a_Notification_for_every_order_placed.') }}</p>"
+                                                       class="status toggle-switch-input dynamic-checkbox-toggle" value="1"
+                                                       name="admin_order_notification" id="aon1" {{ $admin_order_notification == 1 ? 'checked' : '' }}>
+                                                <span class="toggle-switch-label text">
+                                            <span class="toggle-switch-indicator"></span>
+                                        </span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-lg-4 mb-4 access_product_approval">
+                                        @php($order_notification_type = \App\Models\BusinessSetting::where('key', 'order_notification_type')->first())
+                                        <div class="form-group mb-0">
+                                            <label class="input-label text-capitalize d-flex alig-items-center"><span
+                                                    class="line--limit-1">{{ translate('Order_Notification_Type') }}
+                                            <span class="form-label-secondary" data-toggle="tooltip"
+                                                  data-placement="right"
+                                                  data-original-title="{{ translate('For_Firebase,_a_single_real-time_notification_will_be_sent_upon_order_placement,_with_no_repetition._For_the_Manual_option,_notifications_will_appear_at_10-second_intervals_until_the_order_is_viewed.') }}">
+                                                <img src="{{asset('public/assets/admin/img/info-circle.svg')}}" alt="">
+                                            </span>
+                                        </span>
+                                            </label>
+                                            <div class="resturant-type-group border">
+                                                <label class="form-check form--check mr-2 mr-md-4">
+                                                    <input class="form-check-input" type="radio" value="firebase"
+                                                           name="order_notification_type" {{ $order_notification_type ? ($order_notification_type->value == 'firebase' ? 'checked' : '') : '' }}>
+                                                    <span class="form-check-label">
+                                                {{translate('firebase')}}
+                                            </span>
+                                                </label>
+                                                <label class="form-check form--check mr-2 mr-md-4">
+                                                    <input class="form-check-input" type="radio" value="manual"
+                                                           name="order_notification_type" {{ $order_notification_type ? ($order_notification_type->value == 'manual' ? 'checked' : '') : '' }}>
+                                                    <span class="form-check-label">
+                                                {{translate('manual')}}
+                                            </span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                     @php($extra_packaging_data = \App\Models\BusinessSetting::where('key', 'extra_packaging_data')->first()?->value ?? '')
                                     @php($extra_packaging_data =json_decode($extra_packaging_data , true))
-                                    <div class="mt-4  mb-4 access_product_approval">
+                                    <div class="mb-3 access_product_approval">
 
                                         <label class="mb-2 input-label text-capitalize d-flex alig-items-center" for=""> <img src="{{ asset('/public/assets/admin/img/icon-park_ad-product.png') }}" alt=""
                                             class="card-header-icon align-self-center mr-1">{{ translate('Enable Extra Packaging Charge') }}
@@ -270,82 +367,108 @@
                                     </div>
                                 </div>
 
-                                    {{-- @if (addon_published_status('Rental'))
-                                    @php($order_cancelation_rate_limit_status = App\CentralLogics\Helpers::get_business_settings('order_cancelation_rate_limit_status') ?? 0)
+                                <div class="__bg-F8F9FC-card p-0 mt-4">
+                                    @php($admin_free_delivery_status = \App\Models\BusinessSetting::where('key', 'admin_free_delivery_status')->first())
 
-                                    <div class="__bg-FAFAFA card shadow-none">
-                                        <div class="card-header bg-transparent">
-                                            <div>
-                                                <h5 class="text-title mb-1">
-                                                    {{ translate('messages.Vendor Cancelation Rate Setup') }}
-                                                </h5>
-                                                <p class="fs-12 mb-0">
-                                                    {{ translate('messages.This section will be applicable for vendors of car rental module') }}
-                                                </p>
-                                            </div>
-                                            <div class="col-lg-4 col-md-6">
+                                    <div class="border-bottom d-flex justify-content-between p-3">
+                                        <h4 class="card-title m-0 text--title">{{translate('Free Delivery Option')}}</h4>
+                                        <label class="form-label d-flex justify-content-between text-capitalize mb-1"
+                                               for="admin_free_delivery_status">
+
+                                    <span class="toggle-switch toggle-switch-sm pr-sm-3">
+                                        <input type="checkbox" data-id="admin_free_delivery_status" data-type="toggle"
+                                               data-image-on="{{ asset('/public/assets/admin/img/modal/free-delivery-on.png') }}"
+                                               data-image-off="{{ asset('/public/assets/admin/img/modal/free-delivery-off.png') }}"
+                                               data-title-on="<strong>{{ translate('messages.Want_to_enable_Free_Delivery_Option?') }}</strong>"
+                                               data-title-off="<strong>{{ translate('messages.Want_to_disable_Free_Delivery_Option?') }}</strong>"
+                                               class="status toggle-switch-input dynamic-checkbox-toggle"
+                                               name="admin_free_delivery_status" id="admin_free_delivery_status" value="1"
+                                            {{ $admin_free_delivery_status?->value ? 'checked' : '' }}>
+                                        <span class="toggle-switch-label text mb-0"><span
+                                                class="toggle-switch-indicator"></span></span>
+                                    </span>
+                                        </label>
+                                    </div>
+
+
+                                    <div class="card-body">
+                                        <div class="row g-3 align-items-end">
+                                            <div class="col-sm-6 col-lg-6">
+
+
+                                                @php($free_delivery_over = \App\Models\BusinessSetting::where('key', 'free_delivery_over')->first())
+                                                @php($admin_free_delivery_option = \App\Models\BusinessSetting::where('key', 'admin_free_delivery_option')->first())
+                                                {{--                                        @dd($admin_free_delivery_status?->value)--}}
+
                                                 <div class="form-group mb-0">
                                                     <label
-                                                        class="toggle-switch h--45px toggle-switch-sm d-flex justify-content-between border rounded px-3 py-0 form-control">
-                                                        <span class="pr-1 d-flex align-items-center switch--label text--title">
-
-                                                        </span>
-                                                        <input type="checkbox" data-id="order_cancelation_rate_limit_status" data-type="toggle"
-                                                            data-image-on="{{ asset('/public/assets/admin/img/modal/dm-tips-on.png') }}"
-                                                            data-image-off="{{ asset('/public/assets/admin/img/modal/dm-tips-off.png') }}"
-                                                            data-title-on="<strong>{{ translate('messages.Want_to_enable_provider_cancelation_rate?') }}</strong>"
-                                                            data-title-off="<strong>{{ translate('messages.Want_to_disable_provider_cancelation_rate?') }}</strong>"
-                                                            data-text-on="<p>{{ translate('messages.If_you_enable_this,_provider_cancelation_rate_will_be_enabled.') }}</p>"
-                                                            data-text-off="<p>{{ translate('messages.If_you_disable_this,_provider_cancelation_rate_will_be_disabled.') }}</p>"
-                                                            class="status toggle-switch-input dynamic-checkbox-toggle" value="1"
-                                                            name="order_cancelation_rate_limit_status" id="order_cancelation_rate_limit_status"
-                                                            {{  $order_cancelation_rate_limit_status ? 'checked' : '' }}>
-                                                        <span class="toggle-switch-label text">
-                                                            <span class="toggle-switch-indicator"></span>
-                                                        </span>
+                                                        class="input-label text-capitalize d-flex alig-items-center add_text_mute {{ $admin_free_delivery_status?->value ? '' : 'text-muted' }} "><span
+                                                            class="line--limit-1">{{ translate('Choose Free Delivery Option') }}
+                                                </span>
                                                     </label>
+                                                    <div class="resturant-type-group border bg-white">
+                                                        <label class="form-check form--check">
+                                                            <input class="form-check-input radio-trigger" type="radio" {{ $admin_free_delivery_status?->value ? '' : 'disabled' }}
+                                                            value="free_delivery_to_all_store"
+                                                                   name="admin_free_delivery_option" {{ $admin_free_delivery_option?->value == 'free_delivery_to_all_store' ? 'checked' : '' }}>
+                                                            <span class="form-check-label">
+                                                        {{translate('Set free delivery for all store')}}
+                                                    </span>
+                                                        </label>
+                                                        <label class="form-check form--check">
+                                                            <input
+                                                                class="form-check-input radio-trigger"
+                                                                type="radio" {{ $admin_free_delivery_status?->value ? '' : 'disabled' }} value="free_delivery_by_order_amount"
+                                                                name="admin_free_delivery_option" {{ $admin_free_delivery_option?->value == 'free_delivery_by_order_amount' || $admin_free_delivery_option?->value == null ? 'checked' : '' }}>
+                                                            <span class="form-check-label">
+                                                        {{translate('Set Specific Criteria')}}
+                                                    </span>
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="row">
-                                                <div class="col-lg-6">
-                                                    @php($order_cancelation_rate_block_limit =  App\CentralLogics\Helpers::get_business_settings('order_cancelation_rate_block_limit') ?? 0)
-                                                    <div class="form-group mb-0">
-                                                        <label class="input-label font-medium" for="order_cancelation_rate_block_limit">
-                                                            {{ translate('messages.Cancelation Rate Limit') }} (%)
-                                                            <span class="form-label-secondary" data-toggle="tooltip" data-placement="right"
-                                                                data-original-title="{{ translate('messages.Cancelation Rate Limit') }}">
-                                                                <i class="tio-info-outined text--title"></i>
-                                                            </span>
-                                                        </label>
-                                                        <input type="number" max="100" min="0" id="order_cancelation_rate_block_limit" name="order_cancelation_rate_block_limit" class="form-control"  {{  $order_cancelation_rate_limit_status ? 'required' : 'readonly' }}  placeholder="{{ translate('Ex: 25') }}" value="{{ $order_cancelation_rate_block_limit }}">
-                                                    </div>
+
+
+
+                                            <div id="show_free_delivery_over"
+                                                 class="col-sm-6 col-lg-6 {{ $admin_free_delivery_option?->value == 'free_delivery_by_order_amount' || $admin_free_delivery_option?->value == null ? '' : 'd-none' }}">
+                                                <div class="form-group mb-0">
+                                                    <label
+                                                        class="form-label d-flex justify-content-between text-capitalize mb-1 add_text_mute {{ $admin_free_delivery_status?->value ? '' : 'text-muted' }} "
+                                                        for="">
+                                                <span
+                                                    class="line--limit-1">{{ translate('messages.free_delivery_over') }}
+                                                    ({{ \App\CentralLogics\Helpers::currency_symbol() }}) <small
+                                                        class="text-danger"><span class="form-label-secondary"
+                                                                                  data-toggle="tooltip" data-placement="right"
+                                                                                  data-original-title="{{ translate('messages.Set_a_minimum_order_value_for_automated_free_delivery._If_the_minimum_amount_is_exceeded,_the_Delivery_Fee_is_deducted_from_Admin’s_commission_and_added_to_Admin’s_expense.') }}"><img
+                                                                src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
+                                                                alt="{{ translate('messages.free_over_delivery_message') }}"></span>
+                                                        *</small></span>
+
+                                                    </label>
+
+                                                    <input type="number" name="free_delivery_over" class="form-control"
+                                                           id="free_delivery_over" placeholder="{{ translate('messages.Ex:_10') }}"
+                                                           value="{{ $free_delivery_over ? $free_delivery_over->value : 0 }}"
+                                                           min="1" step=".01" {{ $admin_free_delivery_option?->value == 'free_delivery_by_order_amount' ? 'required' : '' }} {{ $admin_free_delivery_status?->value ? '' : 'readonly' }}>
                                                 </div>
-
-                                                @php($order_cancelation_rate_warning_limit =  App\CentralLogics\Helpers::get_business_settings('order_cancelation_rate_warning_limit') ?? 0)
-
-                                                <div class="col-lg-6">
-                                                    <div class="form-group mb-0">
-                                                        <label class="input-label font-medium" for="order_cancelation_rate_warning_limit">
-                                                            {{ translate('messages.Cancelation Rate Warning') }} (%)
-                                                            <span class="form-label-secondary" data-toggle="tooltip" data-placement="right"
-                                                                data-original-title="{{ translate('messages.Cancelation Rate Warning') }}">
-                                                                <i class="tio-info-outined text--title"></i>
-                                                            </span>
-                                                        </label>
-                                                        <input type="number" {{  $order_cancelation_rate_limit_status ? 'required' : 'readonly' }} min="0" max="100" value="{{ $order_cancelation_rate_warning_limit }}" name="order_cancelation_rate_warning_limit" id="order_cancelation_rate_warning_limit" class="form-control" placeholder="{{ translate('Ex: 20') }}">
-                                                    </div>
+                                            </div>
+                                            <div id="show_text_for_all_store_free_delivery"
+                                                 class="col-sm-6 col-lg-6 {{ $admin_free_delivery_option?->value == 'free_delivery_to_all_store' ? '' : ' d-none' }}">
+                                                <div class="alert fs-13 alert-primary-light text-dark mb-0  mt-md-0 add_text_mute text-muted"
+                                                     role="alert">
+                                                    <img src="{{ asset('/public/assets/admin/img/lnfo_light.png') }}" alt="">
+                                                    {{translate('Free delivery is active for all stores. Cost bearer for the free delivery is')}}
+                                                    <strong>{{ translate('Admin') }}</strong>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-
-                                    @endif --}}
-
+                                </div>
 
 
-                                <div class="btn--container justify-content-end mt-20">
+                                <div class="btn--container justify-content-end mt-20 footer-sticky-insider">
                                     <button type="reset" class="btn btn--reset">{{ translate('messages.reset') }}</button>
                                     <button type="{{ env('APP_MODE') != 'demo' ? 'submit' : 'button' }}"
                                         class="btn btn--primary call-demo">{{ translate('save_information') }}</button>
@@ -370,7 +493,8 @@
                         @php($language = $language->value ?? null)
                         @php($defaultLang = str_replace('_', '-', app()->getLocale()))
                         @if ($language)
-                            <ul class="nav nav-tabs nav--tabs mb-3 border-0">
+                        <div class="js-nav-scroller tabs-slide-wrap tabs-slide-space position-relative hs-nav-scroller-horizontal">
+                            <ul class="nav nav-tabs tabs-inner nav--tabs mb-4 border-0">
                                 <li class="nav-item">
                                     <a class="nav-link lang_link1 active" href="#"
                                         id="default-link1">{{ translate('Default') }}</a>
@@ -382,6 +506,21 @@
                                     </li>
                                 @endforeach
                             </ul>
+                            <div class="arrow-area">
+                                <div class="button-prev align-items-center">
+                                    <button type="button"
+                                        class="btn btn-click-prev mr-auto border-0 btn-primary rounded-circle fs-12 p-2 d-center">
+                                        <i class="tio-chevron-left fs-24"></i>
+                                    </button>
+                                </div>
+                                <div class="button-next align-items-center">
+                                    <button type="button"
+                                        class="btn btn-click-next ml-auto border-0 btn-primary rounded-circle fs-12 p-2 d-center">
+                                        <i class="tio-chevron-right fs-24"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                         @endif
                         <div class="row g-3">
                             <div class="col-sm-6 lang_form1 default-form1">
@@ -616,8 +755,186 @@
             </div>
     </div>
     <!-- Modal -->
+
+
+    <div class="modal fade" id="confirmation_modal_free_delivery_by_order_amount" tabindex="-1" role="dialog"
+         aria-labelledby="modalLabel" aria-hidden="true">
+        <div class=" modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body pb-5 pt-0">
+                    <div class="max-349 mx-auto mb-20">
+                        <div>
+                            <div class="text-center">
+                                <img src="{{asset('/public/assets/admin/img/subscription-plan/package-status-disable.png')}}"
+                                     class="mb-20">
+
+                                <h5 class="modal-title"></h5>
+                            </div>
+                            <div class="text-center">
+                                <h3> {{ translate('Do You Want Active “Set Specific Criteria”?') }}</h3>
+                                <div>
+                                    <p>{{ translate('Are you sure to active “Set Specific Criteria”? If you active this delivery charge will not added to order when customer order more then your “Free Delivery Over” amount.') }}
+                                    </p>
+                                </div>
+                            </div>
+
+
+
+                            <div class="btn--container justify-content-center">
+                                <button data-dismiss="modal"
+                                        class="btn btn-soft-secondary min-w-120">{{translate("Cancel")}}</button>
+                                <button data-dismiss="modal" type="button" id="confirmBtn_free_delivery_by_order_amount"
+                                        class="btn btn--primary min-w-120">{{translate('Yes')}}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" id="confirmation_modal_free_delivery_to_all_store" tabindex="-1" role="dialog"
+         aria-labelledby="modalLabel" aria-hidden="true">
+        <div class="modal-dialog-centered modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body pb-5 pt-0">
+                    <div class="max-349 mx-auto mb-20">
+                        <div>
+                            <div class="text-center">
+                                <img src="{{asset('/public/assets/admin/img/subscription-plan/package-status-disable.png')}}"
+                                     class="mb-20">
+
+                                <h5 class="modal-title"></h5>
+                            </div>
+                            <div class="text-center">
+                                <h3> {{ translate('Do You Want Active “Free Delivery for All Stores”?') }}</h3>
+                                <div>
+                                    <p>{{ translate('Are you sure to active “Free delivery order for all Stores”? If you active this no delivery charge will added to order and the cost will be added to you.') }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="btn--container justify-content-center">
+                                <button data-dismiss="modal"
+                                        class="btn btn-soft-secondary min-w-120">{{translate("Cancel")}}</button>
+                                <button data-dismiss="modal" type="button" id="confirmBtn_free_delivery_to_all_store"
+                                        class="btn btn--primary min-w-120">{{translate('Yes')}}</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('script_2')
     <script src="{{asset('public/assets/admin/js/view-pages/business-settings-order-page.js')}}"></script>
+
+    <script>
+        "use strict";
+        $(document).ready(function () {
+            let selectedRadio = null;
+
+            // Function to update field validation based on selected option and status
+            function updateFieldValidation() {
+                const isEnabled = $('#admin_free_delivery_status').is(':checked');
+                const selectedValue = $('input[name="admin_free_delivery_option"]:checked').val();
+
+                if (!isEnabled) {
+                    // When disabled, remove validation and make readonly
+                    $('#free_delivery_over').removeAttr('required').prop('readonly', true);
+                    $('.radio-trigger').prop('disabled', true);
+                } else {
+                    // When enabled, set validation based on selected radio
+                    $('.radio-trigger').prop('disabled', false);
+
+                    if (selectedValue === 'free_delivery_by_order_amount') {
+                        $('#show_free_delivery_over').removeClass('d-none');
+                        $('#show_text_for_all_store_free_delivery').addClass('d-none');
+                        $('#free_delivery_over').prop('readonly', false).prop('required', true);
+                    } else if (selectedValue === 'free_delivery_to_all_store') {
+                        $('#show_free_delivery_over').addClass('d-none');
+                        $('#show_text_for_all_store_free_delivery').removeClass('d-none');
+                        $('#free_delivery_over').val('').prop('required', false).prop('readonly', true);
+                    }
+                }
+
+                // Update text-muted classes
+                if (isEnabled) {
+                    $('.add_text_mute').removeClass('text-muted');
+                } else {
+                    $('.add_text_mute').addClass('text-muted');
+                }
+            }
+
+            // Handle radio button clicks
+            $(".radio-trigger").on("click", function (event) {
+                event.preventDefault();
+                selectedRadio = this;
+                let selectedValue = $(this).val();
+
+                if (selectedValue === 'free_delivery_to_all_store') {
+                    $("#confirmation_modal_free_delivery_to_all_store").modal("show");
+                } else {
+                    $("#confirmation_modal_free_delivery_by_order_amount").modal("show");
+                }
+            });
+
+            // Handle confirmation for "free delivery to all store"
+            $("#confirmBtn_free_delivery_to_all_store").on("click", function () {
+                if (selectedRadio) {
+                    selectedRadio.checked = true;
+                    updateFieldValidation();
+                }
+                $("#confirmation_modal_free_delivery_to_all_store").modal("hide");
+            });
+
+            // Handle confirmation for "free delivery by order amount"
+            $("#confirmBtn_free_delivery_by_order_amount").on("click", function () {
+                if (selectedRadio) {
+                    selectedRadio.checked = true;
+                    updateFieldValidation();
+                }
+                $("#confirmation_modal_free_delivery_by_order_amount").modal("hide");
+            });
+
+            // Handle toggle switch change - using multiple event listeners to catch all scenarios
+            $('#admin_free_delivery_status').on('change', function() {
+                // Use setTimeout to ensure this runs after any other handlers
+                setTimeout(function() {
+                    updateFieldValidation();
+                }, 100);
+            });
+
+            // Also listen for click events on the toggle
+            $('#admin_free_delivery_status').on('click', function() {
+                setTimeout(function() {
+                    updateFieldValidation();
+                }, 100);
+            });
+
+            // Listen for changes on the parent toggle switch span (in case the event bubbles from there)
+            $('.toggle-switch-input').on('change', function() {
+                setTimeout(function() {
+                    updateFieldValidation();
+                }, 100);
+            });
+
+            // Initialize validation state on page load
+            setTimeout(function() {
+                updateFieldValidation();
+            }, 200);
+        });
+    </script>
 @endpush

@@ -42,7 +42,7 @@
         </div>
         @php($openai_config = \App\CentralLogics\Helpers::get_business_settings('openai_config'))
         <!-- End Page Header -->
-        <form id="product_form" enctype="multipart/form-data" class="custom-validation" data-ajax="true">
+        <form id="product_form" enctype="multipart/form-data" class="validate-form" data-ajax="true">
             <input type="hidden" id="module_type" value="{{ Config::get('module.current_module_type') }}">
             @if (request()->product_gellary == 1)
                 @php($route = route('admin.item.store', ['product_gellary' => request()->product_gellary]))
@@ -280,6 +280,9 @@
                         </div>
                     </div>
                 @endif
+                @if (Config::get('module.current_module_type') == 'ecommerce')
+                    @includeIf('admin-views.business-settings.landing-page-settings.partial._meta_data', ['item' => $product])
+                @endif
 
                 <div class="col-md-12">
                     <div class="btn--container justify-content-end">
@@ -378,43 +381,30 @@
             $('#removedImageKeysInput').val(removedImageKeys.join(','));
         }
 
-
-        function show_min_max(data) {
-            console.log(data);
-            $('#min_max1_' + data).removeAttr("readonly");
-            $('#min_max2_' + data).removeAttr("readonly");
-            $('#min_max1_' + data).attr("required", "true");
-            $('#min_max2_' + data).attr("required", "true");
-        }
-
-        function hide_min_max(data) {
-            console.log(data);
-            $('#min_max1_' + data).val(null).trigger('change');
-            $('#min_max2_' + data).val(null).trigger('change');
-            $('#min_max1_' + data).attr("readonly", "true");
-            $('#min_max2_' + data).attr("readonly", "true");
-            $('#min_max1_' + data).attr("required", "false");
-            $('#min_max2_' + data).attr("required", "false");
-        }
-
-        $(document).on('change', '.show_min_max', function() {
-            let data = $(this).data('count');
-            show_min_max(data);
+        $(document).on('change', '.show_min_max', function () {
+            let count = $(this).data('count');
+            toggleMinMaxRequired(count, true);
         });
 
-        $(document).on('change', '#discount_type', function() {
-            let data = document.getElementById("discount_type");
-            if (data.value === 'amount') {
-                $('#symble').text("({{ \App\CentralLogics\Helpers::currency_symbol() }})");
+        $(document).on('change', '.hide_min_max', function () {
+            let count = $(this).data('count');
+            toggleMinMaxRequired(count, false);
+        });
+
+        function toggleMinMaxRequired(count, required) {
+            let $min = $('#min_max1_' + count);
+            let $max = $('#min_max2_' + count);
+
+            if (required) {
+                $min.prop('readonly', false).prop('required', true);
+                $max.prop('readonly', false).prop('required', true);
             } else {
-                $('#symble').text("(%)");
+                $min.prop('readonly', true).prop('required', false).val(null).trigger('change').removeClass('is-invalid');
+                $max.prop('readonly', true).prop('required', false).val(null).trigger('change').removeClass('is-invalid');
+                $('div.form-validation-error[data-for="options[' + count + '][min]"]').remove();
+                $('div.form-validation-error[data-for="options[' + count + '][max]"]').remove();
             }
-        });
-
-        $(document).on('change', '.hide_min_max', function() {
-            let data = $(this).data('count');
-            hide_min_max(data);
-        });
+        }
 
 
 
@@ -540,6 +530,7 @@
         function removeOption(e) {
             element = $(e);
             element.parents('.view_new_option').remove();
+            combination_update();
         }
 
         $(document).on('click', '.delete_input_button', function() {
@@ -550,6 +541,7 @@
         function deleteRow(e) {
             element = $(e);
             element.parents('.add_new_view_row_class').remove();
+            combination_update();
         }
 
         $(document).on('click', '.deleteRow', function() {
@@ -957,7 +949,9 @@
                     $('#variant_combination').html(data.view);
                     if (data.length < 1) {
                         $('input[name="current_stock"]').attr("readonly", false);
+                        $('input[name="current_stock"]').val(0);
                     }
+                    update_qty();
                 }
             });
         }
@@ -971,11 +965,9 @@
         //        }
         //    });
 
-        $('#product_form').on('submit', function() {
-            console.log('working');
-
-            let $form = $(this);
-            if (!$form.valid()) {
+        $('#product_form').on('submit', function(e) {
+            e.preventDefault();
+            if(typeof FormValidation != 'undefined' && !FormValidation.validateForm(this)) {
                 return false;
             }
 
@@ -1036,7 +1028,7 @@
             let total_qty = 0;
             let qty_elements = $('input[name^="stock_"]');
             for (let i = 0; i < qty_elements.length; i++) {
-                total_qty += parseInt(qty_elements.eq(i).val());
+                total_qty += parseInt(qty_elements.eq(i).val() || 0);
             }
             if (qty_elements.length > 0) {
 
@@ -1046,11 +1038,12 @@
                 $('input[name="current_stock"]').attr("readonly", false);
             }
         }
-        $('input[name^="stock_"]').on('keyup', function() {
+        
+        $(document).on('keyup', 'input[name^="stock_"]', function() {
             let total_qty = 0;
             let qty_elements = $('input[name^="stock_"]');
             for (let i = 0; i < qty_elements.length; i++) {
-                total_qty += parseInt(qty_elements.eq(i).val());
+                total_qty += parseInt(qty_elements.eq(i).val() || 0);
             }
             $('input[name="current_stock"]').val(total_qty);
         });
@@ -1061,7 +1054,7 @@
                 maxCount: 5,
                 rowHeight: '176px !important',
                 groupClassName: 'spartan_item_wrapper min-w-176px max-w-176px',
-                maxFileSize: 1024 * 1024 * 2,
+                maxFileSize: 1024 * 1024 * {{ MAX_FILE_SIZE }},
                 placeholderImage: {
                     image: "{{ asset('public/assets/admin/img/upload-img.png') }}",
                     width: '176px'

@@ -305,7 +305,11 @@
                 <tr>
                     <td>2</td>
                     <td>{{translate('messages.item_discount')}}</td>
-                    <td>{{ \App\CentralLogics\Helpers::format_currency($order_transaction->order->details()->sum(DB::raw('discount_on_item * quantity')) + $order_transaction->order['flash_admin_discount_amount'] +$order_transaction->order['flash_store_discount_amount']) }}</td>
+                    @if ($order_transaction->discount_type == 'flash_sale')
+                    <td>{{ \App\CentralLogics\Helpers::format_currency($order_transaction->order['flash_admin_discount_amount'] +$order_transaction->order['flash_store_discount_amount']) }}</td>
+                        @else
+                    <td>{{ \App\CentralLogics\Helpers::format_currency($order_transaction->order->details()->sum(DB::raw('discount_on_item * quantity')) ) }}</td>
+                    @endif
                 </tr>
                 <tr>
                     <td>3</td>

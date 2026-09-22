@@ -18,8 +18,24 @@
                                 <div class="row gy-4">
                                     <div class="col-md-6">
                                         <div class="from-group">
+                                            <label for="name" class="mb-2">{{ "Name" }} <span class="text-danger">*</span></label>
+                                            <input type="text" id="name" class="form-control" name="name"
+                                                   value="{{ old('name') }}"
+                                                   placeholder="{{ "Ex: John Doe" }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="from-group">
+                                            <label for="email" class="mb-2">{{ "Email" }} <span class="text-danger">*</span></label>
+                                            <input type="email" id="email" class="form-control" name="email"
+                                                   value="{{ old('email') }}"
+                                                   placeholder="{{ "Ex: john@example.com" }}" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="from-group">
                                             <label for="username" class="d-flex align-items-center gap-2 mb-2">
-                                                <span class="fw-medium">{{ "Codecanyon Username" }}</span>
+                                                <span class="fw-medium">{{ "Codecanyon Username" }} <span class="text-danger">*</span></span>
                                                 <span class="cursor-pointer" data-bs-toggle="tooltip"
                                                       data-bs-placement="top" data-bs-custom-class="custom-tooltip"
                                                       data-bs-html="true"
@@ -35,7 +51,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="from-group">
-                                            <label for="purchase_key" class="mb-2">{{ "Purchase Code" }}</label>
+                                            <label for="purchase_key" class="mb-2">{{ "Purchase Code" }} <span class="text-danger">*</span></label>
                                             <input type="text" id="purchase_key" class="form-control"
                                                    name="purchase_key" value="{{ env('PURCHASE_CODE')??'' }}"
                                                    placeholder="{{ "Ex: 19xxxxxx-ca5c-49c2-83f6-696a738b0000" }}"

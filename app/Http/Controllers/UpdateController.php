@@ -31,7 +31,14 @@ class UpdateController extends Controller
 
     public function update_software_index()
     {
-        return view('update.update-software');
+        $permission = Helpers::system_permission_check();
+
+        $phpVersion = number_format((float)phpversion(), 2, '.', '');
+        $buyerUsername = env('BUYER_USERNAME');
+        $purchaseCode = env('PURCHASE_CODE');
+        $fileChecks = Helpers::system_file_checks();
+
+        return view('update.update-software', compact('permission', 'phpVersion', 'buyerUsername', 'purchaseCode', 'fileChecks'));
     }
 
     public function update_software(Request $request)
@@ -44,10 +51,25 @@ class UpdateController extends Controller
         Helpers::setEnvironmentValue('BUYER_USERNAME', $request['username']);
         Helpers::setEnvironmentValue('PURCHASE_CODE', $request['purchase_key']);
         Helpers::setEnvironmentValue('APP_MODE', 'live');
-        Helpers::setEnvironmentValue('SOFTWARE_VERSION', '3.7');
+        Helpers::setEnvironmentValue('SOFTWARE_VERSION', '4.1');
         Helpers::setEnvironmentValue('REACT_APP_KEY', '45370351');
         Helpers::setEnvironmentValue('APP_NAME', '6amMart' . time());
 
+        $hostDomain = parse_url(env('APP_URL', ''), PHP_URL_HOST) ?: '';
+        if (!env('APP_HOST_DOMAIN') && $hostDomain !== '') {
+            Helpers::setEnvironmentValue('APP_HOST_DOMAIN', $hostDomain);
+        }
+        if (!env('APP_HOST_BASE_DOMAIN') && $hostDomain !== '') {
+            Helpers::setEnvironmentValue('APP_HOST_BASE_DOMAIN', Helpers::host_base_domain($hostDomain));
+        }
+
+        if (!env('APP_PUBLIC_IP')) {
+            $publicIp = $request->server('SERVER_ADDR')
+                ?: (filter_var($hostDomain, FILTER_VALIDATE_IP) ? $hostDomain : '');
+            if ($publicIp !== '') {
+                Helpers::setEnvironmentValue('APP_PUBLIC_IP', $publicIp);
+            }
+        }
 
         // version_2.11.1
         Artisan::call('cache:table');
@@ -503,13 +525,13 @@ class UpdateController extends Controller
     {
         $config = Helpers::get_business_settings('fcm_credentials');
 
-        $apiKey = $config['apiKey'] ?? '';
-        $authDomain = $config['authDomain'] ?? '';
-        $projectId = $config['projectId'] ?? '';
-        $storageBucket = $config['storageBucket'] ?? '';
+        $apiKey            = $config['apiKey'] ?? '';
+        $authDomain        = $config['authDomain'] ?? '';
+        $projectId         = $config['projectId'] ?? '';
+        $storageBucket     = $config['storageBucket'] ?? '';
         $messagingSenderId = $config['messagingSenderId'] ?? '';
-        $appId = $config['appId'] ?? '';
-        $measurementId = $config['measurementId'] ?? '';
+        $appId             = $config['appId'] ?? '';
+        $measurementId     = $config['measurementId'] ?? '';
 
         $filePath = base_path('firebase-messaging-sw.js');
 
@@ -520,9 +542,12 @@ class UpdateController extends Controller
                 }
             }
 
+            // Modern compat SDK (10.x) with onBackgroundMessage + click
+            // routing. Single SW shared by host's legacy push paths and
+            // Builder storefront customers.
             $fileContent = <<<JS
-                importScripts('https://www.gstatic.com/firebasejs/8.3.2/firebase-app.js');
-                importScripts('https://www.gstatic.com/firebasejs/8.3.2/firebase-messaging.js');
+                importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js");
+                importScripts("https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js");
 
                 firebase.initializeApp({
                     apiKey: "$apiKey",
@@ -535,12 +560,49 @@ class UpdateController extends Controller
                 });
 
                 const messaging = firebase.messaging();
-                messaging.setBackgroundMessageHandler(function (payload) {
-                    return self.registration.showNotification(payload.data.title, {
-                        body: payload.data.body ? payload.data.body : '',
-                        icon: payload.data.icon ? payload.data.icon : ''
+
+                messaging.onBackgroundMessage((payload) => {
+                    const data = payload.data || {};
+                    const title = data.title || (payload.notification && payload.notification.title) || "Notification";
+                    const body  = data.body  || (payload.notification && payload.notification.body)  || "";
+                    const image = data.image || (payload.notification && payload.notification.image) || undefined;
+
+                    self.registration.showNotification(title, {
+                        body,
+                        icon: image,
+                        data,
                     });
                 });
+
+                self.addEventListener("notificationclick", (event) => {
+                    event.notification.close();
+                    const data = event.notification.data || {};
+                    const url = resolveTargetUrl(data);
+
+                    event.waitUntil(
+                        self.clients
+                            .matchAll({ type: "window", includeUncontrolled: true })
+                            .then((windowClients) => {
+                                const existing = windowClients.find((c) => c.url.startsWith(self.location.origin));
+                                if (existing) {
+                                    existing.focus();
+                                    return existing.navigate(url);
+                                }
+                                return self.clients.openWindow(url);
+                            }),
+                    );
+                });
+
+                function resolveTargetUrl(data) {
+                    const base = self.location.origin;
+                    if (data && data.type === "order_status" && data.order_id) {
+                        return base + "/profile?page=orders&orderId=" + encodeURIComponent(data.order_id);
+                    }
+                    if (data && data.type === "message") {
+                        return base + "/profile?page=inbox";
+                    }
+                    return base + "/";
+                }
                 JS;
 
 

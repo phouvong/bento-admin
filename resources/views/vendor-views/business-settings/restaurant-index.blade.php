@@ -1,14 +1,19 @@
+@php
+    // Service providers are "Providers", not "Stores".
+    $isServiceStore = ($store->module_type ?? $store->module?->module_type) === 'service' && service_addon_active();
+@endphp
 @extends('layouts.vendor.app')
 
 @section('title', translate('messages.settings'))
 
 @push('css_or_js')
 <link rel="stylesheet" href="{{asset('public/assets/admin/css/custom.css')}}">
-<link rel="stylesheet" href="{{asset('public/assets/admin/css/upload-single-image.css')}}">
+
 @endpush
 
 
 @section('content')
+ 
     <div class="content container-fluid config-inline-remove-class">
         <!-- Page Heading -->
         <div class="page-header">
@@ -17,7 +22,7 @@
                     <img src="{{ asset('public/assets/admin/img/config.png') }}" class="w--30" alt="">
                 </span>
                 <span>
-                    {{ translate('messages.store_setup') }}
+                    {{ $isServiceStore ? translate('messages.Provider Setup') : translate('messages.store_setup') }}
                 </span>
             </h1>
         </div>
@@ -27,7 +32,7 @@
                 <div class="d-flex flex-row justify-content-between align-items-center">
                     <h4 class="card-title align-items-center d-flex">
                         <img src="{{ asset('public/assets/admin/img/store.png') }}" class="w--20 mr-1" alt="">
-                        <span>{{ translate('messages.store_temporarily_closed_title') }}</span>
+                        <span>{{ $isServiceStore ? translate('messages.Provider Temporarily Closed') : translate('messages.store_temporarily_closed_title') }}</span>
                     </h4>
                     <label class="switch toggle-switch-lg m-0" for="restaurant-open-status">
                         <input type="checkbox" id="restaurant-open-status"
@@ -41,6 +46,146 @@
         </div>
 
 
+        {{-- Provider Settings — service module only. Mirrors the provider-relevant fields from
+             the admin provider settings page (admin/service/provider/details/{id}/settings).
+             Toggles reuse the existing vendor toggle-settings route; the service-location and
+             serviceman-permission controls reflect the current StoreConfig state. --}}
+        @if ($isServiceStore)
+            @php
+                $providerConfig = $store->storeConfig;
+                $instantBookingEnabled = service_setting_enabled('service_instant_booking');
+                $repeatBookingEnabled = service_setting_enabled('service_repeat_booking');
+                $scheduleBookingEnabled = service_setting_enabled('service_schedule_booking');
+                $atProviderPlaceEnabled = service_setting_enabled('service_at_provider_place');
+                $servicemanCancelEnabled = service_setting_enabled('service_serviceman_cancel_booking_req');
+                $chosenLocations = $providerConfig?->choose_service_location ?: ['customer'];
+            @endphp
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <span class="card-header-icon">
+                            <i class="tio-settings-outlined"></i>
+                        </span>
+                        <span>
+                            {{ translate('messages.Provider Settings') }}
+                        </span>
+                    </h5>
+                </div>
+                <form action="{{ route('vendor.service.business.provider-settings.update') }}" method="post">
+                    @csrf
+                    <div class="card-body">
+                        <div class="row g-3">
+                            @if ($instantBookingEnabled)
+                                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+                                    <label
+                                        class="toggle-switch toggle-switch-sm d-flex justify-content-between border border-secondary rounded px-4 form-control"
+                                        for="instant_booking">
+                                        <span class="pr-2">{{ translate('messages.Instant Booking') }}</span>
+                                        <input type="checkbox" class="toggle-switch-input" name="instant_booking" value="1"
+                                            id="instant_booking" {{ $providerConfig?->instant_booking ? 'checked' : '' }}>
+                                        <span class="toggle-switch-label">
+                                            <span class="toggle-switch-indicator"></span>
+                                        </span>
+                                    </label>
+                                </div>
+                            @endif
+                            @if ($repeatBookingEnabled)
+                                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+                                    <label
+                                        class="toggle-switch toggle-switch-sm d-flex justify-content-between border border-secondary rounded px-4 form-control"
+                                        for="repeat_booking">
+                                        <span class="pr-2">{{ translate('messages.Repeat Booking') }}</span>
+                                        <input type="checkbox" class="toggle-switch-input" name="repeat_booking" value="1"
+                                            id="repeat_booking" {{ $providerConfig?->repeat_booking ? 'checked' : '' }}>
+                                        <span class="toggle-switch-label">
+                                            <span class="toggle-switch-indicator"></span>
+                                        </span>
+                                    </label>
+                                </div>
+                            @endif
+                            @if ($scheduleBookingEnabled)
+                                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-6 col-12">
+                                    <label
+                                        class="toggle-switch toggle-switch-sm d-flex justify-content-between border border-secondary rounded px-4 form-control"
+                                        for="schedule_booking">
+                                        <span class="pr-2">{{ translate('messages.Schedule Booking') }}</span>
+                                        <input type="checkbox" class="toggle-switch-input" name="schedule_booking" value="1"
+                                            id="schedule_booking" {{ $providerConfig?->schedule_booking ? 'checked' : '' }}>
+                                        <span class="toggle-switch-label">
+                                            <span class="toggle-switch-indicator"></span>
+                                        </span>
+                                    </label>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="card-body pt-0">
+                        <div class="bg-light rounded p-3">
+                        <input type="hidden" name="choose_service_location_present" value="1">
+                        <div class="row g-3 align-items-center">
+                            <div class="col-lg-5 col-xl-6">
+                                <h5 class="mb-1 font-weight-bold text-dark">{{ translate('messages.Choose Your Service Location') }}</h5>
+                                <p class="fs-12 mb-0 text-muted">{{ translate('messages.Select the option where you want to provide your service') }}</p>
+                            </div>
+                            <div class="col-lg-7 col-xl-6">
+                                <div class="border rounded bg-white px-3 py-2">
+                                    <div class="row g-2">
+                                        <div class="col-12 col-sm-6">
+                                            <label class="custom_checkbox d-flex align-items-center m-0 py-1">
+                                                <input type="checkbox" class="service-location-option" name="choose_service_location[]" value="customer"
+                                                    {{ in_array('customer', $chosenLocations) ? 'checked' : '' }}>
+                                                <span class="label-text text-dark">{{ translate('messages.Go to Customer Location') }}</span>
+                                            </label>
+                                        </div>
+                                        @if ($atProviderPlaceEnabled)
+                                            <div class="col-12 col-sm-6">
+                                                <label class="custom_checkbox d-flex align-items-center m-0 py-1">
+                                                    <input type="checkbox" class="service-location-option" name="choose_service_location[]" value="provider"
+                                                        {{ in_array('provider', $chosenLocations) ? 'checked' : '' }}>
+                                                    <span class="label-text text-dark">{{ translate('messages.Customer Will Come to My Location') }}</span>
+                                                </label>
+                                            </div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @if ($servicemanCancelEnabled)
+                        <div class="bg-light rounded p-3 mt-3">
+                            <input type="hidden" name="serviceman_permission_present" value="1">
+                            <div class="row g-3 align-items-center">
+                                <div class="col-lg-5 col-xl-6">
+                                    <h5 class="mb-1 font-weight-bold text-dark">{{ translate('messages.Servicemen Permission') }}</h5>
+                                    <p class="fs-12 mb-0 text-muted">{{ translate('messages.Manage what this providers servicemen are allowed to do') }}</p>
+                                </div>
+                                <div class="col-lg-7 col-xl-6">
+                                    <div class="border rounded bg-white px-3 py-2">
+                                        <div class="row g-2">
+                                            <div class="col-12 col-sm-6">
+                                                <label class="custom_checkbox d-flex align-items-center m-0 py-1">
+                                                    <input type="checkbox" name="serviceman_can_cancel_booking" value="1"
+                                                        {{ $providerConfig?->serviceman_can_cancel_booking ? 'checked' : '' }}>
+                                                    <span class="label-text text-dark">{{ translate('messages.Can Cancel Booking') }}</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                    <div class="btn--container mt-3 justify-content-end">
+                        <button type="reset" class="btn btn--reset">{{ translate('messages.reset') }}</button>
+                        <button type="submit" class="btn btn--primary">{{ translate('messages.update') }}</button>
+                    </div>
+                </div>
+                </form>
+            </div>
+        @endif
+        {{-- Service providers get their own provider settings block above; the generic
+             store settings/basic settings toggles are hidden for the service module. --}}
+        @if (!$isServiceStore)
         <div class="card mb-3">
             <div class="card-header">
                 <h5 class="card-title">
@@ -240,6 +385,8 @@
                 </div>
             </form>
         </div>
+        @endif
+        @if (!$isServiceStore)
         <div class="card mb-3">
             <div class="card-header">
                 <h5 class="card-title">
@@ -263,10 +410,10 @@
                                     class="input-label-secondary" data-toggle="tooltip" data-placement="right"
                                     data-original-title="{{ translate('Specify_the_minimum_order_amount_required_for_customers_when_ordering_from_this_store.') }}"><img
                                         src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
-                                        alt="{{ translate('messages.self_delivery_hint') }}"></span></label>
-                            <input type="number" id="minimum_order" name="minimum_order" step="0.01" min="0"
-                                max="999999999" class="form-control" placeholder="100"
-                                value="{{ $store->minimum_order > 0 ? $store->minimum_order : '' }}">
+                                        alt="{{ translate('messages.self_delivery_hint') }}"></span> <span class="text-danger">*</span></label>
+                            <input type="number" id="minimum_order" name="minimum_order" step="0.01" min="1"
+                                max="999999999" class="form-control" placeholder="100" required
+                                value="{{ $store->minimum_order > 0 ? $store->minimum_order : 0 }}">
                         </div>
                         @if (config('module.' . $store->module->module_type)['order_place_to_schedule_interval'])
                             <div class=" col-md-4">
@@ -287,7 +434,7 @@
                                     class="input-label-secondary" data-toggle="tooltip" data-placement="right"
                                     data-original-title="{{ translate('Set_the_total_time_to_deliver_products.') }}"><img
                                         src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
-                                        alt="{{ translate('Set_the_total_time_to_deliver_products.') }}"></span></label>
+                                        alt="{{ translate('Set_the_total_time_to_deliver_products.') }}"></span> <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <input type="number" id="minimum_delivery_time" name="minimum_delivery_time"
                                     class="form-control" placeholder="Min: 10"
@@ -352,25 +499,6 @@
                             </div>
                         @endif
 
-                        @if ($store->module->module_type != 'food')
-                            <div class="col-sm-4 col-12">
-                                <div class="">
-                                    <label class="input-label text-capitalize"
-                                        for="minimum_stock_for_warning">{{ translate('messages.Minimum_stock_for_warning') }}
-                                        <span data-toggle="tooltip" data-placement="right"
-                                            data-original-title="{{ translate('When_the_stock_of_a_product_reaches_its_minimum_value_that_you_have_set,_you_will_receive_a_warning_to_update_the_stock._Additionally,_these_products_will_appear_in_the_Admin’s_Low_Stock_list.') }}"
-                                            class="input-label-secondary"><img
-                                                src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
-                                                alt="{{ translate('messages.Minimum_stock_for_warning') }}"></span>
-                                    </label>
-                                    <input type="number" id="minimum_stock_for_warning" name="minimum_stock_for_warning"
-                                        min="0" max="999999999" class="form-control"
-                                        placeholder="{{ translate('messages.Ex: 5') }}"
-                                        value="{{ $store?->storeConfig?->minimum_stock_for_warning ?? '' }}">
-                                </div>
-                            </div>
-                        @endif
-
                         <div class="col-sm-{{ $store->module->module_type != 'food' ? '4' : '6' }} col-12">
                             <div class="">
                                 <label class="d-flex justify-content-between switch toggle-switch-sm text-dark"
@@ -393,7 +521,7 @@
 
                         @php($extra_packaging_data = \App\Models\BusinessSetting::where('key', 'extra_packaging_data')->first()?->value ?? '')
                         @php($extra_packaging_data = json_decode($extra_packaging_data, true))
-                        @if (!empty($extra_packaging_data) && $extra_packaging_data[$store->module->module_type] == '1')
+                        @if (!empty($extra_packaging_data) && ($extra_packaging_data[$store->module->module_type] ?? '0') == '1')
                             <div class="col-sm-{{ $store->module->module_type != 'food' ? '4' : '6' }}">
                                 <div class="">
                                     <label class="d-flex justify-content-between switch toggle-switch-sm text-dark"
@@ -438,13 +566,126 @@
                 </form>
             </div>
         </div>
-        <div class="card mb-3">
+        @endif
+        {{-- Stock Setup is not applicable to service providers. --}}
+        @if (!$isServiceStore && $store->module->module_type != 'food')
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5 class="card-title">
+                        <span class="card-header-icon">
+                            <i class="tio-apps"></i>
+                        </span>
+                        <span>{{ translate('messages.Stock_Setup') }}</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('vendor.business-settings.update-stock-setup', [$store['id']]) }}" method="post">
+                        @csrf
+                        <div class="row align-items-end g-3">
+                            <div class="col-md-4">
+                                <div class="">
+                                    <label class="toggle-switch toggle-switch-sm d-flex justify-content-between border border-secondary rounded px-4 form-control"
+                                        for="show_low_stock_count">
+                                        <span class="pr-2">{{ translate('messages.Show_Low_Stock_Count') }}
+                                            <span class="form-label-secondary" data-toggle="tooltip" data-placement="right"
+                                                data-original-title="{{ translate('messages.If_enabled_low_stock_count_and_warning_products_will_be_visible_to_customer.') }}"><img
+                                                    src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
+                                                    alt="{{ translate('messages.Show_Low_Stock_Count') }}"></span>
+                                        </span>
+                                        <input type="checkbox" class="toggle-switch-input" name="show_low_stock_count"
+                                            id="show_low_stock_count" value="1"
+                                            {{ ($store?->storeConfig?->show_low_stock_count == 1) ? 'checked' : '' }}>
+                                        <span class="toggle-switch-label">
+                                            <span class="toggle-switch-indicator"></span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="input-label text-capitalize"
+                                    for="minimum_stock_for_warning_stock_card">{{ translate('messages.Minimum_stock_for_warning') }}
+                                    <span data-toggle="tooltip" data-placement="right"
+                                        data-original-title="{{ translate('When_the_stock_of_a_product_reaches_its_minimum_value_that_you_have_set,_you_will_receive_a_warning_to_update_the_stock._Additionally,_these_products_will_appear_in_the_Admin’s_Low_Stock_list.') }}"
+                                        class="input-label-secondary"><img
+                                            src="{{ asset('/public/assets/admin/img/info-circle.svg') }}"
+                                            alt="{{ translate('messages.Minimum_stock_for_warning') }}"></span>
+                                </label>
+                                <input type="number" id="minimum_stock_for_warning_stock_card" name="minimum_stock_for_warning"
+                                    min="0" max="999999999" class="form-control"
+                                    placeholder="{{ translate('messages.Ex: 5') }}"
+                                    value="{{ $store?->storeConfig?->minimum_stock_for_warning ?? '' }}">
+                            </div>
+                            <div class="col-12">
+                                <div class="btn--container mt-3 justify-content-end">
+                                    <button type="reset" class="btn btn--reset">{{ translate('messages.reset') }}</button>
+                                    <button type="submit" class="btn btn--primary">{{ translate('messages.update') }}</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
+        {{-- Website Builder is not offered to service providers. --}}
+        @if(!$isServiceStore && addon_published_status('Builder') && $admin_website_builder_status == 1)
+
+            <div class="card mt-3" id="admin_website_builder_section">
+                <div class="card-body">
+                    <div class="mb-20">
+                        <div class="row g-1 align-items-center">
+                            <div class="col-xxl-9 col-lg-8 col-md-7 col-sm-6">
+                                <div>
+                                    <h4 class="mb-1">
+                                        {{ translate('Vendor Website Builder') }}
+                                    </h4>
+                                    <p class="mb-0 fs-12">
+                                        {{ translate('Enable this option to allow vendors to set up and manage their own website.') }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="col-xxl-3 col-lg-4 col-md-5 col-sm-6">
+                                <div class="">
+                                    <div class="form-group mb-0">
+                                        <label
+                                            class="toggle-switch h--45px toggle-switch-sm d-flex justify-content-between border rounded px-3 py-0 form-control">
+                                            <span class="pr-1 d-flex align-items-center switch--label">
+                                                <span class="line--limit-1">
+                                                    {{translate('Status') }}
+                                                </span>
+                                            </span>
+                                            <input type="checkbox"
+                                                data-id="website_builder_status"
+                                                data-type="toggle"
+                                                data-image-on="{{ asset('/public/assets/admin/img/modal/store-reg-on.png') }}"
+                                                data-image-off="{{ asset('/public/assets/admin/img/modal/store-reg-off.png') }}"
+                                                data-title-on="<strong>{{translate('Are you sure to enable vendor Website setup?')}}</strong>"
+                                                data-title-off="<strong>{{translate('Are you sure to disable vendor Website setup?')}}</strong>"
+                                                data-text-on="<p>{{ translate('If enabled, vendors will have the freedom to create, edit, and manage their own websites independently.') }}</p>"
+                                                data-text-off="<p>{{ translate('If disabled, vendors will not be able to create or manage their own websites.') }}</p>"
+                                                class="status toggle-switch-input dynamic-checkbox"
+                                                value="1"
+                                                name="website_builder_status" id="website_builder_status"
+                                                {{ $store->storeConfig?->website_builder_status == 1?'checked':'' }}>
+                                            <span class="toggle-switch-label text">
+                                                <span class="toggle-switch-indicator"></span>
+                                            </span>
+                                                </label>
+                                                <form action="{{route('vendor.business-settings.website-builder-status',[$store->id,$store->storeConfig?->website_builder_status?0:1])}}"  method="get"  id="website_builder_status_form"></form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            @endif
+        <div class="card mb-3 mt-3">
             <div class="card-header">
                 <h5 class="card-title">
                     <span class="card-header-icon">
                         <img class="w--22" src="{{ asset('public/assets/admin/img/store.png') }}" alt="">
                     </span>
-                    <span class="p-md-1"> {{ translate('messages.store_meta_data') }}</span>
+                    <span class="p-md-1"> {{ $isServiceStore ? translate('messages.Provider Meta Data') : translate('messages.store_meta_data') }}</span>
                 </h5>
             </div>
             @php($language = \App\Models\BusinessSetting::where('key', 'language')->first())
@@ -518,7 +759,7 @@
 @endsection
 
 @push('script_2')
-    <script src="{{asset('public/assets/admin/js/upload-single-image.js')}}"></script>
+
     <script>
         "use strict";
 
@@ -637,6 +878,10 @@
                     $('#gst').attr('readonly', true);
                 }
             });
+
+            $("#show_low_stock_count").on('change', function() {
+                // Low stock count visibility is separate from warning threshold.
+            });
         });
 
         $('#exampleModal').on('show.bs.modal', function(event) {
@@ -692,6 +937,26 @@
                     $('#loading').hide();
                 },
             });
+        });
+
+        // Provider Settings guards (service module) — mirror the admin provider settings page.
+        // At least one of Instant / Schedule booking must stay enabled when both are available.
+        $(document).on('change', '#instant_booking, #schedule_booking', function() {
+            let $instant = $('#instant_booking');
+            let $schedule = $('#schedule_booking');
+            if ($instant.length && $schedule.length && !$instant.is(':checked') && !$schedule.is(':checked')) {
+                $(this).prop('checked', true); // revert the toggle just switched off
+                toastr.warning('{{ translate('At least one of Instant Booking or Schedule Booking must be enabled.') }}');
+            }
+        });
+
+        // Choose Service Location — at least one option must stay selected.
+        $(document).on('change', '.service-location-option', function() {
+            let $options = $('.service-location-option');
+            if ($options.filter(':checked').length === 0) {
+                $(this).prop('checked', true); // revert the option just unchecked
+                toastr.warning('{{ translate('At least one service location must be selected.') }}');
+            }
         });
     </script>
 @endpush

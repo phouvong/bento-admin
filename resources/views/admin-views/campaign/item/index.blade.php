@@ -52,7 +52,7 @@
                                 <span class="card-header-icon">
                                     <i class="tio-fastfood"></i>
                                 </span>
-                                <span>{{ translate('Item Info') }}</span>
+                                <span>{{ config('module.current_module_type') === 'service' ? translate('Service Info') : translate('Item Info') }}</span>
                             </h5>
                         </div>
                         <div class="card-body">
@@ -65,7 +65,7 @@
                                         (Default)
                                     </label>
                                     <input type="text" name="title[]" id="default_title" required
-                                        class="form-control" placeholder="{{ translate('messages.new_item') }}"
+                                        class="form-control" placeholder="{{ (config('module.current_module_type') === 'service' ? translate('messages.new_service') : translate('messages.new_item')) }}"
                                     >
                                 </div>
                                 <input type="hidden" name="lang[]" value="default">
@@ -84,7 +84,7 @@
                                                 ({{ strtoupper($lang) }})
                                             </label>
                                             <input type="text" name="title[]" id="{{ $lang }}_title"
-                                                class="form-control" placeholder="{{ translate('messages.new_item') }}">
+                                                class="form-control" placeholder="{{ (config('module.current_module_type') === 'service' ? translate('messages.new_service') : translate('messages.new_item')) }}">
                                         </div>
                                         <input type="hidden" name="lang[]" value="{{ $lang }}">
                                         <div class="form-group mb-0 error-wrapper">
@@ -100,7 +100,7 @@
                                         <label class="input-label"
                                             for="exampleFormControlInput1">{{ translate('messages.title') }} ({{ translate('messages.default') }})</label>
                                         <input type="text" name="title[]" class="form-control"
-                                            placeholder="{{ translate('messages.new_item') }}" >
+                                            placeholder="{{ (config('module.current_module_type') === 'service' ? translate('messages.new_service') : translate('messages.new_item')) }}" >
                                     </div>
                                     <input type="hidden" name="lang[]" value="default">
                                     <div class="form-group mb-0 error-wrapper">
@@ -120,16 +120,16 @@
                                 <span class="card-header-icon">
                                     <i class="tio-comment-image-outlined"></i>
                                 </span>
-                                <span>{{ translate('Item Image') }}</span>
+                                <span>{{ config('module.current_module_type') === 'service' ? translate('Service Image') : translate('Item Image') }}</span>
                             </h5>
                         </div>
                         <div class="error-wrapper">
                             <div class="card-body d-flex flex-column">
                                 <label>
-                                    {{translate('messages.item_image')}}
+                                    {{ config('module.current_module_type') === 'service' ? translate('messages.service_image') : translate('messages.item_image') }}
                                     <small class="text-danger">* ( {{translate('messages.ratio')}} 1:1 )</small>
                                 </label>
-    
+
                                 <div id="image-viewer-section" class="text-center py-3 my-auto">
                                     <img class="img--120" id="viewer"
                                             src="{{asset('public/assets/admin/img/100x100/2.png')}}" alt="banner image"/>
@@ -150,17 +150,17 @@
                                 <span class="card-header-icon">
                                     <i class="tio-dashboard-outlined"></i>
                                 </span>
-                                <span>{{ translate('Item Details') }}</span>
+                                <span>{{ config('module.current_module_type') === 'service' ? translate('Service Details') : translate('Item Details') }}</span>
                             </h5>
                         </div>
                         <div class="card-body">
                             <div class="row g-2">
                                 <div class="col-md-3 col-sm-6">
                                     <div class="form-group mb-0 error-wrapper">
-                                        <label class="input-label" for="exampleFormControlSelect1">{{translate('messages.store')}}<span
+                                        <label class="input-label" for="exampleFormControlSelect1">{{ config('module.current_module_type') === 'service' ? translate('messages.provider') : translate('messages.store') }}<span
                                                 class="input-label-secondary">*</span></label>
-                                        <select name="store_id" class="js-data-example-ajax form-control" id="store_id"  data-toggle="tooltip" data-placement="right" data-original-title="{{ translate('Select Store') }}" required>
-                                        <option selected disabled>{{ translate('Select Store') }}</option>
+                                        <select name="store_id" class="js-data-example-ajax form-control" id="store_id"  data-toggle="tooltip" data-placement="right" data-original-title="{{ config('module.current_module_type') === 'service' ? translate('Select Provider') : translate('Select Store') }}" required>
+                                        <option selected disabled>{{ config('module.current_module_type') === 'service' ? translate('Select Provider') : translate('Select Store') }}</option>
 
                                         </select>
                                     </div>
@@ -182,7 +182,7 @@
                                 <div class="col-md-3 col-sm-6" id="addon_input">
                                     <div class="form-group mb-0 error-wrapper">
                                         <label class="input-label" for="exampleFormControlSelect1">{{translate('messages.addon')}}<span
-                                                class="input-label-secondary" data-toggle="tooltip" data-placement="right" data-original-title="{{translate('messages.store_required_warning')}}"><img src="{{asset('/public/assets/admin/img/info-circle.svg')}}" alt="{{translate('messages.store_required_warning')}}"></span></label>
+                                                class="input-label-secondary" data-toggle="tooltip" data-placement="right" data-original-title="{{(config('module.current_module_type') === 'service' ? translate('messages.provider_required_warning') : translate('messages.store_required_warning'))}}"><img src="{{asset('/public/assets/admin/img/info-circle.svg')}}" alt="{{(config('module.current_module_type') === 'service' ? translate('messages.provider_required_warning') : translate('messages.store_required_warning'))}}"></span></label>
                                         <select name="addon_ids[]" id="add_on" class="form-control js-select2-custom" multiple="multiple">
 
                                         </select>
@@ -300,7 +300,7 @@
                                     <div class="form-group mb-0 error-wrapper">
                                         <label class="input-label" for="exampleFormControlInput1">{{translate('messages.discount_type')}}<span class="input-label-secondary text--title" data-toggle="tooltip"
                                             data-placement="right"
-                                            data-original-title="{{ translate('Currently you need to manage discount with store.') }}">
+                                            data-original-title="{{ config('module.current_module_type') === 'service' ? translate('Currently you need to manage discount with provider.') : translate('Currently you need to manage discount with store.') }}">
                                             <i class="tio-info-outined"></i>
                                         </span></label>
                                         <select name="discount_type" class="form-control js-select2-custom">
@@ -479,6 +479,19 @@
     <script src="{{asset('public/assets/admin')}}/js/tags-input.min.js"></script>
     <script>
         "use strict";
+        $(document).ready(function(){
+            $('#date_from').attr('min',(new Date()).toISOString().split('T')[0]);
+            $('#date_to').attr('min',(new Date()).toISOString().split('T')[0]);
+        });
+
+        $("#date_from").on("change", function () {
+            $('#date_to').attr('min',$(this).val());
+        });
+
+        $("#date_to").on("change", function () {
+            $('#date_from').attr('max',$(this).val());
+        });
+        
         let module_data = "";
         let module_type = "";
         let element = "";
@@ -487,9 +500,20 @@
             $('#food_variation_section').hide();
         });
 
-        $('#choice_attributes').on('change', function () {
+
+        $('#choice_attributes').on('change', function() {
+
             $('#customer_choice_options').html(null);
-            $.each($("#choice_attributes option:selected"), function () {
+            $('#variant_combination').html(null);
+            $.each($("#choice_attributes option:selected"), function() {
+                if ($(this).val().length > 50) {
+                    toastr.error(
+                        '{{ translate('validation.max.string', ['attribute' => translate('messages.variation'), 'max' => '50']) }}', {
+                            CloseButton: true,
+                            ProgressBar: true
+                        });
+                    return false;
+                }
                 add_more_customer_choice_option($(this).val(), $(this).text());
             });
         });
@@ -664,7 +688,7 @@
 
         $('#store_id').select2({
             ajax: {
-                url: '{{url('/')}}/admin/store/get-stores',
+                url: '{{ route('admin.store.get-stores') }}',
                 data: function (params) {
                     return {
                         q: params.term, // search term

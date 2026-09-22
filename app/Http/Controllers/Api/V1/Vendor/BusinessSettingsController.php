@@ -48,7 +48,19 @@ class BusinessSettingsController extends Controller
 
         $store->save();
 
+        $defaultLang = Helpers::system_default_language();
+
         foreach ($data_trans as $key => $i) {
+            if (($i['locale'] ?? null) === $defaultLang) {
+                Translation::where('translationable_type', 'App\Models\Store')
+                    ->where('translationable_id', $store->id)
+                    ->where('locale', $i['locale'])
+                    ->where('key', $i['key'])
+                    ->delete();
+
+                continue;
+            }
+
             Translation::updateOrInsert(
                 ['translationable_type' => 'App\Models\Store',
                 'translationable_id' => $store->id,
@@ -144,7 +156,8 @@ class BusinessSettingsController extends Controller
         $conf->halal_tag_status = $request->halal_tag_status ?? 0;
         $conf->extra_packaging_status = $request->extra_packaging_status ?? 0;
         $conf->extra_packaging_amount = $request->extra_packaging_amount;
-        $conf->minimum_stock_for_warning = $request->minimum_stock_for_warning ?? 0;
+        $conf->minimum_stock_for_warning = $request->minimum_stock_for_warning ?? ($conf->minimum_stock_for_warning ?? 0);
+        $conf->show_low_stock_count = $request->show_low_stock_count ?? ($conf->show_low_stock_count ?? 1);
         $conf->save();
 
         return response()->json(['message'=>translate('messages.store_settings_updated')], 200);

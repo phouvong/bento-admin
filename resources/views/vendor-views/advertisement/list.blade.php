@@ -45,7 +45,7 @@ active
             </div>
             <hr>
             <div class="max-w-471 mx-auto fs-12 py-4">
-                {{ translate('By') }} <strong>{{ translate('Creating Advertisement') }}</strong> {{ translate('you can showcase your items or store to a wider audience through targeted ad campaigns.') }}
+                {{ translate('By') }} <strong>{{ translate('Creating Advertisement') }}</strong> {{ translate('you can showcase your') }} {{ strtolower(\App\CentralLogics\Helpers::moduleItemLabel()) }}s {{ translate('or') }} {{ strtolower(\App\CentralLogics\Helpers::moduleStoreLabel()) }} {{ translate('to a wider audience through targeted ad campaigns.') }}
             </div>
         </div>
     </div>
@@ -60,7 +60,7 @@ active
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="page-header-title d-flex align-items-center gap-2">
             <img src="{{asset('public/assets/admin/img/advertisement.png')}}" alt="">
-            {{ translate('messages.Ads_list') }}
+            {{ request()?->type == 'pending' ? translate('messages.Ads_pending_list') : translate('messages.Ads_list') }}
             <span class="badge badge-soft-dark ml-2">{{ $adds->total() }}</span>
         </h1>
         <a href="{{ route('vendor.advertisement.create') }}" class="btn btn-primary">  <i class="tio-add"></i> {{ translate('New Advertisement') }}</a>

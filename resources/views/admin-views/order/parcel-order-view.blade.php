@@ -279,8 +279,22 @@
                                         </div>
 
                                         <div class="col col-md-3 align-self-center text-right">
-                                            <h6>{{ translate('messages.delivery_charge') }}</h6>
-                                            <span>{{ \App\CentralLogics\Helpers::format_currency($order['delivery_charge']) }}</span>
+                                            <h6 class="d-flex align-items-center justify-content-end __gap-5px">
+                                                {{ translate('messages.Delivery_Charge') }}
+                                                @if (
+                                                    $order->orderProDiscount &&
+                                                        $order->orderProDiscount->benefit_type === 'delivery_fee' &&
+                                                        ($order->orderProDiscount->delivery_fee_reduction_amount ?? 0) > 0)
+                                                    @if ($order->orderProDiscount->delivery_offer_type === 'full_free')
+                                                        <i class="tio-info-outined" data-toggle="tooltip"
+                                                            title="{{ translate('messages.Pro_Customer_free_delivery_applied') }}"></i>
+                                                    @else
+                                                        <i class="tio-info-outined" data-toggle="tooltip"
+                                                            title="{{ translate('messages.Pro_Customer_partial_delivery_discount_applied') }} ({{ (float) ($order->orderProDiscount->delivery_charge_discount_percentage ?? 0) }}%)"></i>
+                                                    @endif
+                                                @endif
+                                            </h6>
+                                            <span>{{ \App\CentralLogics\Helpers::format_currency(\App\CentralLogics\DeliveryFeeLogic::proDeliveryBreakdown($order)['original_fee']) }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -294,6 +308,8 @@
                             <div class="col-12">
                                 <dl class="row text-right px-3">
 
+                                    @include('partials.pro-delivery-discount-row', ['order' => $order, 'layout' => 'dl', 'dtClass' => 'col-sm-8 p-0 font-regular', 'ddClass' => 'col-sm-4 p-0 text-right'])
+
                                     @if (($order->tax_status == 'excluded' && $order['total_tax_amount'] > 0) || $order->tax_status == null)
                                         <dt class="col-6 col-sm-8 p-0 font-regular">{{ translate('messages.vat/tax') }}:
                                         </dt>
@@ -305,7 +321,7 @@
                                     @endif
 
                                     <dt class="col-6 col-sm-8 p-0 font-regular">
-                                        {{ translate('messages.delivery_man_tips') }}
+                                        {{ translate('messages.Delivery_Man_Tips') }}
                                     </dt>
                                     <dd class="col-6 col-sm-4 p-0">
                                         + {{ \App\CentralLogics\Helpers::format_currency($order['dm_tips']) }}</dd>
@@ -694,7 +710,7 @@
                                     @endif
                                 @endif
                             @endif
-                            
+
                         @endif
                     </div>
                 </div>
@@ -863,11 +879,12 @@
 
                             <a class="media align-items-center deco-none customer--information-single __bg-FAFAFA rounded p-10px mb-10px"
                                 href="{{ route('admin.users.customer.view', [$order->customer['id']]) }}">
-                                <div class="avatar avatar-circle">
-                                    <img class="avatar-img onerror-image"
-                                        data-onerror-image="{{ asset('public/assets/admin/img/160x160/img1.jpg') }}"
-                                        src="{{ $order->customer->image_full_url }}" alt="Image Description">
-                                </div>
+                                @include('partials._user-avatar', [
+                                    'imageUrl'  => $order->customer->image_full_url,
+                                    'proStatus' => true,
+                                    'badgeSize' => 14,
+                                    'size'      => 42,
+                                ])
                                 <div class="media-body">
                                     <span class="fz--14px text--title font-semibold text-hover-primary d-block">
                                         {{ $order->customer['f_name'] . ' ' . $order->customer['l_name'] }}
@@ -1456,7 +1473,7 @@
                                                 <div class="d-flex align-items-center gap-2">
                                                     <span class="customer-namekey">{{ translate('Name') }}</span>:
                                                     <span class="text-dark"> <a class="text-dark text text-capitalize"
-                                                            href="{{ route('admin.customer.view', [$order['user_id']]) }}">
+                                                            href="{{ route('admin.users.customer.view', [$order['user_id']]) }}">
                                                             {{ $order->customer['f_name'] . ' ' . $order->customer['l_name'] }}
                                                         </a> </span>
                                                 </div>

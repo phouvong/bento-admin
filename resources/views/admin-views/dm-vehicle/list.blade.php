@@ -38,7 +38,7 @@
                                 </div>
                                 <!-- End Search -->
                             </form>
-                            @if(request()->get('search'))
+                            @if(request()->input('search'))
                             <button type="reset" class="btn btn--primary ml-2 location-reload-to-base" data-url="{{url()->full()}}">{{translate('messages.reset')}}</button>
                             @endif
 
@@ -51,7 +51,8 @@
                                data-hs-datatables-options='{
                                  "order": [],
                                  "orderCellsTop": true,
-                                 "paging":false
+                                 "paging":false,
+                                 "columnDefs":[{"targets":[8],"orderable":false}]
                                }'>
                             <thead class="thead-light">
                             <tr>
@@ -92,7 +93,7 @@
                                          {{ \App\CentralLogics\Helpers::format_currency($vehicle->extra_charges) }}
                                         </span>
                                     </td>
-                                    <td>
+                                    <td data-order="{{ $vehicle->status?1:0 }}">
                                         <label class="toggle-switch toggle-switch-sm" for="stocksCheckbox{{$vehicle->id}}">
                                             <input type="checkbox"
                                             data-id="statusCheckbox{{$vehicle->id}}"

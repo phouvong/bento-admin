@@ -247,7 +247,7 @@
                     @foreach($data_values->sortByDesc('is_active') as $payment_key => $payment)
                         <div class="col-md-6 payment-card">
                             <div class="card">
-                                <form action="{{env('APP_MODE')!='demo'?route('admin.business-settings.third-party.payment-method-update',['payment_method_status' => $payment->key_name]):'javascript:'}}" method="POST"
+                                <form action="{{getEnvMode()!='demo'?route('admin.business-settings.third-party.payment-method-update',['payment_method_status' => $payment->key_name]):'javascript:'}}" method="POST"
                                       id="{{$payment->key_name}}_form" enctype="multipart/form-data">
                                     @csrf
                                     @php($mode=$data_values->where('key_name',$payment->key_name)->first()->live_values['mode'])
@@ -291,7 +291,7 @@
                                 </form>
 
                                     <div id="payment_setup_{{$payment->key_name}}" class="custom-offcanvas d-flex flex-column justify-content-between">
-                                        <form action="{{env('APP_MODE')!='demo'?route('admin.business-settings.third-party.payment-method-update'):'javascript:'}}" method="POST" enctype="multipart/form-data">
+                                        <form action="{{getEnvMode()!='demo'?route('admin.business-settings.third-party.payment-method-update'):'javascript:'}}" method="POST" enctype="multipart/form-data">
                                             @csrf
                                             <input type="hidden" name="gateway" value="{{$payment->key_name}}">
                                             

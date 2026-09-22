@@ -27,9 +27,9 @@ class AccountTransactionController extends Controller
      */
     public function index(Request $request)
     {
-        $key = isset($request['search']) ? explode(' ', $request['search']) : [];
+        $key = isset($request['search']) ? explode(' ', $request['search'] ?? '') : [];
         $account_transaction = AccountTransaction::
-        when(isset($key), function ($query) use ($key) {
+        when(isset($request['search']), function ($query) use ($key) {
             return $query->where(function ($q) use ($key) {
                 foreach ($key as $value) {
                     $q->orWhere('ref', 'like', "%{$value}%");
@@ -59,14 +59,15 @@ class AccountTransactionController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'type' => 'required|in:store,deliveryman',
+            'type' => 'required|in:store,deliveryman,rider',
             'method' => 'required',
             'store_id' => 'required_if:type,store',
             'deliveryman_id' => 'required_if:type,deliveryman',
+            'rider_id' => 'required_if:type,rider',
             'amount' => 'required|numeric',
         ]);
 
-        if ($request['store_id'] && $request['deliveryman_id']) {
+        if ($request['store_id'] && $request['deliveryman_id'] && $request['rider_id']) {
             $validator->getMessageBag()->add('from type', 'Can not select both deliveryman and store');
             return response()->json(['errors' => Helpers::error_processor($validator)]);
         }
@@ -81,6 +82,12 @@ class AccountTransactionController extends Controller
         else if($request['type']=='deliveryman' && $request['deliveryman_id'])
         {
             $data = DeliveryMan::findOrFail($request['deliveryman_id']);
+
+            $current_balance = $data->wallet?$data->wallet->collected_cash:0;
+        }
+        else if($request['type']=='rider' && $request['rider_id'])
+        {
+            $data = DeliveryMan::rider()->findOrFail($request['rider_id']);
 
             $current_balance = $data->wallet?$data->wallet->collected_cash:0;
         }
@@ -138,7 +145,7 @@ class AccountTransactionController extends Controller
 
 
             if($request['type']=='deliveryman' && $request['deliveryman_id'] && config('mail.status') &&  Helpers::get_mail_status('cash_collect_mail_status_dm') == '1'  &&  Helpers::getNotificationStatusData('deliveryman','deliveryman_collect_cash','mail_status')){
-                Mail::to($data?->getRawOriginal('email'))->send(new \App\Mail\CollectCashMail($account_transaction,$data['f_name']));
+                Mail::to($data?->getRawOriginal('email'))->send(new \App\Mail\CollectCashMail($account_transaction, $data));
             }
         } catch (\Throwable $th) {
 
@@ -195,9 +202,9 @@ class AccountTransactionController extends Controller
     }
 
     public function export_account_transaction(Request $request){
-        $key = isset($request['search']) ? explode(' ', $request['search']) : [];
+        $key = isset($request['search']) ? explode(' ', $request['search'] ?? '') : [];
         $account_transaction = AccountTransaction::
-        when(isset($key), function ($query) use ($key) {
+        when(isset($request['search']), function ($query) use ($key) {
             return $query->where(function ($q) use ($key) {
                 foreach ($key as $value) {
                     $q->orWhere('ref', 'like', "%{$value}%");
@@ -220,7 +227,7 @@ class AccountTransactionController extends Controller
     }
 
     public function search_account_transaction(Request $request){
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
         $account_transaction = AccountTransaction::where(function ($q) use ($key) {
             foreach ($key as $value) {
                 $q->orWhere('ref', 'like', "%{$value}%");

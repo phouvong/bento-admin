@@ -43,7 +43,7 @@
                     <div class="select-item">
                         <select name="store_id" id="store" data-url="{{url()->full()}}" data-placeholder="{{translate('messages.select_store')}}" class="js-data-example-ajax form-control store-filter" required title="Select Store" oninvalid="this.setCustomValidity('{{translate('messages.please_select_store')}}')">
                             @if($store)
-                            <option value="{{$store->id}}" selected>{{$store->name}}</option>
+                            <option value="{{$store->id}}" data-verified="{{ (int) $store->verified_seller }}" selected>{{$store->name}}</option>
                             @else
                             <option value="all" selected>{{translate('messages.all_stores')}}</option>
                             @endif
@@ -52,7 +52,7 @@
                 </div>
 
                 <div class="col-sm-6 col-md-3">
-                    @if(!isset(auth('admin')->user()->zone_id))
+                    @if(!auth('admin')?->user()?->zone_id)
                         <div class="select-item">
                             <select name="zone_id" class="form-control js-select2-custom set-filter"
                                     data-url="{{url()->full()}}" data-filter="zone_id">
@@ -151,7 +151,7 @@
                         </div>
                         <!-- End Search -->
                     </form>
-                    @if(request()->get('search'))
+                    @if(request()->input('search'))
                     <button type="reset" class="btn btn--primary ml-2 location-reload-to-base" data-url="{{url()->full()}}">{{translate('messages.reset')}}</button>
                     @endif
                     <!-- Unfold -->
@@ -178,7 +178,7 @@
                                 <img class="avatar avatar-xss avatar-4by3 mr-2"
                                     src="{{ asset('public/assets/admin') }}/svg/components/placeholder-csv-format.svg"
                                     alt="Image Description">
-                                .{{ translate('messages.csv') }}
+                                {{ translate('messages.csv') }}
                             </a>
 
                         </div>
@@ -196,7 +196,7 @@
                 <table id="datatable" class="table table-borderless table-thead-bordered table-nowrap table-align-middle card-table"
                     data-hs-datatables-options='{
                         "columnDefs": [{
-                            "targets": [],
+                            "targets": [7,8],
                             "width": "5%",
                             "orderable": false
                         }],
@@ -402,7 +402,7 @@
 
         $('#store').select2({
             ajax: {
-                url: '{{url('/')}}/admin/store/get-stores',
+                url: '{{ route('admin.store.get-stores') }}',
                 data: function (params) {
                     return {
                         q: params.term, // search term

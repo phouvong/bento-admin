@@ -17,11 +17,8 @@
                         <div class="col-lg-4 col-md-6">
                             <label class="form-label">{{ translate('Date Range') }}</label>
                             <div class="position-relative">
-                                @php
-                                    $dataRange = Carbon\Carbon::parse($startDate)->format('m/d/Y') . ' - ' . Carbon\Carbon::parse($endDate)->format('m/d/Y');
-                                @endphp
                                 <i class="tio-calendar-month icon-absolute-on-right"></i>
-                                <input type="text" data-title="{{ translate('Select_Date_Range') }}" name="dates" value="{{ $dataRange  ?? null }}" class="date-range-picker form-control">
+                                <input type="text" data-title="{{ translate('Select_Date_Range') }}" name="dates" value="{{ $dateRange ?? null }}" class="date-range-picker form-control">
 
                             </div>
                         </div>
@@ -75,7 +72,7 @@
                 <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap mb-20">
                     <h4 class="mb-0">{{ translate('All Taxes') }}</h4>
                     <div class="search--button-wrapper justify-content-end">
-                        <div class="hs-unfold mr-2">
+                        <div class="hs-unfold mr-2 flex-grow-0">
                             <a class="js-hs-unfold-invoker btn btn-sm btn-white dropdown-toggle h--40px" href="javascript:;"
                                 data-hs-unfold-options='{
                             "target": "#usersExportDropdown", "type": "css-animation" }'>
@@ -94,7 +91,7 @@
                                     <img class="avatar avatar-xss avatar-4by3 mr-2"
                                         src="{{ asset('public/assets/admin') }}/svg/components/placeholder-csv-format.svg"
                                         alt="Image Description">
-                                    .{{ translate('messages.csv') }}
+                                    {{ translate('messages.csv') }}
                                 </a>
                             </div>
                         </div>
@@ -212,10 +209,21 @@
     <script>
         "use strict";
 
+        $(function() {
+            $('input[name="dates"]').daterangepicker({
+                startDate: moment('{{ $startDate }}'),
+                endDate: moment('{{ $endDate }}'),
+                maxDate: moment(),
+                locale: {
+                    format: 'MM/DD/YYYY'
+                }
+            });
+        });
+
         $(document).on('ready', function() {
             $('.js-data-example-ajax').select2({
                 ajax: {
-                    url: '{{ url('/') }}/admin/store/get-stores',
+                    url: '{{ route('admin.store.get-stores') }}',
                     data: function(params) {
                         return {
                             q: params.term, // search term

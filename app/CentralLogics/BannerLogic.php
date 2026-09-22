@@ -32,9 +32,12 @@ class BannerLogic
                 });
 
             if (config('module.current_module_data')) {
-                $banners = $banners->whereHas('zone.modules', function ($query) use ($moduleId) {
-                    $query->where('modules.id',$moduleId);
-                }) ->module($moduleId);
+                $banners = $banners->where(function ($query) use ($moduleId) {
+                    $query->whereNull('zone_id')
+                        ->orWhereHas('zone.modules', function ($query) use ($moduleId) {
+                            $query->where('modules.id', $moduleId);
+                        });
+                })->module($moduleId);
             }
 
                return  $banners = $banners->get();
@@ -71,16 +74,18 @@ class BannerLogic
                         });
                     })
                     ->find($banner->data);
-                $data[] = [
-                    'id' => $banner->id,
-                    'title' => $banner->title,
-                    'type' => $banner->type,
-                    'image' => $banner->image,
-                    'link' => null,
-                    'store' => null,
-                    'item' => $item ? Helpers::product_data_formatting($item, false, false, app()->getLocale()) : null,
-                    'image_full_url' => $banner->image_full_url
-                ];
+                if($item){
+                    $data[] = [
+                        'id' => $banner->id,
+                        'title' => $banner->title,
+                        'type' => $banner->type,
+                        'image' => $banner->image,
+                        'link' => null,
+                        'store' => null,
+                        'item' => $item ? Helpers::product_data_formatting($item, false, false, app()->getLocale()) : null,
+                        'image_full_url' => $banner->image_full_url
+                    ];
+                }
             }
             if ($banner->type == 'default') {
                 $data[] = [

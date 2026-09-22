@@ -2,35 +2,83 @@
 
 namespace App\CentralLogics;
 
-use App\Models\User;
-use App\Models\Admin;
-use App\Models\Order;
-use App\Models\Store;
-use App\Models\Vendor;
-use App\Models\AdminWallet;
-use App\Models\DeliveryMan;
-use App\Models\StoreWallet;
-use Illuminate\Support\Str;
-use App\Models\OrderPayment;
-use App\Models\BusinessSetting;
-use App\Models\OrderTransaction;
-use App\Models\DeliveryManWallet;
+use App\Mail\AddFundToWallet;
 use App\Models\AccountTransaction;
-use Illuminate\Support\Facades\DB;
-use App\CentralLogics\CustomerLogic;
-use App\Models\ParcelPenaltyFee;
+use App\Models\Admin;
+use App\Models\AdminWallet;
+use App\Models\BusinessSetting;
+use App\Models\DeliveryMan;
 use App\Models\DeliverymanReferralHistory;
-use App\Models\ParcelReturnFees;
+use App\Models\DeliveryManWallet;
+use App\Models\Order;
+use App\Models\OrderPayment;
+use App\Models\OrderTransaction;
 use App\Models\ParcelCancellation;
+use App\Models\ParcelPenaltyFee;
+use App\Models\ParcelReturnFees;
+use App\Models\Store;
+use App\Models\StoreWallet;
+use App\Models\User;
+use App\Models\Vendor;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Modules\Rental\Entities\PartialPayment;
 
 class OrderLogic
 {
     public static function gen_unique_id()
     {
-        return rand(1000, 9999) . '-' . Str::random(5) . '-' . time();
+        return rand(1000, 9999).'-'.Str::random(5).'-'.time();
+    }
+
+    public static function format_order_card($order, int $previewLimit = 3): array
+    {
+        $items = collect($order->details ?? [])
+            ->map(function ($detail) {
+                if (! $detail->item) {
+                    return null;
+                }
+
+                return [
+                    'id' => (int) $detail->item->id,
+                    'name' => $detail->item->name,
+                    'image_full_url' => $detail->item->image_full_url,
+                    'quantity' => (int) $detail->quantity,
+                ];
+            })
+            ->filter()
+            ->values();
+
+        $preview = $items->take(max(0, $previewLimit))->values();
+        $extra = max(0, $items->count() - $preview->count());
+
+        return [
+            'order_id' => (int) $order->id,
+            'module_id' => (int) $order->module_id,
+            'order_amount' => (float) $order->order_amount,
+            'created_at' => $order->created_at,
+            'store' => [
+                'id' => (int) ($order->store?->id ?? 0),
+                'module_id' => (int) ($order->store?->module_id ?? 0),
+                'name' => $order->store?->name,
+                'slug' => $order->store?->slug,
+                'logo_full_url' => $order->store?->logo_full_url,
+            ],
+            'items_preview' => $preview,
+            'extra_items_count' => $extra,
+            'item_count' => $items->count(),
+            'can_reorder' => $order->can_reorder,
+        ];
+    }
+
+    public static function format_order_cards($orders, int $previewLimit = 3): array
+    {
+        return collect($orders)
+            ->map(fn ($order) => self::format_order_card($order, $previewLimit))
+            ->values()
+            ->all();
     }
 
     public static function track_order($order_id)
@@ -42,6 +90,111 @@ class OrderLogic
     {
         return true;
     }
+
+    public static function get_original_admin_commission_details($order_transaction)
+    {
+        $order = $order_transaction?->order;
+
+        if (! $order) {
+            return [
+                'original_admin_commission' => 0,
+                'item_price_after_admin_commission' => 0,
+            ];
+        }
+        $totalItemAmount = (float) ($order->order_amount ?? 0)
+            - (float) ($order_transaction->additional_charge ?? 0)
+            - (float) ($order->dm_tips ?? 0)
+            - (float) ($order->delivery_charge ?? 0)
+            - (float) ($order_transaction->tax ?? 0)
+            - (float) ($order->extra_packaging_amount ?? 0)
+            + (float) ($order->coupon_discount_amount ?? 0)
+            + (float) ($order->store_discount_amount ?? 0)
+            + (float) ($order->ref_bonus_amount ?? 0)
+            + (float) ($order->flash_admin_discount_amount ?? 0)
+            + (float) ($order->flash_store_discount_amount ?? 0)
+            + (float) ($order->extra_discount_amount ?? 0);
+
+        $originalAdminCommission = (float) ($order_transaction->admin_commission ?? 0)
+            + (float) ($order_transaction->admin_expense ?? 0)
+            - (float) ($order_transaction->delivery_fee_comission ?? 0)
+            - (float) ($order_transaction->additional_charge ?? 0)
+            - (float) ($order->flash_admin_discount_amount ?? 0);
+
+        $itemPriceAfterAdminCommission = $totalItemAmount - $originalAdminCommission;
+
+        return [
+            'original_admin_commission' => $originalAdminCommission,
+            'item_price_after_admin_commission' => $itemPriceAfterAdminCommission,
+        ];
+    }
+
+    public static function admin_item_commission($order_transaction): float
+    {
+        $order = $order_transaction?->order;
+        if (! $order) {
+            return 0;
+        }
+
+        if ($order_transaction->is_subscribed) {
+            return 0;
+        }
+
+        $commission_percentage = (float) ($order_transaction->commission_percentage ?? 0);
+        if ($commission_percentage <= 0) {
+            return (float) ($order_transaction->admin_commission ?? 0)
+                + (float) ($order_transaction->admin_expense ?? 0)
+                - (float) ($order_transaction->delivery_fee_comission ?? 0)
+                - (float) ($order_transaction->additional_charge ?? 0)
+                - (float) ($order->flash_admin_discount_amount ?? 0);
+        }
+
+        $item_amount = (float) ($order->order_amount ?? 0)
+            - (float) ($order_transaction->additional_charge ?? 0)
+            - (float) ($order->dm_tips ?? 0)
+            - (float) DeliveryFeeLogic::adjustedFeeForOrder($order)['adjusted']
+            - (float) ($order_transaction->tax ?? 0)
+            + (float) ($order->coupon_discount_amount ?? 0)
+            + (float) ($order->store_discount_amount ?? 0)
+            + (float) ($order->flash_admin_discount_amount ?? 0)
+            + (float) ($order->flash_store_discount_amount ?? 0)
+            + (float) ($order->ref_bonus_amount ?? 0)
+            - (float) ($order->extra_packaging_amount ?? 0)
+            + (float) ($order->extra_discount_amount ?? 0)
+            + (float) ($order_transaction->pro_discount ?? 0);
+
+        return $item_amount * $commission_percentage / 100;
+    }
+
+    public static function pro_discount_total($order): float
+    {
+        $pro = $order->orderProDiscount ?? null;
+
+        if (! $pro) {
+            return 0.0;
+        }
+
+        return (float) ($pro->amount_saved ?? 0)
+            + (float) ($pro->delivery_fee_reduction_amount ?? 0);
+    }
+
+    public static function admin_net_income($order_transaction): float
+    {
+        $order = $order_transaction->order;
+
+        if ($order?->order_type === 'parcel') {
+            return (float) ($order_transaction->admin_commission ?? 0)
+            + (float) $order_transaction->delivery_fee_comission ?? 0
+            + (float) ($order_transaction->additional_charge ?? 0)
+             - (float) ($order_transaction->admin_expense ?? 0);
+        }
+
+        return self::admin_item_commission($order_transaction)
+            + (float) ($order_transaction->delivery_fee_comission ?? 0)
+            + (float) ($order_transaction->additional_charge ?? 0)
+            - (float) ($order_transaction->admin_expense ?? 0)
+            + ($order?->delivery_type === 'express' ? (float) $order->delivery_type_charge : 0);
+    }
+
     public static function create_transaction($order, $received_by = false, $status = null)
     {
         $type = $order->order_type;
@@ -60,13 +213,23 @@ class OrderLogic
         $subscription_mode = 0;
         $commission_percentage = 0;
         $store_amount = 0;
-
+        $extra_discount_amount = $order->extra_discount_amount ?? 0;
+        $proDiscount = 0;
         $store = $order?->store;
         $store_sub = $order?->store?->store_sub;
         // free delivery by admin
         if ($order->free_delivery_by == 'admin') {
             $admin_subsidy = $order->original_delivery_charge;
-            Helpers::expenseCreate(amount: $order->original_delivery_charge, type: 'free_delivery', datetime: now(), created_by: $order->free_delivery_by, order_id: $order->id);
+            $free_delivery_expense_type = 'free_delivery';
+            if ($order->orderProDiscount && $order->orderProDiscount?->benefit_type === 'delivery_fee') {
+                $admin_subsidy = $order->orderProDiscount->delivery_fee_reduction_amount ?? $admin_subsidy;
+                if ($order->orderProDiscount->delivery_offer_type === 'partial_free') {
+                    $free_delivery_expense_type = 'pro_partial_free_delivery';
+                } else {
+                    $free_delivery_expense_type = 'pro_free_delivery';
+                }
+            }
+            Helpers::expenseCreate(amount: $admin_subsidy, type: $free_delivery_expense_type, datetime: now(), created_by: $order->free_delivery_by, order_id: $order->id);
         }
         // free delivery by store
         if ($order->free_delivery_by == 'vendor') {
@@ -83,10 +246,18 @@ class OrderLogic
             $ref_bonus_amount = $order->ref_bonus_amount;
             Helpers::expenseCreate(amount: $ref_bonus_amount, type: 'referral_discount', datetime: now(), created_by: 'admin', order_id: $order->id);
         }
+        if ($order->delivery_type == 'slightly_delay' && $order->delivery_type_charge > 0) {
+            Helpers::expenseCreate(amount: $order->delivery_type_charge, type: 'slightly_delay_delivery_charge', datetime: now(), created_by: 'admin', order_id: $order->id);
+        }
         // coupon discount by store
         if ($order->coupon_created_by == 'vendor') {
             $store_coupon_discount_subsidy = $order->coupon_discount_amount;
             Helpers::expenseCreate(amount: $store_coupon_discount_subsidy, type: 'coupon_discount', datetime: now(), created_by: $order->coupon_created_by, order_id: $order->id, store_id: $order->store->id);
+        }
+
+        if ($order->orderProDiscount && $order->orderProDiscount?->benefit_type === 'discount') {
+            $proDiscount = $order?->orderProDiscount?->amount_saved ?? 0;
+            Helpers::expenseCreate(amount: $proDiscount, type: 'pro_discount_on_product', datetime: now(), order_id: $order->id, created_by: 'admin');
         }
 
         if ($order?->cashback_history) {
@@ -94,30 +265,35 @@ class OrderLogic
         }
 
         if ($type == 'parcel') {
-            $comission = \App\Models\BusinessSetting::where('key', 'parcel_commission_dm')->first();
+            $comission = BusinessSetting::where('key', 'parcel_commission_dm')->first()?->value ?? 0;
+            $commission_percentage = $comission;
+            $delivery_fee_reduction_amount=0;
+            if ($order->orderProDiscount && $order->orderProDiscount?->benefit_type === 'delivery_fee') {
+                $delivery_fee_reduction_amount = $order->orderProDiscount?->delivery_fee_reduction_amount ?? 0;
+            }
             $dm_tips = $dm_tips_manage_status ? $order->dm_tips : 0;
-            $comission = isset($comission) ? $comission->value : 0;
-            $order_amount = $order->order_amount - $dm_tips - $order->additional_charge - $order->extra_packaging_amount - $order->total_tax_amount;
+            $order_amount = $order->order_amount - $dm_tips - $order->additional_charge - $order->extra_packaging_amount - $order->total_tax_amount + $delivery_fee_reduction_amount;
             $dm_commission = $comission ? ($order_amount / 100) * $comission : 0;
             $comission_amount = $order_amount - $dm_commission;
-        } else {
-            $comission = isset($order->store->comission) == null ? \App\Models\BusinessSetting::where('key', 'admin_commission')->first()->value : $order->store->comission;
+
+            } else {
+            $comission = isset($order->store->comission) == null ? BusinessSetting::where('key', 'admin_commission')->first()?->value : $order->store->comission;
             $dm_tips = $dm_tips_manage_status ? $order->dm_tips : 0;
             // $order_amount = $order->order_amount - $order->delivery_charge - $order->total_tax_amount - $dm_tips;
 
-            if ($order->store_discount_amount > 0  && $order->discount_on_product_by == 'vendor') {
+            if ($order->store_discount_amount > 0 && $order->discount_on_product_by == 'vendor') {
                 if ($store->store_business_model == 'subscription' && isset($store_sub)) {
-                    $store_d_amount =  $order->store_discount_amount;
+                    $store_d_amount = $order->store_discount_amount;
                     Helpers::expenseCreate(amount: $store_d_amount, type: 'discount_on_product', datetime: now(), created_by: 'vendor', order_id: $order->id, store_id: $order->store->id);
                 } else {
                     $amount_admin = $comission ? ($order->store_discount_amount / 100) * $comission : 0;
-                    $store_d_amount =  $order->store_discount_amount - $amount_admin;
+                    $store_d_amount = $order->store_discount_amount - $amount_admin;
                     Helpers::expenseCreate(amount: $store_d_amount, type: 'discount_on_product', datetime: now(), created_by: 'vendor', order_id: $order->id, store_id: $order->store->id);
                     Helpers::expenseCreate(amount: $amount_admin, type: 'discount_on_product', datetime: now(), created_by: 'admin', order_id: $order->id);
                 }
             }
 
-            if ($order->store_discount_amount > 0  && $order->discount_on_product_by == 'admin') {
+            if ($order->store_discount_amount > 0 && $order->discount_on_product_by == 'admin') {
                 $store_discount_amount = $order->store_discount_amount;
                 Helpers::expenseCreate(amount: $store_discount_amount, type: 'discount_on_product', datetime: now(), created_by: 'admin', order_id: $order->id);
             }
@@ -131,12 +307,19 @@ class OrderLogic
                 $flash_store_discount_amount = $order->flash_store_discount_amount;
                 Helpers::expenseCreate(amount: $flash_store_discount_amount, type: 'flash_sale_discount', datetime: now(), created_by: 'vendor', order_id: $order->id, store_id: $order->store->id);
             }
+            if ($extra_discount_amount > 0) {
+                Helpers::expenseCreate(amount: $extra_discount_amount, type: 'extra_discount', datetime: now(), created_by: 'vendor', order_id: $order->id, store_id: $order->store->id);
+            }
 
+            $order_amount = $order->order_amount - $order->additional_charge - $order->extra_packaging_amount - $order->delivery_charge - $order->total_tax_amount - $dm_tips + $flash_admin_discount_amount + $order->coupon_discount_amount + $store_discount_amount + $flash_store_discount_amount + $ref_bonus_amount + $extra_discount_amount + $proDiscount;
 
-            $order_amount = $order->order_amount - $order->additional_charge - $order->extra_packaging_amount - $order->delivery_charge - $order->total_tax_amount - $dm_tips + $flash_admin_discount_amount + $order->coupon_discount_amount + $store_discount_amount + $flash_store_discount_amount + $ref_bonus_amount;
+            if ($order->delivery_type === 'express') {
+                $order_amount -= $order->delivery_type_charge;
+            } elseif ($order->delivery_type === 'slightly_delay') {
+                $order_amount += $order->delivery_type_charge;
+            }
             // comission in delivery charge
-            $delivery_charge_comission = BusinessSetting::where('key', 'delivery_charge_comission')->first();
-            $delivery_charge_comission_percentage = $delivery_charge_comission ? $delivery_charge_comission->value : 0;
+            $delivery_charge_comission_percentage = BusinessSetting::where('key', 'delivery_charge_comission')->first()?->value ?? 0;
             $comission_on_delivery = $delivery_charge_comission_percentage * ($order->original_delivery_charge / 100);
 
             if ($order->store->sub_self_delivery) {
@@ -149,13 +332,13 @@ class OrderLogic
             if ($order->free_delivery_by == 'admin') {
                 if ($order->store->sub_self_delivery) {
                     $comission_on_actual_delivery_fee = 0;
-                    $store_amount = $order->original_delivery_charge ?? 0;
+                    $store_amount = $admin_subsidy > 0 ? $admin_subsidy : $order->original_delivery_charge ?? 0;
                 } else {
                     $comission_on_actual_delivery_fee = ($order->original_delivery_charge > 0) ? $comission_on_delivery : 0;
                 }
             }
 
-            //final comission
+            // final comission
             if ($store->store_business_model == 'subscription' && isset($store_sub)) {
                 $comission_on_store_amount = 0;
                 $subscription_mode = 1;
@@ -169,7 +352,7 @@ class OrderLogic
             $comission_amount = $comission_on_store_amount + $comission_on_actual_delivery_fee;
             $dm_commission = $order->original_delivery_charge - $comission_on_actual_delivery_fee;
         }
-        $store_amount = $store_amount + $order_amount + $order->total_tax_amount + $order->extra_packaging_amount - $comission_on_store_amount - $store_coupon_discount_subsidy - $flash_store_discount_amount;
+        $store_amount = $store_amount + $order_amount + $order->total_tax_amount + $order->extra_packaging_amount - $comission_on_store_amount - $store_coupon_discount_subsidy - $flash_store_discount_amount - $extra_discount_amount;
         try {
             OrderTransaction::insert([
                 'vendor_id' => $type == 'parcel' ? null : $order->store->vendor->id,
@@ -185,17 +368,19 @@ class OrderLogic
                 'received_by' => $received_by ? $received_by : 'admin',
                 'zone_id' => $order->zone_id,
                 'module_id' => $order->module_id,
-                'admin_expense' => $admin_subsidy + $admin_coupon_discount_subsidy + $store_discount_amount + $flash_admin_discount_amount + $amount_admin + $ref_bonus_amount,
-                'store_expense' => $store_subsidy + $store_coupon_discount_subsidy + $flash_store_discount_amount,
+                'admin_expense' => $admin_subsidy + $admin_coupon_discount_subsidy + $store_discount_amount + $flash_admin_discount_amount + $amount_admin + $ref_bonus_amount + $proDiscount + ($order->delivery_type === 'slightly_delay' ? $order->delivery_type_charge : 0),
+                'store_expense' => $store_subsidy + $store_coupon_discount_subsidy + $flash_store_discount_amount + $extra_discount_amount,
                 'status' => $status,
                 'dm_tips' => $dm_tips,
                 'created_at' => now(),
                 'updated_at' => now(),
                 'delivery_fee_comission' => isset($comission_on_actual_delivery_fee) ? $comission_on_actual_delivery_fee : 0,
-                'discount_amount_by_store' => $store_coupon_discount_subsidy + $store_d_amount + $store_subsidy,
+                'discount_amount_by_store' => $store_coupon_discount_subsidy + $store_d_amount + $store_subsidy + $extra_discount_amount,
                 'additional_charge' => $order->additional_charge,
                 'extra_packaging_amount' => $order->extra_packaging_amount,
                 'ref_bonus_amount' => $order->ref_bonus_amount,
+                'pro_discount' => $order->orderProDiscount?->amount_saved ?? 0,
+                'pro_delivery_discount' => $order->orderProDiscount?->delivery_fee_reduction_amount ?? 0,
                 // for store business model
                 'is_subscribed' => $subscription_mode,
                 'commission_percentage' => $commission_percentage,
@@ -204,7 +389,11 @@ class OrderLogic
                 ['admin_id' => Admin::where('role_id', 1)->first()->id]
             );
 
-            $adminWallet->total_commission_earning = $adminWallet->total_commission_earning + $comission_amount + $order->additional_charge - $admin_subsidy - $admin_coupon_discount_subsidy - $store_discount_amount - $flash_admin_discount_amount - $ref_bonus_amount;
+            $adminWallet->total_commission_earning = $adminWallet->total_commission_earning + $comission_amount + $order->additional_charge - $admin_subsidy - $admin_coupon_discount_subsidy - $store_discount_amount - $flash_admin_discount_amount - $ref_bonus_amount - $proDiscount;
+
+            if ($order->delivery_type == 'express' && $order->delivery_type_charge > 0) {
+                $adminWallet->total_commission_earning = $adminWallet->total_commission_earning + $order->delivery_type_charge;
+            }
 
             if ($type != 'parcel') {
                 $vendorWallet = StoreWallet::firstOrNew(
@@ -218,7 +407,7 @@ class OrderLogic
                 // $vendorWallet->total_earning = $vendorWallet->total_earning+($order_amount + $order->total_tax_amount - $comission_on_store_amount);
                 $vendorWallet->total_earning = $vendorWallet->total_earning + $store_amount;
             }
-            if ($order->delivery_man && ($type == 'parcel' || ($order->store && !$order->store->sub_self_delivery))) {
+            if ($order->delivery_man && ($type == 'parcel' || ($order->store && ! $order->store->sub_self_delivery))) {
                 $dmWallet = DeliveryManWallet::firstOrNew(
                     ['delivery_man_id' => $order->delivery_man_id]
                 );
@@ -240,14 +429,14 @@ class OrderLogic
                 }
                 if ($received_by == 'admin') {
                     $adminWallet->digital_received = $adminWallet->digital_received + ($order->order_amount - $order->partially_paid_amount);
-                } else if ($received_by == 'store' && $type != 'parcel' && ($order->payment_method == "cash_on_delivery" || $unpaid_pay_method == 'cash_on_delivery')) {
-                    $store_over_flow =  true;
+                } elseif ($received_by == 'store' && $type != 'parcel' && ($order->payment_method == 'cash_on_delivery' || $unpaid_pay_method == 'cash_on_delivery')) {
+                    $store_over_flow = true;
                     $vendorWallet->collected_cash = $vendorWallet->collected_cash + ($order->order_amount - $order->partially_paid_amount);
-                } else if ($received_by == false) {
+                } elseif ($received_by == false) {
                     $adminWallet->manual_received = $adminWallet->manual_received + ($order->order_amount - $order->partially_paid_amount);
-                } else if ($received_by == 'deliveryman' && $order->delivery_man && $order->delivery_man->type == 'zone_wise') {
+                } elseif ($received_by == 'deliveryman' && $order->delivery_man && $order->delivery_man->type == 'zone_wise') {
                     $dmWallet->collected_cash = $dmWallet->collected_cash + ($order->order_amount - $order->partially_paid_amount);
-                    $dm_over_flow =  true;
+                    $dm_over_flow = true;
                 }
 
                 $adminWallet->save();
@@ -257,7 +446,6 @@ class OrderLogic
                 if (isset($dmWallet)) {
                     $dmWallet->save();
                 }
-
 
                 if (isset($store_over_flow)) {
                     self::create_account_transaction_for_collect_cash(old_collected_cash: $vendorWallet->collected_cash, from_type: 'store', from_id: $order->store->vendor->id, amount: $order->order_amount - $order->partially_paid_amount, order_id: $order->id);
@@ -270,43 +458,53 @@ class OrderLogic
 
                 DB::commit();
 
-                if($order->delivery_man_id && $order->delivery_man->earning == 1){
-                   $deliveryMan = $order->delivery_man;
-                   if($deliveryMan->ref_by &&  $deliveryMan->orders()->whereIn('order_status', ['delivered'])->count() == 0 ){
-                    self::deliverymanReferalTransaction(deliveryManId: $order->delivery_man_id, referType:'referrerBonus', reference: $order->id, referrerId : $deliveryMan->ref_by);
-                    self::deliverymanReferalTransaction(deliveryManId: $deliveryMan->ref_by, referType:'referral', reference: $order->id, referrerId : $order->delivery_man_id);
-                  }
+                if ($order->delivery_man_id && $order->delivery_man->earning == 1) {
+                    $deliveryMan = $order->delivery_man;
+                    if ($deliveryMan->ref_by && $deliveryMan->orders()->whereIn('order_status', ['delivered'])->count() == 0) {
+                        self::deliverymanReferalTransaction(deliveryManId: $order->delivery_man_id, referType: 'referrerBonus', reference: $order->id, referrerId : $deliveryMan->ref_by);
+                        self::deliverymanReferalTransaction(deliveryManId: $deliveryMan->ref_by, referType: 'referral', reference: $order->id, referrerId : $order->delivery_man_id);
+                    }
                 }
-                if ($order->is_guest  == 0) {
-                    $ref_status = BusinessSetting::where('key', 'ref_earning_status')->first()->value;
-                    if (isset($order->customer->ref_by) && $order->customer->order_count == 0  && $ref_status == 1) {
-                        $ref_code_exchange_amt = BusinessSetting::where('key', 'ref_earning_exchange_rate')->first()->value;
+                if ($order->is_guest == 0) {
+                    $ref_status = BusinessSetting::where('key', 'ref_earning_status')->first()?->value;
+                    // Skip the referrer credit + push + email entirely for
+                    // storefront customers when the Builder wallet-features
+                    // master switch is off. Loyalty credit a few lines below
+                    // is already skipped automatically because
+                    // create_loyalty_point_transaction returns false and the
+                    // notification check is `> 0`.
+                    if (isset($order->customer->ref_by) && $order->customer->order_count == 0 && $ref_status == 1
+                        && ! storefront_wallet_disabled_for_user($order->user_id)) {
+                        $ref_code_exchange_amt = BusinessSetting::where('key', 'ref_earning_exchange_rate')->first()?->value;
                         $referar_user = User::where('id', $order->customer->ref_by)->first();
                         $refer_wallet_transaction = CustomerLogic::create_wallet_transaction($referar_user->id, $ref_code_exchange_amt, 'referrer', $order->customer->phone);
 
                         $notification_data = [
                             'title' => translate('messages.Congratulation'),
-                            'description' => translate('You have received') . ' ' . Helpers::format_currency($ref_code_exchange_amt) . ' ' . translate('in your wallet as') . ' ' . $order?->customer?->f_name . ' ' . $order?->customer?->l_name . ' ' . translate('you referred completed thier first order'),
+                            'description' => translate('You have received').' '.Helpers::format_currency($ref_code_exchange_amt).' '.translate('in your wallet as').' '.$order?->customer?->f_name.' '.$order?->customer?->l_name.' '.translate('you referred completed thier first order'),
                             'order_id' => 1,
                             'image' => '',
                             'type' => 'referral_code',
                         ];
 
-                        if (Helpers::getNotificationStatusData('customer', 'customer_referral_bonus_earning', 'push_notification_status') && $referar_user?->cm_firebase_token) {
-                            Helpers::send_push_notif_to_device($referar_user?->cm_firebase_token, $notification_data);
-                            DB::table('user_notifications')->insert([
-                                'data' => json_encode($notification_data),
-                                'user_id' => $referar_user?->id,
-                                'created_at' => now(),
-                                'updated_at' => now()
-                            ]);
+                        try {
+                            if (Helpers::getNotificationStatusData('customer', 'customer_referral_bonus_earning', 'push_notification_status') && $referar_user?->cm_firebase_token) {
+                                Helpers::send_push_notif_to_device($referar_user?->cm_firebase_token, $notification_data);
+                                DB::table('user_notifications')->insert([
+                                    'data' => json_encode($notification_data),
+                                    'user_id' => $referar_user?->id,
+                                    'created_at' => now(),
+                                    'updated_at' => now(),
+                                ]);
+                            }
+                        } catch (\Throwable $e) {
+                            info('order referral notification failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
                         }
-
 
                         try {
                             Helpers::add_fund_push_notification($referar_user->id);
                             if (config('mail.status') && Helpers::get_mail_status('add_fund_mail_status_user') == '1' && Helpers::getNotificationStatusData('customer', 'customer_add_fund_to_wallet', 'mail_status')) {
-                                Mail::to($referar_user?->getRawOriginal('email'))->send(new \App\Mail\AddFundToWallet($refer_wallet_transaction));
+                                Mail::to($referar_user?->getRawOriginal('email'))->send(new AddFundToWallet($refer_wallet_transaction));
                             }
                         } catch (\Exception $ex) {
                             info($ex->getMessage());
@@ -317,30 +515,41 @@ class OrderLogic
                     if ($create_loyalty_point_transaction > 0) {
                         $notification_data = [
                             'title' => translate('messages.Congratulation'),
-                            'description' => translate('You_have_received') . ' ' . $create_loyalty_point_transaction . ' ' . translate('points_as_loyalty_point'),
+                            'description' => translate('You_have_received').' '.$create_loyalty_point_transaction.' '.translate('points_as_loyalty_point'),
                             'order_id' => $order->id,
                             'image' => '',
                             'type' => 'loyalty_point',
                         ];
 
-                        if (Helpers::getNotificationStatusData('customer', 'customer_loyalty_point_earning', 'push_notification_status') && $order->customer?->cm_firebase_token) {
-                            Helpers::send_push_notif_to_device($order->customer?->cm_firebase_token, $notification_data);
-                            DB::table('user_notifications')->insert([
-                                'data' => json_encode($notification_data),
-                                'user_id' => $order->user_id,
-                                'created_at' => now(),
-                                'updated_at' => now()
-                            ]);
+                        try {
+                            if (Helpers::getNotificationStatusData('customer', 'customer_loyalty_point_earning', 'push_notification_status') && $order->customer?->cm_firebase_token) {
+                                Helpers::send_push_notif_to_device($order->customer?->cm_firebase_token, $notification_data);
+                                DB::table('user_notifications')->insert([
+                                    'data' => json_encode($notification_data),
+                                    'user_id' => $order->user_id,
+                                    'created_at' => now(),
+                                    'updated_at' => now(),
+                                ]);
+                            }
+                        } catch (\Throwable $e) {
+                            info('order loyalty notification failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
                         }
                     }
                 }
             } catch (\Exception $e) {
                 DB::rollBack();
-                info($e->getMessage());
+                info('order completion transaction failed', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage(),
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                ]);
+
                 return false;
             }
         } catch (\Exception $e) {
             info($e->getMessage());
+
             return false;
         }
 
@@ -355,12 +564,22 @@ class OrderLogic
         $store_discount_amount = 0;
         $flash_admin_discount_amount = 0;
         $ref_bonus_amount = 0;
+        $proDiscount = 0;
 
         $return_fee = $order?->parcelCancellation?->return_fee ?? 0;
         // free delivery by admin
         if ($order->free_delivery_by == 'admin') {
             $admin_subsidy = $order->original_delivery_charge;
-            Helpers::expenseCreate(amount: $order->original_delivery_charge, type: 'free_delivery', datetime: now(), created_by: $order->free_delivery_by, order_id: $order->id);
+            $free_delivery_expense_type = 'free_delivery';
+            if ($order->orderProDiscount && $order->orderProDiscount?->benefit_type === 'delivery_fee') {
+                $admin_subsidy = $order->orderProDiscount->delivery_fee_reduction_amount ?? $admin_subsidy;
+                if ($order->orderProDiscount->delivery_offer_type === 'partial_free') {
+                    $free_delivery_expense_type = 'pro_partial_free_delivery';
+                } else {
+                    $free_delivery_expense_type = 'pro_free_delivery';
+                }
+            }
+            Helpers::expenseCreate(amount: $admin_subsidy, type: $free_delivery_expense_type, datetime: now(), created_by: $order->free_delivery_by, order_id: $order->id);
         }
 
         // coupon discount by Admin
@@ -368,15 +587,20 @@ class OrderLogic
             $admin_coupon_discount_subsidy = $order->coupon_discount_amount;
             Helpers::expenseCreate(amount: $admin_coupon_discount_subsidy, type: 'coupon_discount', datetime: now(), created_by: $order->coupon_created_by, order_id: $order->id);
         }
+        if ($order->orderProDiscount && $order->orderProDiscount?->benefit_type === 'discount') {
+            $proDiscount = $order?->orderProDiscount?->amount_saved ?? 0;
+            Helpers::expenseCreate(amount: $proDiscount, type: 'pro_discount_on_product', datetime: now(), order_id: $order->id, created_by: 'admin');
+        }else{
+            $proDiscount = $order->orderProDiscount?->delivery_fee_reduction_amount ?? 0;
+        }
 
-        $comission = \App\Models\BusinessSetting::where('key', 'parcel_commission_dm')->first();
+        $comission = BusinessSetting::where('key', 'parcel_commission_dm')->first();
         $dm_tips = $dm_tips_manage_status ? $order->dm_tips : 0;
         $comission = isset($comission) ? $comission->value : 0;
-        $order_amount = $order->order_amount - $dm_tips - $order->additional_charge - $order->total_tax_amount;
+        $order_amount = $order->order_amount - $dm_tips - $order->additional_charge - $order->total_tax_amount + $proDiscount;
 
         $dm_commission = $comission ? ($order_amount / 100) * $comission : 0;
         $comission_amount = $order_amount - $dm_commission;
-
 
         DB::beginTransaction();
 
@@ -387,15 +611,13 @@ class OrderLogic
         $order->parcelCancellation->return_fee_payment_status = 'paid';
         $order->parcelCancellation->save();
 
-
         try {
 
             $adminWallet = AdminWallet::firstOrNew(
                 ['admin_id' => Admin::where('role_id', 1)->first()->id]
             );
 
-            $adminWallet->total_commission_earning = $adminWallet->total_commission_earning + $comission_amount + $order->additional_charge - $admin_subsidy - $admin_coupon_discount_subsidy - $store_discount_amount - $flash_admin_discount_amount - $ref_bonus_amount;
-
+            $adminWallet->total_commission_earning = $adminWallet->total_commission_earning + $comission_amount + $order->additional_charge - $admin_subsidy - $admin_coupon_discount_subsidy - $store_discount_amount - $flash_admin_discount_amount - $ref_bonus_amount - $proDiscount;
 
             if ($order->delivery_man) {
                 $dmWallet = DeliveryManWallet::firstOrNew(
@@ -403,7 +625,7 @@ class OrderLogic
                 );
                 if ($order->delivery_man->earning == 1) {
                     $dmWallet->total_earning = $dmWallet->total_earning + $dm_commission + $dm_tips + $return_fee;
-                    $dmWallet->collected_cash = $dmWallet->collected_cash +$return_fee;
+                    $dmWallet->collected_cash = $dmWallet->collected_cash + $return_fee;
                     self::createReturnFeeLog($order, $return_fee);
                 } else {
                     $adminWallet->total_commission_earning = $adminWallet->total_commission_earning + $dm_commission + $dm_tips + $return_fee;
@@ -414,16 +636,16 @@ class OrderLogic
 
             if ($received_by == 'admin') {
                 $adminWallet->digital_received = $adminWallet->digital_received + ($order->order_amount - $order->partially_paid_amount);
-            } else if ($received_by == false) {
+            } elseif ($received_by == false) {
                 $adminWallet->manual_received = $adminWallet->manual_received + ($order->order_amount - $order->partially_paid_amount);
-            } else if ($received_by == 'deliveryman' && $order->delivery_man && $order->delivery_man->type == 'zone_wise') {
+            } elseif ($received_by == 'deliveryman' && $order->delivery_man && $order->delivery_man->type == 'zone_wise') {
                 $dmWallet->collected_cash = $dmWallet->collected_cash + ($order->order_amount - $order->partially_paid_amount);
-                $dm_over_flow =  true;
+                $dm_over_flow = true;
             }
 
             $adminWallet->save();
 
-              OrderTransaction::insert([
+            OrderTransaction::insert([
                 'vendor_id' => null,
                 'delivery_man_id' => $order->delivery_man_id,
                 'order_id' => $order->id,
@@ -436,7 +658,7 @@ class OrderLogic
                 'received_by' => $received_by ? $received_by : 'admin',
                 'zone_id' => $order->zone_id,
                 'module_id' => $order->module_id,
-                'admin_expense' => $admin_subsidy + $admin_coupon_discount_subsidy + $store_discount_amount + $flash_admin_discount_amount  + $ref_bonus_amount,
+                'admin_expense' => $admin_subsidy + $admin_coupon_discount_subsidy + $store_discount_amount + $flash_admin_discount_amount + $ref_bonus_amount + $proDiscount,
                 'store_expense' => 0,
                 'status' => null,
                 'dm_tips' => $dm_tips,
@@ -447,26 +669,24 @@ class OrderLogic
                 'additional_charge' => $order->additional_charge,
                 'extra_packaging_amount' => $order->extra_packaging_amount ?? 0,
                 'ref_bonus_amount' => $order->ref_bonus_amount ?? 0,
+                'pro_discount' => $order->orderProDiscount?->amount_saved ?? 0,
+                'pro_delivery_discount' => $order->orderProDiscount?->delivery_fee_reduction_amount ?? 0,
                 // for store business model
                 'is_subscribed' => 0,
                 'commission_percentage' => $comission,
             ]);
 
-
-
-            if($order->parcelCancellation->return_date){
+            if ($order->parcelCancellation->return_date) {
                 $returnDate = Carbon::parse($order->parcelCancellation->return_date);
                 if ($returnDate->isPast() && isset($dmWallet)) {
-                     $dmWallet->collected_cash = $dmWallet->collected_cash + $order->parcelCancellation->dm_penalty_fee??0;
-                     self::createParcelPenaltyLog($order, $order->parcelCancellation->dm_penalty_fee??0);
+                    $dmWallet->collected_cash = $dmWallet->collected_cash + $order->parcelCancellation->dm_penalty_fee ?? 0;
+                    self::createParcelPenaltyLog($order, $order->parcelCancellation->dm_penalty_fee ?? 0);
                 }
             }
 
             if (isset($dmWallet)) {
                 $dmWallet->save();
             }
-
-
 
             if (isset($dm_over_flow)) {
                 self::create_account_transaction_for_collect_cash(old_collected_cash: $dmWallet->collected_cash, from_type: 'deliveryman', from_id: $order->delivery_man_id, amount: $order->order_amount - $order->partially_paid_amount, order_id: $order->id);
@@ -478,6 +698,7 @@ class OrderLogic
         } catch (\Exception $e) {
             DB::rollBack();
             info($e->getMessage());
+
             return false;
         }
 
@@ -492,21 +713,22 @@ class OrderLogic
         if ($order->payment_method == 'cash_on_delivery') {
             return false;
         }
-        if (($order->payment_status == "paid")) {
+        if (($order->payment_status == 'paid')) {
 
             $adminWallet->digital_received = $adminWallet->digital_received - $order->order_amount;
             $adminWallet->save();
-            if (BusinessSetting::where('key', 'wallet_add_refund')->first()->value == 1 && $order->is_guest  == 0) {
+            if (BusinessSetting::where('key', 'wallet_add_refund')->first()->value == 1 && $order->is_guest == 0) {
                 CustomerLogic::create_wallet_transaction($order->user_id, $order->order_amount, 'order_refund', $order->id);
             }
-        } elseif (($order->payment_status == "partially_paid")) {
+        } elseif (($order->payment_status == 'partially_paid')) {
 
             $adminWallet->digital_received = $adminWallet->digital_received - $order->partially_paid_amount;
             $adminWallet->save();
-            if (BusinessSetting::where('key', 'wallet_add_refund')->first()->value == 1  &&  $order->is_guest  == 0) {
+            if (BusinessSetting::where('key', 'wallet_add_refund')->first()->value == 1 && $order->is_guest == 0) {
                 CustomerLogic::create_wallet_transaction($order->user_id, $order->partially_paid_amount, 'order_refund', $order->id);
             }
         }
+
         return true;
     }
 
@@ -547,12 +769,12 @@ class OrderLogic
                 $refund_amount = $refund_amount - $order->partially_paid_amount;
             }
             if ($received_by == 'admin') {
-                if ($order->delivery_man_id && $order->payment_method != "cash_on_delivery") {
+                if ($order->delivery_man_id && $order->payment_method != 'cash_on_delivery') {
                     $adminWallet->digital_received = $adminWallet->digital_received - $refund_amount;
                 } else {
                     $adminWallet->manual_received = $adminWallet->manual_received - $refund_amount;
                 }
-            } else if ($received_by == 'store') {
+            } elseif ($received_by == 'store') {
                 $vendorWallet->collected_cash = $vendorWallet->collected_cash - $refund_amount;
             }
 
@@ -564,14 +786,16 @@ class OrderLogic
         } catch (\Exception $e) {
             DB::rollBack();
             info($e->getMessage());
+
             return false;
         }
+
         return true;
     }
 
     public static function create_order_payment($order_id, $amount, $payment_status, $payment_method)
     {
-        $payment = new OrderPayment();
+        $payment = new OrderPayment;
         $payment->order_id = $order_id;
         $payment->amount = $amount;
         $payment->payment_status = $payment_status;
@@ -597,6 +821,7 @@ class OrderLogic
 
             return false;
         }
+
         return true;
     }
 
@@ -606,18 +831,17 @@ class OrderLogic
         if ($payment) {
             $payment->payment_status = 'paid';
             if ($payment_method != 'partial_payment') {
-                $payment->payment_method = $payment_method;
+                $payment->payment_method = $payment->payment_method == 'wallet' ? 'wallet' : $payment_method;
             }
             $payment->save();
         }
+
         return true;
     }
 
-
-
     public static function create_account_transaction_for_collect_cash($old_collected_cash, $from_type, $from_id, $amount, $order_id)
     {
-        $account_transaction = new AccountTransaction();
+        $account_transaction = new AccountTransaction;
         $account_transaction->from_type = $from_type;
         $account_transaction->from_id = $from_id;
         $account_transaction->created_by = $from_type;
@@ -628,114 +852,117 @@ class OrderLogic
         $account_transaction->type = 'cash_in';
         $account_transaction->save();
 
-
-        if ($from_type  ==  'store') {
+        if ($from_type == 'store') {
             $vendor = Vendor::find($from_id);
-            $Payable_Balance = $vendor?->wallet?->collected_cash   > 0 ? 1 : 0;
+            $Payable_Balance = $vendor?->wallet?->collected_cash > 0 ? 1 : 0;
             $cash_in_hand_overflow = BusinessSetting::where('key', 'cash_in_hand_overflow_store')->first()?->value;
             $cash_in_hand_overflow_store_amount = BusinessSetting::where('key', 'cash_in_hand_overflow_store_amount')->first()?->value;
 
-            if ($Payable_Balance == 1 &&  $cash_in_hand_overflow && $vendor?->wallet?->balance < 0 &&  $cash_in_hand_overflow_store_amount <= abs($vendor?->wallet?->collected_cash)) {
+            if ($Payable_Balance == 1 && $cash_in_hand_overflow && $vendor?->wallet?->balance < 0 && $cash_in_hand_overflow_store_amount <= abs($vendor?->wallet?->collected_cash)) {
                 $rest = Store::where('vendor_id', $vendor->id)->first();
                 $rest->status = 0;
                 $rest->save();
             }
-        } elseif ($from_type  ==  'deliveryman') {
+        } elseif ($from_type == 'deliveryman') {
             $cash_in_hand_overflow = BusinessSetting::where('key', 'cash_in_hand_overflow_delivery_man')->first()?->value;
             $cash_in_hand_overflow_delivery_man = BusinessSetting::where('key', 'dm_max_cash_in_hand')->first()?->value;
             // $val=  $cash_in_hand_overflow_delivery_man - (($cash_in_hand_overflow_delivery_man * 10)/100);
 
             $dm = DeliveryMan::find($from_id);
             $wallet_balance = $dm?->wallet?->total_earning - ($dm?->wallet?->total_withdrawn + $dm?->wallet?->pending_withdraw + $dm?->wallet?->collected_cash);
-            $over_flow_balance =  $dm?->wallet?->collected_cash;
-            $Payable_Balance =  $over_flow_balance   > 0 ? 1 : 0;
-            if ($Payable_Balance == 1 &&  $cash_in_hand_overflow  && $wallet_balance < 0 &&  $cash_in_hand_overflow_delivery_man < abs($over_flow_balance)) {
+            $over_flow_balance = $dm?->wallet?->collected_cash;
+            $Payable_Balance = $over_flow_balance > 0 ? 1 : 0;
+            if ($Payable_Balance == 1 && $cash_in_hand_overflow && $wallet_balance < 0 && $cash_in_hand_overflow_delivery_man < abs($over_flow_balance)) {
                 $dm->status = 0;
                 try {
-                if(Helpers::getNotificationStatusData('deliveryman','deliveryman_account_block','push_notification_status') &&  isset($dm->fcm_token))
-                {
-                    $data = [
-                        'title' => translate('messages.suspended'),
-                        'description' => translate('Your account has been temporarily suspended due to exceeding the cash limit'),
-                        'order_id' => '',
-                        'image' => '',
-                        'type'=> 'block'
-                    ];
-                    Helpers::send_push_notif_to_device($dm->fcm_token, $data);
+                    if (Helpers::getNotificationStatusData('deliveryman', 'deliveryman_account_block', 'push_notification_status') && isset($dm->fcm_token)) {
+                        $data = [
+                            'title' => translate('messages.suspended'),
+                            'description' => translate('Your account has been temporarily suspended due to exceeding the cash limit'),
+                            'order_id' => '',
+                            'image' => '',
+                            'type' => 'block',
+                        ];
+                        Helpers::send_push_notif_to_device($dm->fcm_token, $data);
 
-                    DB::table('user_notifications')->insert([
-                        'data'=> json_encode($data),
-                        'delivery_man_id'=>$dm->id,
-                        'created_at'=>now(),
-                        'updated_at'=>now()
-                    ]);
+                        DB::table('user_notifications')->insert([
+                            'data' => json_encode($data),
+                            'delivery_man_id' => $dm->id,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]);
+                    }
+                } catch (\Throwable $th) {
+                    // throw $th;
                 }
-            } catch (\Throwable $th) {
-                //throw $th;
-            }
                 $dm->auth_token = null;
                 $dm->save();
             }
-            
+
         }
+
         return true;
     }
-
 
     public static function cashbackToWallet($order)
     {
 
         $refer_wallet_transaction = CustomerLogic::create_wallet_transaction($order?->cashback_history?->user_id, $order?->cashback_history?->calculated_amount, 'CashBack', $order->id);
         if ($refer_wallet_transaction != false) {
-            Helpers::expenseCreate(amount: $order?->cashback_history?->calculated_amount, type: 'CashBack', datetime: now(), created_by: 'admin', order_id: $order->id);
+            Helpers::expenseCreate(amount: $order?->cashback_history?->calculated_amount, type: 'CashBack', datetime: now(), created_by: 'admin', order_id: $order->id, user_id: $order->customer?->id);
             $order?->cashback_history?->cashBack?->increment('total_used');
 
             $notification_data = [
-                'title' => translate('messages.Congratulation_you_have_received') . ' ' . $order?->cashback_history?->calculated_amount . ' ' . translate('cashback'),
+                'title' => translate('messages.Congratulation_you_have_received').' '.$order?->cashback_history?->calculated_amount.' '.translate('cashback'),
                 'description' => translate('The_cashback_amount_successfully_added_to_your_wallet'),
                 'order_id' => $order->id,
                 'image' => '',
                 'type' => 'cashback',
             ];
 
-            if ($order->customer?->cm_firebase_token && Helpers::getNotificationStatusData('customer', 'customer_cashback', 'push_notification_status')) {
-                Helpers::send_push_notif_to_device($order->customer?->cm_firebase_token, $notification_data);
-                DB::table('user_notifications')->insert([
-                    'data' => json_encode($notification_data),
-                    'user_id' => $order->customer?->id,
-                    'created_at' => now(),
-                    'updated_at' => now()
-                ]);
+            try {
+                if ($order->customer?->cm_firebase_token && Helpers::getNotificationStatusData('customer', 'customer_cashback', 'push_notification_status')) {
+                    Helpers::send_push_notif_to_device($order->customer?->cm_firebase_token, $notification_data);
+                    DB::table('user_notifications')->insert([
+                        'data' => json_encode($notification_data),
+                        'user_id' => $order->customer?->id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            } catch (\Throwable $e) {
+                info('order cashback notification failed', ['order_id' => $order->id, 'error' => $e->getMessage()]);
             }
         }
 
         return true;
     }
 
-    public static function makeValidationForParcelReturn($request , $order) {
+    public static function makeValidationForParcelReturn($request, $order)
+    {
         $validationError = match (true) {
-            !$order => [
-                'code'    => 'order',
+            ! $order => [
+                'code' => 'order',
                 'message' => translate('messages.order_not_found'),
                 'status_code' => 403,
             ],
             $order->order_type != 'parcel' => [
-                'code'    => 'parcel',
+                'code' => 'parcel',
                 'message' => translate('messages.Only_parcel_order_can_be_returned'),
                 'status_code' => 403,
             ],
             $order->order_status != 'canceled' => [
-                'code'    => 'parcel',
+                'code' => 'parcel',
                 'message' => translate('messages.You_can_return_only_canceled_parcel_orders'),
                 'status_code' => 403,
             ],
-           !$order->parcelCancellation => [
-                'code'    => 'order',
+            ! $order->parcelCancellation => [
+                'code' => 'order',
                 'message' => translate('messages.You_have_not_requested_for_parcel_return'),
                 'status_code' => 403,
             ],
-           $order->parcelCancellation->return_otp && $order->parcelCancellation->return_otp != $request->return_otp => [
-                'code'    => 'order',
+            $order->parcelCancellation->return_otp && $order->parcelCancellation->return_otp != $request->return_otp => [
+                'code' => 'order',
                 'message' => translate('messages.Invalid_return_otp'),
                 'status_code' => 403,
             ],
@@ -750,14 +977,13 @@ class OrderLogic
         return null;
     }
 
-
     public static function cancelParcelOrder($order, $cancel_by, $request)
     {
-        if (in_array($order->order_status, ['canceled', 'delivered','returned'])) {
+        if (in_array($order->order_status, ['canceled', 'delivered', 'returned'])) {
             return ['status_code' => 403, 'code' => 'complete_order', 'message' => translate('messages.you_can_not_cancel_a_completed_order')];
         }
         $code = 'success';
-        $msg= translate('Parcel_canceled_successfully');
+        $msg = translate('Parcel_canceled_successfully');
         $parcel_cancellation_basic_setup = Helpers::get_business_settings('parcel_cancellation_basic_setup');
 
         $return_fee_status = $parcel_cancellation_basic_setup['return_fee_status'] ?? 0;
@@ -776,42 +1002,42 @@ class OrderLogic
         $parcelCancellation->note = $request->note ?? null;
         $parcelCancellation->reason = json_encode($request->reason);
 
-        if (in_array($orderOldStatus, ['picked_up']) ) {
+        if (in_array($orderOldStatus, ['picked_up'])) {
             $parcelCancellation->before_pickup = 0;
             $parcelCancellation->return_otp = random_int(1000, 9999);
 
-            if($return_fee_status == 1 && $return_fee > 0 ){
-                if((in_array($cancel_by,['deliveryman', 'admin_for_deliveryman']) && $do_not_charge_return_fee_on_deliveryman_cancel == 1)){
+            if ($return_fee_status == 1 && $return_fee > 0) {
+                if ((in_array($cancel_by, ['deliveryman', 'admin_for_deliveryman']) && $do_not_charge_return_fee_on_deliveryman_cancel == 1)) {
                     $parcelCancellation->return_fee = 0;
-                }else{
+                } else {
                     $chargeAmount = $order['delivery_charge'] + $order['total_tax_amount'] + $order['additional_charge'] - $order['coupon_discount_amount'] - $order['ref_bonus_amount'];
                     $parcelCancellation->return_fee = ($chargeAmount * $return_fee) / 100;
                 }
             }
 
             $parcel_return_time_fee = Helpers::get_business_settings('parcel_return_time_fee');
-            $parcel_return_time_fee_status = $parcel_return_time_fee['status']?? 0;
-            $return_fee_for_dm= $parcel_return_time_fee['return_fee_for_dm'] ?? 0;
+            $parcel_return_time_fee_status = $parcel_return_time_fee['status'] ?? 0;
+            $return_fee_for_dm = $parcel_return_time_fee['return_fee_for_dm'] ?? 0;
 
-            if($parcel_return_time_fee_status == 1 && $return_fee_for_dm > 0){
+            if ($parcel_return_time_fee_status == 1 && $return_fee_for_dm > 0) {
                 $parcelCancellation->dm_penalty_fee = $return_fee_for_dm;
                 $parcelCancellation->return_date = now()->addDays((int) $parcel_return_time_fee['parcel_return_time'] ?? 1);
             }
-        } else{
-            if($order->payment_status == 'paid' && $order->is_guest  == 0){
-                if(Helpers::get_business_settings('wallet_status') == 1 && Helpers::get_business_settings('wallet_add_refund') == 1){
-                   $refunded=  self::refund_before_delivered($order);
-                    if($refunded){
-                        self::parcelRefundNotification($order,true);
+        } else {
+            if ($order->payment_status == 'paid' && $order->is_guest == 0) {
+                if (Helpers::get_business_settings('wallet_status') == 1 && Helpers::get_business_settings('wallet_add_refund') == 1) {
+                    $refunded = self::refund_before_delivered($order);
+                    if ($refunded) {
+                        self::parcelRefundNotification($order, true);
                     }
                 } else {
                     $parcelCancellation->is_delivery_charge_refundable = 1;
                     $code = 'wallet_failed';
-                    $msg= translate('messages.Parcel_canceled_successfully_contact_admin_for_refund');
+                    $msg = translate('messages.Parcel_canceled_successfully_contact_admin_for_refund');
                 }
-            } elseif($order->payment_status == 'paid' && $order->is_guest  == 1){
+            } elseif ($order->payment_status == 'paid' && $order->is_guest == 1) {
                 $code = 'wallet_failed';
-                $msg= translate('messages.Parcel_canceled_successfully_contact_admin_for_refund');
+                $msg = translate('messages.Parcel_canceled_successfully_contact_admin_for_refund');
                 $parcelCancellation->is_delivery_charge_refundable = 1;
             }
         }
@@ -822,7 +1048,8 @@ class OrderLogic
         return ['status_code' => 200, 'code' => $code, 'message' => $msg];
     }
 
-    public static function deliveryManCancelParcelTransaction($order){
+    public static function deliveryManCancelParcelTransaction($order)
+    {
 
         $return_fee = $order?->parcelCancellation?->return_fee ?? 0;
         DB::beginTransaction();
@@ -832,18 +1059,18 @@ class OrderLogic
 
         $order->parcelCancellation->return_fee_payment_status = 'paid';
 
-            if($order->payment_status == 'paid' && $order->is_guest  == 0){
-                if(Helpers::get_business_settings('wallet_status') == 1 && Helpers::get_business_settings('wallet_add_refund') == 1){
-                   $refunded= self::refund_before_delivered($order);
-                    if($refunded){
-                        self::parcelRefundNotification($order,true);
-                    }
-                } else {
-                    $order->parcelCancellation->is_delivery_charge_refundable = 1;
+        if ($order->payment_status == 'paid' && $order->is_guest == 0) {
+            if (Helpers::get_business_settings('wallet_status') == 1 && Helpers::get_business_settings('wallet_add_refund') == 1) {
+                $refunded = self::refund_before_delivered($order);
+                if ($refunded) {
+                    self::parcelRefundNotification($order, true);
                 }
-            } elseif($order->payment_status == 'paid' && $order->is_guest  == 1){
+            } else {
                 $order->parcelCancellation->is_delivery_charge_refundable = 1;
             }
+        } elseif ($order->payment_status == 'paid' && $order->is_guest == 1) {
+            $order->parcelCancellation->is_delivery_charge_refundable = 1;
+        }
 
         $order->parcelCancellation->save();
 
@@ -862,7 +1089,7 @@ class OrderLogic
                     $dmWallet->collected_cash = $dmWallet->collected_cash + $return_fee;
                     self::createReturnFeeLog($order, $return_fee);
                 } else {
-                    $adminWallet->total_commission_earning = $adminWallet->total_commission_earning  + $return_fee;
+                    $adminWallet->total_commission_earning = $adminWallet->total_commission_earning + $return_fee;
                 }
             } else {
                 $adminWallet->total_commission_earning = $adminWallet->total_commission_earning + $return_fee;
@@ -870,15 +1097,13 @@ class OrderLogic
 
             $adminWallet->save();
 
-            if($order->parcelCancellation->return_date){
+            if ($order->parcelCancellation->return_date) {
                 $returnDate = Carbon::parse($order->parcelCancellation->return_date);
                 if ($returnDate->isPast() && isset($dmWallet)) {
-                     $dmWallet->collected_cash = $dmWallet->collected_cash + $order->parcelCancellation->dm_penalty_fee??0;
-                     self::createParcelPenaltyLog($order, $order->parcelCancellation->dm_penalty_fee??0);
+                    $dmWallet->collected_cash = $dmWallet->collected_cash + $order->parcelCancellation->dm_penalty_fee ?? 0;
+                    self::createParcelPenaltyLog($order, $order->parcelCancellation->dm_penalty_fee ?? 0);
                 }
             }
-
-
 
             if (isset($dmWallet)) {
                 $dmWallet->save();
@@ -888,6 +1113,7 @@ class OrderLogic
         } catch (\Exception $e) {
             DB::rollBack();
             info($e->getMessage());
+
             return false;
         }
 
@@ -895,9 +1121,10 @@ class OrderLogic
 
     }
 
-    public static function parcelRefundNotification($order,$wallet=true){
+    public static function parcelRefundNotification($order, $wallet = true)
+    {
         try {
-            if(Helpers::getNotificationStatusData('customer','customer_refund_request_approval','push_notification_status') && $order?->customer?->cm_firebase_token){
+            if (Helpers::getNotificationStatusData('customer', 'customer_refund_request_approval', 'push_notification_status') && $order?->customer?->cm_firebase_token) {
                 $data = [
                     'title' => translate('messages.order_refunded'),
                     'description' => $wallet ? translate('Your Parcel\'s delivery charge has been refunded to your wallet') : translate('Your Parcel\'s delivery charge has been marked as Refunded'),
@@ -911,45 +1138,43 @@ class OrderLogic
                     'data' => json_encode($data),
                     'user_id' => $order->user_id,
                     'created_at' => now(),
-                    'updated_at' => now()
+                    'updated_at' => now(),
                 ]);
             }
             // if(config('mail.status') && $order?->customer?->email && Helpers::get_mail_status('refund_order_mail_status_user') == '1'  &&  Helpers::getNotificationStatusData('customer','customer_refund_request_approval','mail_status') ){
             //     Mail::to($order->customer?->getRawOriginal('email'))->send(new \App\Mail\RefundedOrderMail($order->id));
             // }
-            } catch (\Throwable $th) {
-                info($th->getMessage());
-            }
-            return true;
-    }
+        } catch (\Throwable $th) {
+            info($th->getMessage());
+        }
 
+        return true;
+    }
 
     public static function deliverymanReferalTransaction($deliveryManId, $referType, $referrerId, $reference)
     {
 
-        $settings = array_column(BusinessSetting::whereIn('key', ['dm_referal_status', 'dm_referal_amount','dm_referal_bonus'])->get()->toArray(), 'value', 'key');
+        $settings = array_column(BusinessSetting::whereIn('key', ['dm_referal_status', 'dm_referal_amount', 'dm_referal_bonus'])->get()->toArray(), 'value', 'key');
 
-        if (data_get($settings, 'dm_referal_status')  != 1 ) {
-             return ['status_code' => 403, 'code' =>  'Referal', 'message' => translate('referal_option_is_not_enabled')];
-        } elseif (  $referType  == 'referral' && data_get($settings, 'dm_referal_amount')  <= 0 ) {
-             return ['status_code' => 403, 'code' =>  'Referal', 'message' => translate('referal_option_is_not_enabled')];
-        } elseif ( $referType  == 'referrerBonus' && data_get($settings, 'dm_referal_bonus')  <= 0 ) {
-             return ['status_code' => 403, 'code' =>  'Referal', 'message' => translate('referal_option_is_not_enabled')];
+        if (data_get($settings, 'dm_referal_status') != 1) {
+            return ['status_code' => 403, 'code' => 'Referal', 'message' => translate('referal_option_is_not_enabled')];
+        } elseif ($referType == 'referral' && data_get($settings, 'dm_referal_amount') <= 0) {
+            return ['status_code' => 403, 'code' => 'Referal', 'message' => translate('referal_option_is_not_enabled')];
+        } elseif ($referType == 'referrerBonus' && data_get($settings, 'dm_referal_bonus') <= 0) {
+            return ['status_code' => 403, 'code' => 'Referal', 'message' => translate('referal_option_is_not_enabled')];
         }
-
 
         $deliveryMan = DeliveryMan::find($deliveryManId);
-        if(!$deliveryMan){
-            return ['status_code' => 403, 'code' =>  'wallet', 'message' => translate('delivery_man_not_found')];
-        } elseif($deliveryMan->earning != 1){
-              return ['status_code' => 403, 'code' =>  'Referal', 'message' => translate('wallet_not_enabled')];
+        if (! $deliveryMan) {
+            return ['status_code' => 403, 'code' => 'wallet', 'message' => translate('delivery_man_not_found')];
+        } elseif ($deliveryMan->earning != 1) {
+            return ['status_code' => 403, 'code' => 'Referal', 'message' => translate('wallet_not_enabled')];
         }
 
-        $referralHistory =  new DeliverymanReferralHistory();
+        $referralHistory = new DeliverymanReferralHistory;
         $referralHistory->delivery_man_id = $deliveryMan->id;
 
-
-        $amount = $referType  == 'referrerBonus' ? data_get($settings, 'dm_referal_bonus', 0) : data_get($settings, 'dm_referal_amount', 0);
+        $amount = $referType == 'referrerBonus' ? data_get($settings, 'dm_referal_bonus', 0) : data_get($settings, 'dm_referal_amount', 0);
 
         $referralHistory->amount = $amount;
 
@@ -967,65 +1192,69 @@ class OrderLogic
             $referralHistory->transaction_id = Helpers::generate_transaction_id($referralHistory);
             $referralHistory->save();
             $dmWallet->save();
+
+            Helpers::expenseCreate(amount: $amount, type: 'dm_'.$referType, datetime: now(), created_by: 'admin', order_id: null, delivery_man_id: $deliveryManId);
+
             DB::commit();
 
         } catch (\Exception $exception) {
             info(["line___{$exception->getLine()}", $exception->getMessage()]);
             DB::rollback();
-             return ['status_code' => 403, 'code' =>  'loyalty_point', 'message' => translate('messages.something_went_wrong')];
+
+            return ['status_code' => 403, 'code' => 'loyalty_point', 'message' => translate('messages.something_went_wrong')];
         }
 
-            try {
+        try {
             $data = [
                 'title' => translate('Referal Bonus'),
-                'description' =>  translate('Congratulations! You have received a referal bonus of ') . Helpers::format_currency($amount) ,
+                'description' => translate('Congratulations! You have received a referal bonus of ').Helpers::format_currency($amount),
                 'data_id' => $referralHistory->id,
                 'image' => '',
                 'type' => 'deliveryman_referral',
             ];
-                if(Helpers::getNotificationStatusData('deliveryman','deliveryman_referral_bonus','push_notification_status') && $deliveryMan->fcm_token ){
-                    Helpers::send_push_notif_to_device($deliveryMan->fcm_token, $data);
-                    DB::table('user_notifications')->insert([
-                        'data' => json_encode($data),
-                        'delivery_man_id' => $deliveryMan->id,
-                        'created_at' => now(),
-                        'updated_at' => now()
-                    ]);
-                }
-
-            } catch (\Exception $exception) {
-                info(["line___{$exception->getLine()}", $exception->getMessage()]);
+            if (Helpers::getNotificationStatusData('deliveryman', 'deliveryman_referral_bonus', 'push_notification_status') && $deliveryMan->fcm_token) {
+                Helpers::send_push_notif_to_device($deliveryMan->fcm_token, $data);
+                DB::table('user_notifications')->insert([
+                    'data' => json_encode($data),
+                    'delivery_man_id' => $deliveryMan->id,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
             }
+
+        } catch (\Exception $exception) {
+            info(["line___{$exception->getLine()}", $exception->getMessage()]);
+        }
+
         return true;
     }
 
+    public static function createReturnFeeLog($order, $returnFee)
+    {
+        $returnFeeLog = new ParcelReturnFees;
+        $returnFeeLog->order_id = $order->id;
+        $returnFeeLog->delivery_man_id = $order->delivery_man_id ?? null;
+        $returnFeeLog->amount = $returnFee;
+        $returnFeeLog->save();
 
-    public static  function createReturnFeeLog($order, $returnFee){
-            $returnFeeLog = new ParcelReturnFees();
-            $returnFeeLog->order_id = $order->id;
-            $returnFeeLog->delivery_man_id = $order->delivery_man_id ?? null;
-            $returnFeeLog->amount = $returnFee;
-            $returnFeeLog->save();
+        $returnFeeLog->transaction_id = Helpers::generate_transaction_id($returnFeeLog);
+        $returnFeeLog->save();
 
-            $returnFeeLog->transaction_id =Helpers::generate_transaction_id($returnFeeLog);
-            $returnFeeLog->save();
         return $returnFeeLog;
     }
 
-
-
-
-    public static   function createParcelPenaltyLog($order, $penaltyFee){
-        if($order->delivery_man_id){
-            $log = new ParcelPenaltyFee();
+    public static function createParcelPenaltyLog($order, $penaltyFee)
+    {
+        if ($order->delivery_man_id) {
+            $log = new ParcelPenaltyFee;
             $log->order_id = $order->id;
             $log->delivery_man_id = $order->delivery_man_id;
             $log->amount = $penaltyFee;
             $log->save();
-            $log->transaction_id =Helpers::generate_transaction_id($log);
+            $log->transaction_id = Helpers::generate_transaction_id($log);
             $log->save();
         }
+
         return $log ?? null;
     }
-
 }

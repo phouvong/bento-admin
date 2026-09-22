@@ -72,6 +72,7 @@ class DeliveryManController extends BaseController
     }
     private function getListView(Request $request): View
     {
+
         $zoneId = $request->query('zone_id', 'all');
         $deliveryMen = $this->deliveryManRepo->getFilterWiseListWhere(
             zoneId: $zoneId,
@@ -240,9 +241,9 @@ class DeliveryManController extends BaseController
         }
         try {
             if (config('mail.status') && getWebConfigStatus('suspend_mail_status_dm') == '1' && $request['status'] == 0 && Helpers::getNotificationStatusData('deliveryman', 'deliveryman_account_block', 'mail_status')) {
-                Mail::to($deliveryMan?->getRawOriginal('email'))->send(new DmSuspendMail('suspend', $deliveryMan['f_name']));
+                Mail::to($deliveryMan?->getRawOriginal('email'))->send(new DmSuspendMail('suspend', $deliveryMan));
             } elseif (config('mail.status') && getWebConfigStatus('unsuspend_mail_status_dm') == '1' && $request['status'] != 0 && Helpers::getNotificationStatusData('deliveryman', 'deliveryman_account_unblock', 'mail_status')) {
-                Mail::to($deliveryMan?->getRawOriginal('email'))->send(new DmSuspendMail('unsuspend', $deliveryMan['f_name']));
+                Mail::to($deliveryMan?->getRawOriginal('email'))->send(new DmSuspendMail('unsuspend', $deliveryMan));
             }
         } catch (Exception) {
             Toastr::warning(translate('messages.failed_to_send_mail'));
@@ -260,13 +261,21 @@ class DeliveryManController extends BaseController
 
     public function exportList(Request $request): BinaryFileResponse
     {
+
+
+
         $zoneId = $request->query('zone_id', 'all');
-        $deliveryMen = $this->deliveryManRepo->getZoneWiseListWhere(
+        $deliveryMen = $this->deliveryManRepo->getFilterWiseListWhere(
             zoneId: $zoneId,
             searchValue: $request['search'],
             filters: ['type' => 'zone_wise', 'application_status' => 'approved'],
-            relations: ['zone']
+            additionalFilter: $request['filter'],
+            jobType: $request['job_type'],
+            relations: ['zone', 'wallet'],
+            dataLimit: 'all'
         );
+
+
         $zone = is_numeric($zoneId) ? $this->zoneRepo->getFirstWhere(params: ['id' => $zoneId]) : null;
 
         $data = [
@@ -308,8 +317,29 @@ class DeliveryManController extends BaseController
 
     public function getAllReviewExportList(Request $request): BinaryFileResponse
     {
-        $reviews = $this->dmReviewRepo->getListWhere(searchValue: $request['search'], relations: ['delivery_man', 'customer']);
+        $filter = $request['deliveryman_id'] && is_numeric($request['deliveryman_id']) ? ['delivery_man_id' => $request['deliveryman_id']] : [];
+        $orderBy = $request['order_by'] && isset($request['order_by']) && in_array($request['order_by'], ['asc', 'desc']) ? ['col' => 'rating', 'type' => $request['order_by']] : [];
+        $reviews = $this->dmReviewRepo->getListWhereOrder(
+            searchValue: $request['search'],
+            filters: $filter,
+            relations: ['delivery_man', 'customer', 'order'],
+            dataLimit: "all",
+            orderBy: $orderBy
+        );
+
+
+        if($request['order_by'] == 'desc'){
+            $orderBy=translate('messages.Top_ratings');
+        } elseif($request['order_by'] == 'asc'){
+            $orderBy=translate('messages.Low_ratings');
+        } else {
+            $orderBy=translate('messages.Latest_ratings');
+        }
+
+        $deliveryMan = $this->deliveryManRepo->getFirstWhere(params: ['type' => 'zone_wise', 'id' => $request['deliveryman_id']]);
         $data = [
+            'delivery_men' => is_numeric($request['deliveryman_id']) ?  $deliveryMan?->full_name : translate('all'),
+            'order_by' => $orderBy?? null,
             'reviews' => $reviews,
             'search' => $request->search ?? null,
         ];
@@ -440,9 +470,9 @@ class DeliveryManController extends BaseController
 
             return view('admin-views.delivery-man.view.referral-earn', compact('deliveryMan', 'date', 'totalReferred', 'totalReferralEarning', 'referralEarnings'));
         } else if ($tab == 'disbursement') {
-            $key = explode(' ', $request['search']);
+            $key = explode(' ', $request['search'] ?? '');
             $disbursements = DisbursementDetails::where('delivery_man_id', $deliveryMan->id)
-                ->when(isset($key), function ($q) use ($key) {
+                ->when($request['search'], function ($q) use ($key) {
                     $q->where(function ($q) use ($key) {
                         foreach ($key as $value) {
                             $q->orWhere('disbursement_id', 'like', "%{$value}%")
@@ -466,7 +496,7 @@ class DeliveryManController extends BaseController
     }
     private function getLoyaltyHistoryList($request, $deliveryMan, $date)
     {
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
 
         $start = null;
         $end = null;
@@ -476,7 +506,7 @@ class DeliveryManController extends BaseController
             $end = Carbon::parse($dates[1]);
         }
         $loyalty_points = DeliverymanLoyaltyPointHistory::where('delivery_man_id', $deliveryMan->id)
-            ->when(isset($key), function ($q) use ($key) {
+            ->when($request['search'], function ($q) use ($key) {
                 $q->where(function ($q) use ($key) {
                     foreach ($key as $value) {
                         $q->orWhere('transaction_id', 'like', "%{$value}%")
@@ -494,7 +524,7 @@ class DeliveryManController extends BaseController
     }
     private function getReferralHistoryList($request, $deliveryMan, $date)
     {
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
 
         $start = null;
         $end = null;
@@ -504,7 +534,7 @@ class DeliveryManController extends BaseController
             $end = Carbon::parse($dates[1]);
         }
         $loyalty_points = DeliverymanReferralHistory::where('delivery_man_id', $deliveryMan->id)
-            ->when(isset($key), function ($q) use ($key) {
+            ->when($request['search'], function ($q) use ($key) {
                 $q->where(function ($q) use ($key) {
                     foreach ($key as $value) {
                         $q->orWhere('transaction_id', 'like', "%{$value}%")
@@ -594,13 +624,13 @@ class DeliveryManController extends BaseController
 
                 $mail_status = getWebConfigStatus('approve_mail_status_dm');
                 if (config('mail.status') && $mail_status == '1' && Helpers::getNotificationStatusData('deliveryman', 'deliveryman_registration_approval', 'mail_status')) {
-                    Mail::to($deliveryMan?->getRawOriginal('email'))->send(new DmSelfRegistration('approved', $deliveryMan->f_name . ' ' . $deliveryMan->l_name));
+                    Mail::to($deliveryMan?->getRawOriginal('email'))->send(new DmSelfRegistration('approved', $deliveryMan));
                 }
             } else {
 
                 $mail_status = getWebConfigStatus('deny_mail_status_dm');
                 if (config('mail.status') && $mail_status == '1' && Helpers::getNotificationStatusData('deliveryman', 'deliveryman_registration_deny', 'mail_status')) {
-                    Mail::to($deliveryMan?->getRawOriginal('email'))->send(new DmSelfRegistration('denied', $deliveryMan->f_name . ' ' . $deliveryMan->l_name));
+                    Mail::to($deliveryMan?->getRawOriginal('email'))->send(new DmSelfRegistration('denied', $deliveryMan));
                 }
             }
         } catch (Exception $ex) {
@@ -612,11 +642,11 @@ class DeliveryManController extends BaseController
 
     public function disbursement_export(Request $request, $id, $type)
     {
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
 
         $dm = \App\Models\DeliveryMan::find($id);
         $disbursements = DisbursementDetails::where('delivery_man_id', $dm->id)
-            ->when(isset($key), function ($q) use ($key) {
+            ->when($request['search'], function ($q) use ($key) {
                 $q->where(function ($q) use ($key) {
                     foreach ($key as $value) {
                         $q->orWhere('disbursement_id', 'like', "%{$value}%")
@@ -648,7 +678,7 @@ class DeliveryManController extends BaseController
 
     public function withdraw_list(Request $request)
     {
-        $key = isset($request['search']) ? explode(' ', $request['search']) : [];
+        $key = isset($request['search']) ? explode(' ', $request['search'] ?? '') : [];
         $all = session()->has('withdraw_status_filter') && session('withdraw_status_filter') == 'all' ? 1 : 0;
         $active = session()->has('withdraw_status_filter') && session('withdraw_status_filter') == 'approved' ? 1 : 0;
         $denied = session()->has('withdraw_status_filter') && session('withdraw_status_filter') == 'denied' ? 1 : 0;
@@ -667,7 +697,7 @@ class DeliveryManController extends BaseController
             ->when($pending, function ($query) {
                 return $query->where('approved', 0);
             })
-            ->when(isset($key), function ($query) use ($key) {
+            ->when(isset($request['search']), function ($query) use ($key) {
                 return $query->whereHas('deliveryman', function ($query) use ($key) {
                     foreach ($key as $value) {
                         $query->where(function ($query) use ($value) {
@@ -685,7 +715,7 @@ class DeliveryManController extends BaseController
     }
     public function withdraw_export(Request $request)
     {
-        $key = isset($request['search']) ? explode(' ', $request['search']) : [];
+        $key = isset($request['search']) ? explode(' ', $request['search'] ?? '') : [];
         $all = session()->has('withdraw_status_filter') && session('withdraw_status_filter') == 'all' ? 1 : 0;
         $active = session()->has('withdraw_status_filter') && session('withdraw_status_filter') == 'approved' ? 1 : 0;
         $denied = session()->has('withdraw_status_filter') && session('withdraw_status_filter') == 'denied' ? 1 : 0;
@@ -704,7 +734,7 @@ class DeliveryManController extends BaseController
             ->when($pending, function ($query) {
                 return $query->where('approved', 0);
             })
-            ->when(isset($key), function ($query) use ($key) {
+            ->when(isset($request['search']), function ($query) use ($key) {
                 return $query->whereHas('deliveryman', function ($query) use ($key) {
                     foreach ($key as $value) {
                         $query->where('f_name', 'like', "%{$value}%")
@@ -739,7 +769,7 @@ class DeliveryManController extends BaseController
 
     public function withdraw_search(Request $request)
     {
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
         $withdraw_req = WithdrawRequest::
             whereHas('deliveryman', function ($query) use ($key) {
                 foreach ($key as $value) {

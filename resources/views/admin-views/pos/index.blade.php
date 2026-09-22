@@ -4,6 +4,7 @@
 
 @push('css_or_js')
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="{{ asset('public/assets/admin/css/delivery-type.css') }}">
 
     <style type="text/css" media="print">
         @page {
@@ -34,15 +35,17 @@
                                 <div class="row g-2 justify-content-around">
                                     <div class="col-sm-6 col-12">
                                         <select name="store_id" id="store_select" data-url="{{url()->full()}}"
+                                            data-search-placeholder="{{ translate('messages.search_store') }}"
                                             data-filter="store_id" data-placeholder="{{translate('messages.select_store')}}"
                                             class="js-data-example-ajax form-control h--45px set-filter">
                                             @if($store)
-                                                <option value="{{$store->id}}" selected>{{$store->name}}</option>
+                                                <option value="{{$store->id}}" data-verified="{{ (int) $store->verified_seller }}" selected>{{$store->name}}</option>
                                             @endif
                                         </select>
                                     </div>
                                     <div class="col-sm-6 col-12">
                                         <select name="category" id="category"
+                                        data-search-placeholder="{{ translate('messages.search_category') }}"
                                             class="form-control js-select2-custom mx-1 set-filter"
                                             data-url="{{url()->full()}}" data-filter="category_id"
                                             title="{{translate('messages.select_category')}}" disabled>
@@ -58,18 +61,13 @@
                                             <!-- Search -->
                                             <div class="position-relative">
                                                 <input id="datatableSearch" type="search" value="{{$search ?? ''}}"
-                                                    name="search" class="form-control h--45px pl-5"
+                                                    name="searchKey" class="form-control h--45px pl-5"
                                                     placeholder="{{translate('messages.Search_by_product_name')}}"
                                                     aria-label="{{translate('messages.search_here')}}" disabled>
                                                 <img width="16" height="16"
                                                     src="{{asset('public/assets/admin/img/icons/search-icon.png')}}" alt=""
                                                     class="search-icon">
 
-                                                {{-- @if($keyword)
-                                                <button type="reset"
-                                                    class="btn btn--primary ml-2 location-reload-to-base-pos"
-                                                    data-url="{{url()->full()}}">{{translate('messages.reset')}}</button>
-                                                @endif --}}
                                             </div>
                                             <!-- End Search -->
                                         </form>
@@ -79,11 +77,11 @@
                             </div>
                             <div class="row g-3 mb-auto" id="single-list">
                                 <?php
-    if (session()->get('cart_product_ids') && count(session()->get('cart_product_ids')) > 0) {
-        $cart_product_ids = session()->get('cart_product_ids');
-    } else {
-        $cart_product_ids = [];
-    }
+                                    if (session()->get('cart_product_ids') && count(session()->get('cart_product_ids')) > 0) {
+                                        $cart_product_ids = session()->get('cart_product_ids');
+                                    } else {
+                                        $cart_product_ids = [];
+                                    }
                                 ?>
                                 @foreach($products as $product)
                                     <div class="order--item-box item-box">
@@ -115,11 +113,12 @@
                             </h5>
                         </div>
                         <?php
-    $customer = session('customer') ?? null;
+                                $customer = session('customer') ?? (isset($customer) ? $customer : null);
                             ?>
                         <div class="card-body p-0">
                             <div class="d-flex flex-wrap p-3 add--customer-btn">
                                 <select id="customer" name="customer_id"
+                                    data-search-placeholder="{{ translate('messages.search_customer') }}"
                                     data-placeholder="{{ translate('messages.select_customer') }}"
                                     class="js-data-example-ajax form-control">
                                     @if (isset($customer))
@@ -144,11 +143,12 @@
                                     <div class="p-2 rounded bg--secondary">
                                         <div class="media align-items-center customer--information-single"
                                             href="javascript:">
-                                            <div class="avatar avatar-circle">
-                                                <img class="avatar-img onerror-image" id=customer_image
-                                                    src="{{ isset($customer) ? $customer->image_full_url : '' }}"
-                                                    alt="Image Description">
-                                            </div>
+                                            @include('partials._user-avatar', [
+                                                'imageUrl'  => isset($customer) ? $customer->image_full_url : '',
+                                                'proStatus' => isset($customer) ? ($customer->pro_status ?? false) : false,
+                                                'imgId'     => 'customer_image',
+                                                'size'      => 42,
+                                            ])
                                             <div class="media-body">
                                                 <ul class="list-unstyled m-0">
                                                     <li class="pb-1">
@@ -170,13 +170,6 @@
                                 <!-- End Card -->
                             </div>
 
-
-
-
-
-
-
-
                             <div class="pos--delivery-options">
                                 <div class="d-flex justify-content-between mb-2">
                                     <h5 class="card-title d-flex align-items-center gap-2">
@@ -193,6 +186,15 @@
                                     @include('admin-views.pos._address')
                                 </div>
                             </div>
+
+                            @include('partials.delivery-type-selector', [
+                                'getUrl'            => route('admin.pos.delivery_type.get'),
+                                'setUrl'            => route('admin.pos.delivery_type.set'),
+                                'zoneId'            => $store?->zone_id ?? '',
+                                'moduleId'          => $module_id ?? \Illuminate\Support\Facades\Config::get('module.current_module_id'),
+                                'storeId'           => $store?->id ?? '',
+                                'storeDeliveryTime' => $store?->delivery_time ?? '',
+                            ])
                             <div class='w-100' id="cart">
                                 @include('admin-views.pos._cart', ['store' => $store])
                             </div>
@@ -306,13 +308,24 @@
 
 
 @push('script_2')
-<script
-    src="https://maps.googleapis.com/maps/api/js?key={{ \App\Models\BusinessSetting::where('key', 'map_api_key')->first()->value }}&libraries=places,marker&callback=initMap&v=3.61">
+<script async
+    src="https://maps.googleapis.com/maps/api/js?key={{ \App\Models\BusinessSetting::where('key', 'map_api_key')->first()->value }}&libraries=places,marker&callback=initMap&loading=async&v=weekly">
     </script>
 <script src="{{asset('public/assets/admin/js/view-pages/pos.js')}}"></script>
+<script src="{{asset('public/assets/admin/js/views/delivery-type-selector.js')}}?v={{ @filemtime(public_path('assets/admin/js/views/delivery-type-selector.js')) ?: 1 }}"></script>
 
 <script>
     "use strict";
+    // --- Product items equal width
+    function updateGrid() {
+        const container = document.getElementById('single-list');
+        const items = container.querySelectorAll('.order--item-box');
+
+        container.classList.toggle('equal-grid', items.length >= 10);
+    }
+    updateGrid();
+    // --- End Product items equal width
+
     $(document).on('click', '.place-order-submit', function (event) {
         event.preventDefault();
         let customer_id = document.getElementById('customer');
@@ -348,6 +361,21 @@
     });
 
 
+    function togglePinLoading(isLoading) {
+        let $btn = $('.delivery-Address-Store');
+        if (!$btn.length) {
+            return;
+        }
+        if (isLoading) {
+            if (!$btn.data('original-html')) {
+                $btn.data('original-html', $btn.html());
+            }
+            $btn.prop('disabled', true).html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>{{ translate('calculating') }}...');
+        } else {
+            $btn.prop('disabled', false).html($btn.data('original-html'));
+        }
+    }
+
     function initMap() {
         const mapId = "{{ \App\Models\BusinessSetting::where('key', 'map_api_key')->first()->value }}"
 
@@ -364,6 +392,10 @@
 
         //get current location block
         let infoWindow = new google.maps.InfoWindow();
+        const geoErrorMessages = {
+            geolocationFailed: "{{ translate('The Geolocation service failed') }}",
+            noGeolocationSupport: "{{ translate('Your browser doesn`t support geolocation') }}",
+        };
         // Try HTML5 geolocation.
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
@@ -378,70 +410,41 @@
                     map.setCenter(myLatlng);
                 },
                 () => {
-                    handleLocationError(true, infoWindow, map.getCenter());
+                    handleLocationError(true, infoWindow, map.getCenter(), map, geoErrorMessages);
                 }
             );
         } else {
             // Browser doesn't support Geolocation
-            handleLocationError(false, infoWindow, map.getCenter());
+            handleLocationError(false, infoWindow, map.getCenter(), map, geoErrorMessages);
         }
         //-----end block------
-        const input = document.getElementById("pac-input");
-        const searchBox = new google.maps.places.SearchBox(input);
-        map.controls[google.maps.ControlPosition.TOP_CENTER].push(input);
-        let markers = [];
         const bounds = new google.maps.LatLngBounds();
-        searchBox.addListener("places_changed", () => {
-            const places = searchBox.getPlaces();
-
-            if (places.length === 0) {
-                return;
-            }
-            // Clear out the old markers.
-            markers.forEach((marker) => {
-                marker.setMap(null);
-            });
-            markers = [];
-            // For each place, get the icon, name and location.
-            places.forEach((place) => {
-                if (!place.geometry || !place.geometry.location) {
-                    console.log("Returned place contains no geometry");
-                    return;
-                }
-                if (!google.maps.geometry.poly.containsLocation(
-                    place.geometry.location,
-                    zonePolygon
-                )) {
-                    toastr.error('{{ translate('messages.out_of_coverage') }}', {
-                        CloseButton: true,
-                        ProgressBar: true
-                    });
-                    return false;
-                }
-
-                document.getElementById('latitude').value = place.geometry.location.lat();
-                document.getElementById('longitude').value = place.geometry.location.lng();
-
-
-                const { AdvancedMarkerElement } = google.maps.marker;
-
-                // Create a marker for each place.
-                markers.push(
-                    new AdvancedMarkerElement({
-                        map,
-                        title: place.name,
-                        position: place.geometry.location,
-                    })
-                );
-
-                if (place.geometry.viewport) {
-                    // Only geocodes have viewport.
-                    bounds.union(place.geometry.viewport);
-                } else {
-                    bounds.extend(place.geometry.location);
-                }
-            });
-            map.fitBounds(bounds);
+        posInitPlaceSearch({
+            map: map,
+            inputId: "pac-input",
+            outOfCoverageMessage: '{{ translate('messages.out_of_coverage') }}',
+            getZonePolygon: () => zonePolygon,
+            @if ($store)
+            onLocationSelected: function (location, address) {
+                togglePinLoading(true);
+                posCalculateDeliveryDistance({
+                    origins: [
+                        { lat: {{$store['latitude']}}, lng: {{$store['longitude']}} },
+                        "{{$store->address}}"
+                    ],
+                    destinations: [
+                        address,
+                        { lat: location.lat(), lng: location.lng() }
+                    ],
+                    geocodedAddress: address,
+                    extraChargeUrl: '{{ route('admin.pos.extra_charge') }}',
+                    storeId: {{ $store->id }},
+                    currencySymbol: '{{ \App\CentralLogics\Helpers::currency_symbol() }}',
+                    warningMessage: '{{ translate('Please pin a more precise location to calculate delivery fee') }}',
+                    toggleLoading: togglePinLoading,
+                });
+            },
+            @endif
         });
         @if ($store)
                 $.get({
@@ -485,92 +488,35 @@
                             geocoder = new google.maps.Geocoder();
                             let latlng = new google.maps.LatLng(coordinates['lat'], coordinates['lng']);
 
+                            togglePinLoading(true);
+
                             geocoder.geocode({ 'latLng': latlng }, function (results, status) {
-                                if (status === google.maps.GeocoderStatus.OK) {
-                                    if (results[1]) {
-                                        let address = results[1].formatted_address;
-                                        // initialize services
-                                        const geocoder = new google.maps.Geocoder();
-                                        const service = new google.maps.DistanceMatrixService();
-                                        // build request
-                                        const origin1 = { lat: {{$store['latitude']}}, lng: {{$store['longitude']}} };
-                                        const origin2 = "{{$store->address}}";
-                                        const destinationA = address;
-                                        const destinationB = { lat: coordinates['lat'], lng: coordinates['lng'] };
-                                        const request = {
-                                            origins: [origin1, origin2],
-                                            destinations: [destinationA, destinationB],
-                                            travelMode: google.maps.TravelMode.DRIVING,
-                                            unitSystem: google.maps.UnitSystem.METRIC,
-                                            avoidHighways: false,
-                                            avoidTolls: false,
-                                        };
-
-                                        // get distance matrix response
-                                        service.getDistanceMatrix(request).then((response) => {
-                                            // put response
-                                            let distancMeter = response.rows[0].elements[0].distance['value'];
-                                            let distanceMile = distancMeter / 1000;
-                                            let distancMileResult = Math.round((distanceMile + Number.EPSILON) * 100) / 100;
-                                            document.getElementById('distance').value = distancMileResult;
-                                            document.getElementById('address').value = response.destinationAddresses[1];
-                                            <?php
-            $module_wise_delivery_charge = $store->zone->modules()->where('modules.id', $store->module_id)->first();
-            if ($store->sub_self_delivery) {
-                $per_km_shipping_charge = $store?->per_km_shipping_charge ?? 0;
-                $minimum_shipping_charge = $store?->minimum_shipping_charge ?? 0;
-                $maximum_shipping_charge = $store?->maximum_shipping_charge ?? 0;
-
-                $self_delivery_status = 1;
-            } else {
-                $self_delivery_status = 0;
-
-                if ($module_wise_delivery_charge) {
-                    $per_km_shipping_charge = $module_wise_delivery_charge->pivot->delivery_charge_type == 'distance' ? $module_wise_delivery_charge->pivot->per_km_shipping_charge ?? 0 : $module_wise_delivery_charge->pivot->fixed_shipping_charge ?? 0;
-                    $minimum_shipping_charge = $module_wise_delivery_charge->pivot->delivery_charge_type == 'distance' ? $module_wise_delivery_charge->pivot->minimum_shipping_charge ?? 0 : $module_wise_delivery_charge->pivot->fixed_shipping_charge ?? 0;
-                    $maximum_shipping_charge = $module_wise_delivery_charge->pivot->delivery_charge_type == 'distance' ? $module_wise_delivery_charge->pivot->maximum_shipping_charge ?? 0 : $module_wise_delivery_charge->pivot->fixed_shipping_charge ?? 0;
-
-                } else {
-                    $per_km_shipping_charge = (float) \App\Models\BusinessSetting::where(['key' => 'per_km_shipping_charge'])->first()->value;
-                    $minimum_shipping_charge = (float) \App\Models\BusinessSetting::where(['key' => 'minimum_shipping_charge'])->first()->value;
-                    $maximum_shipping_charge = 0;
-                }
-            }
-
-
-                                                ?>
-
-                                            $.get({
-                                                url: '{{ route('admin.pos.extra_charge') }}',
-                                                dataType: 'json',
-                                                data: {
-                                                    distancMileResult: distancMileResult,
-                                                    self_delivery_status: {{ $self_delivery_status }},
-                                                },
-                                                success: function (data) {
-                                                    let extra_charge = data;
-                                                    let original_delivery_charge = (distancMileResult * {{$per_km_shipping_charge}} > {{$minimum_shipping_charge}}) ? distancMileResult * {{$per_km_shipping_charge}} : {{$minimum_shipping_charge}};
-                                                    let delivery_amount = ({{ $maximum_shipping_charge }} > {{ $minimum_shipping_charge }} && original_delivery_charge + extra_charge > {{ $maximum_shipping_charge }} ? {{ $maximum_shipping_charge }} : original_delivery_charge + extra_charge);
-                                                    let delivery_charge = Math.round((delivery_amount + Number.EPSILON) * 100) / 100;
-                                                    document.getElementById('delivery_fee').value = delivery_charge;
-                                                    $('#delivery_fee').siblings('strong').html(delivery_charge + '{{ \App\CentralLogics\Helpers::currency_symbol() }}');
-
-                                                },
-                                                error: function () {
-                                                    let original_delivery_charge = (distancMileResult * {{$per_km_shipping_charge}} > {{$minimum_shipping_charge}}) ? distancMileResult * {{$per_km_shipping_charge}} : {{$minimum_shipping_charge}};
-
-                                                    let delivery_charge = Math.round((
-                                                        ({{ $maximum_shipping_charge }} > {{ $minimum_shipping_charge }} && original_delivery_charge > {{ $maximum_shipping_charge }} ? {{ $maximum_shipping_charge }} : original_delivery_charge)
-                                                        + Number.EPSILON) * 100) / 100;
-                                                    document.getElementById('delivery_fee').value = delivery_charge;
-                                                    $('#delivery_fee').siblings('strong').html(delivery_charge + '{{ \App\CentralLogics\Helpers::currency_symbol() }}');
-                                                }
-                                            });
-
-                                        });
-
-                                    }
+                                if (status !== google.maps.GeocoderStatus.OK || !results[1]) {
+                                    togglePinLoading(false);
+                                    toastr.warning('{{ translate('Please pin a more precise location to calculate delivery fee') }}', {
+                                        CloseButton: true,
+                                        ProgressBar: true
+                                    });
+                                    return;
                                 }
+
+                                let address = results[1].formatted_address;
+                                posCalculateDeliveryDistance({
+                                    origins: [
+                                        { lat: {{$store['latitude']}}, lng: {{$store['longitude']}} },
+                                        "{{$store->address}}"
+                                    ],
+                                    destinations: [
+                                        address,
+                                        { lat: coordinates['lat'], lng: coordinates['lng'] }
+                                    ],
+                                    geocodedAddress: address,
+                                    extraChargeUrl: '{{ route('admin.pos.extra_charge') }}',
+                                    storeId: {{ $store->id }},
+                                    currencySymbol: '{{ \App\CentralLogics\Helpers::currency_symbol() }}',
+                                    warningMessage: '{{ translate('Please pin a more precise location to calculate delivery fee') }}',
+                                    toggleLoading: togglePinLoading,
+                                });
                             });
                         });
                     },
@@ -583,11 +529,12 @@
     $(document).on('ready', function () {
         $('#store_select').select2({
             ajax: {
-                url: '{{url('/')}}/admin/store/get-stores',
+                url: '{{ route('admin.store.get-stores') }}',
                 data: function (params) {
                     return {
                         q: params.term, // search term
                         module_id:{{Config::get('module.current_module_id')}},
+                        show_active: 1,
                         page: params.page
                     };
                 },
@@ -608,15 +555,14 @@
         });
     });
 
-
-
-    $('#search-form').on('submit', function (e) {
-        e.preventDefault();
-        let search = $('#datatableSearch').val();
-        let url = new URL('{!!url()->full()!!}');
-        url.searchParams.set('search', search);
-        location.href = url;
-    });
+         $('#search-form').on('submit', function (e) {
+            e.preventDefault();
+            let keyword = $('#datatableSearch').val();
+            let nurl = new URL('{!! url()->full() !!}');
+            nurl.searchParams.set('search', keyword);
+            nurl.searchParams.delete('page');
+            location.href = nurl;
+        });
 
     $(document).on('click', '.quick-View', function () {
         $.get({
@@ -927,6 +873,9 @@
             _token: '{{ csrf_token() }}'
         }, function () {
             $('#del-add').empty();
+            $('#customer_id').val('');
+            $('#customer_data').addClass('d-none');
+            $('#customer').val('').trigger('change');
             updateCart();
             toastr.info('{{ translate('messages.item_has_been_removed_from_cart') }}', {
                 CloseButton: true,
@@ -936,9 +885,18 @@
     });
 
 
+    document.addEventListener('delivery-type:changed', function () { updateCart(); });
+
+    function syncDeliveryTypeFromCart() {
+        if (window.deliveryTypeSelector && typeof window.deliveryTypeSelector.syncFromCart === 'function') {
+            window.deliveryTypeSelector.syncFromCart();
+        }
+    }
+
     function updateCart() {
         $.post('<?php echo e(route('admin.pos.cart_items')); ?>?store_id={{request()?->store_id}}', { _token: '<?php echo e(csrf_token()); ?>' }, function (data) {
             $('#cart').empty().html(data);
+            syncDeliveryTypeFromCart();
         });
         $.post('<?php echo e(route('admin.pos.single_items')); ?>' + window.location.search, { _token: '<?php echo e(csrf_token()); ?>' }, function (data) {
             $('#single-list').empty().html(data);
@@ -947,6 +905,7 @@
 
 
     $(function () {
+        syncDeliveryTypeFromCart();
         $(document).on('click', 'input[type=number]', function () { this.select(); });
     });
 
@@ -1075,6 +1034,9 @@
                     $('#customer_wallet').text(data.customer_wallet);
                     $('#customer_image').attr('src', data.customer_image);
                     $('#customer_data').removeClass('d-none');
+                    if (typeof updateCart === 'function') {
+                        updateCart();
+                    }
                 },
                 complete: function () {
                     $('#loading').hide();
@@ -1083,16 +1045,51 @@
         }
     });
 
+        document.querySelectorAll('[name="searchKey"]').forEach(function(element) {
+            element.addEventListener('input', function(event) {
+                const urlParams = new URLSearchParams(window.location.search);
+                if (this.value === "" && urlParams.has('search')) {
+                        var nurl = new URL('{!! url()->full() !!}');
+                        nurl.searchParams.delete("search");
+                        location.href = nurl;
+                }
+            });
+        });
 
-    document.querySelectorAll('[name="search"]').forEach(function (element) {
-        element.addEventListener('input', function (event) {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (this.value === "" && urlParams.has('search')) {
-                var nurl = new URL('{!! url()->full() !!}');
-                nurl.searchParams.delete("search");
-                location.href = nurl;
+        $(document).on('change', '#customer', function (event) {
+            if (!$(this).val()) {
+                document.getElementById('contact_person_name').value = '';
+                document.getElementById('contact_person_number').value = '';
+            } else {
+                var selectedOption = $(this).find('option:selected');
+                var selectedText = selectedOption.text().trim();
+                var parts = selectedText.split("(");
+                document.getElementById('contact_person_name').value = parts[0];
+                document.getElementById('contact_person_number').value = parts[1] ? parts[1].replace(/[()]/g, '') : '';
+            }
+
+            var resetIds = ['road', 'house', 'floor', 'longitude', 'latitude', 'address', 'distance', 'delivery_fee'];
+            resetIds.forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) {
+                    el.value = '';
+                }
+            });
+            $('#delivery_fee').siblings('strong').html('0 {{ \App\CentralLogics\Helpers::currency_symbol() }}');
+
+            var pac = document.getElementById('pac-input');
+            if (pac) {
+                pac.value = '';
+            }
+            $('#del-add').empty();
+            $('#delivery_price').text('{{ \App\CentralLogics\Helpers::format_currency(0) }}');
+        });
+
+       $(document).on('click', '#delivery_address', function () {
+            if (!$('.iti').length || $('.iti').length == 1) {
+                initTelInputs();
             }
         });
-    });
+
 </script>
 @endpush

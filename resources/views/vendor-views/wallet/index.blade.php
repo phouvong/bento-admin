@@ -1,6 +1,8 @@
 @php
     $vendorData = \App\CentralLogics\Helpers::get_store_data();
-    $title = $vendorData?->module_type == 'rental' && addon_published_status('Rental') ? 'Provider' : 'Store';
+    // Service (and rental) providers are "Providers", not "Stores".
+    $isProviderModule = ($vendorData?->module_type == 'rental' && addon_published_status('Rental')) || $vendorData?->module_type == 'service';
+    $title = $isProviderModule ? 'Provider' : 'Store';
 @endphp
 
 @extends('layouts.vendor.app')
@@ -187,7 +189,7 @@
                     </button>
 
                 </div>
-                <form action="{{ route('vendor.wallet.make_payment') }}" method="POST" class="needs-validation">
+                <form action="{{ route('vendor.wallet.wallet_make_payment') }}" method="POST" class="needs-validation">
                     <div class="modal-body">
                         @csrf
                         <input type="hidden" value="{{ \App\CentralLogics\Helpers::get_store_id() }}" name="store_id"/>

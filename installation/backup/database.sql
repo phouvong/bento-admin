@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Jul 31, 2025 at 06:27 AM
--- Server version: 9.3.0
--- PHP Version: 8.2.29
+-- Generation Time: Jul 30, 2026 at 03:34 AM
+-- Server version: 9.5.0
+-- PHP Version: 8.4.13
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `mart_install`
+-- Database: `6ammart_install`
 --
 
 -- --------------------------------------------------------
@@ -29,16 +29,16 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `account_transactions` (
   `id` bigint UNSIGNED NOT NULL,
-  `from_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `from_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `from_id` bigint NOT NULL,
   `current_balance` decimal(24,2) NOT NULL,
   `amount` decimal(24,2) NOT NULL,
-  `method` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `ref` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `method` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `ref` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'collected',
-  `created_by` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'admin'
+  `type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'collected',
+  `created_by` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'admin'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -49,10 +49,10 @@ CREATE TABLE `account_transactions` (
 
 CREATE TABLE `addon_categories` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `module_id` bigint UNSIGNED DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -64,12 +64,12 @@ CREATE TABLE `addon_categories` (
 --
 
 CREATE TABLE `addon_settings` (
-  `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `key_name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `live_values` longtext COLLATE utf8mb4_unicode_ci,
-  `test_values` longtext COLLATE utf8mb4_unicode_ci,
-  `settings_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `mode` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'live',
+  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key_name` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `live_values` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `test_values` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `settings_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mode` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'live',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -137,7 +137,7 @@ INSERT INTO `addon_settings` (`id`, `key_name`, `live_values`, `test_values`, `s
 
 CREATE TABLE `add_ons` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `price` decimal(24,2) NOT NULL DEFAULT '0.00',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -154,19 +154,19 @@ CREATE TABLE `add_ons` (
 
 CREATE TABLE `admins` (
   `id` bigint UNSIGNED NOT NULL,
-  `f_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `l_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `password` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `f_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `l_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `remember_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `role_id` bigint UNSIGNED NOT NULL,
   `zone_id` bigint UNSIGNED DEFAULT NULL,
   `is_logged_in` tinyint(1) NOT NULL DEFAULT '1',
-  `login_remember_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `login_remember_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -177,9 +177,9 @@ CREATE TABLE `admins` (
 
 CREATE TABLE `admin_features` (
   `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `sub_title` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sub_title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -203,9 +203,9 @@ INSERT INTO `admin_features` (`id`, `title`, `sub_title`, `image`, `status`, `cr
 
 CREATE TABLE `admin_promotional_banners` (
   `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `sub_title` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sub_title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -226,8 +226,8 @@ INSERT INTO `admin_promotional_banners` (`id`, `title`, `sub_title`, `image`, `s
 
 CREATE TABLE `admin_roles` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `modules` text COLLATE utf8mb4_unicode_ci,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `modules` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -248,8 +248,8 @@ INSERT INTO `admin_roles` (`id`, `name`, `modules`, `status`, `created_at`, `upd
 
 CREATE TABLE `admin_special_criterias` (
   `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -275,11 +275,11 @@ INSERT INTO `admin_special_criterias` (`id`, `title`, `image`, `status`, `create
 
 CREATE TABLE `admin_testimonials` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `designation` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `review` text COLLATE utf8mb4_unicode_ci,
-  `reviewer_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `company_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `designation` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `review` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `reviewer_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `company_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -319,25 +319,60 @@ CREATE TABLE `advertisements` (
   `id` bigint UNSIGNED NOT NULL,
   `store_id` bigint UNSIGNED NOT NULL,
   `module_id` bigint UNSIGNED DEFAULT NULL,
-  `module_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `add_type` enum('video_promotion','store_promotion') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'store_promotion',
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
+  `module_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `add_type` enum('video_promotion','store_promotion') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'store_promotion',
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
-  `pause_note` text COLLATE utf8mb4_unicode_ci,
-  `cancellation_note` text COLLATE utf8mb4_unicode_ci,
-  `cover_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `profile_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `video_attachment` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pause_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `cancellation_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `cover_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `profile_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `video_attachment` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `priority` int DEFAULT NULL,
   `is_rating_active` tinyint(1) NOT NULL DEFAULT '0',
   `is_review_active` tinyint(1) NOT NULL DEFAULT '0',
   `is_paid` tinyint(1) NOT NULL DEFAULT '0',
   `is_updated` tinyint(1) NOT NULL DEFAULT '0',
   `created_by_id` bigint UNSIGNED NOT NULL,
-  `created_by_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` enum('pending','running','approved','expired','denied','paused') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `created_by_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('pending','running','approved','expired','denied','paused') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ai_conversations`
+--
+
+CREATE TABLE `ai_conversations` (
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED DEFAULT NULL,
+  `guest_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `module_id` bigint UNSIGNED DEFAULT NULL,
+  `zone_id` bigint UNSIGNED DEFAULT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` enum('active','archived') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `ai_messages`
+--
+
+CREATE TABLE `ai_messages` (
+  `id` bigint UNSIGNED NOT NULL,
+  `conversation_id` bigint UNSIGNED NOT NULL,
+  `role` enum('user','assistant','tool') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `tool_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `metadata` json DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -350,7 +385,7 @@ CREATE TABLE `advertisements` (
 
 CREATE TABLE `allergies` (
   `id` bigint UNSIGNED NOT NULL,
-  `allergy` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `allergy` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -382,12 +417,29 @@ CREATE TABLE `allergy_item_campaign` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `analytic_scripts`
+--
+
+CREATE TABLE `analytic_scripts` (
+  `id` bigint UNSIGNED NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `script_id` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `script` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `is_active` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `attributes`
 --
 
 CREATE TABLE `attributes` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -400,7 +452,9 @@ CREATE TABLE `attributes` (
 
 CREATE TABLE `automated_messages` (
   `id` bigint UNSIGNED NOT NULL,
-  `message` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `question_for` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'customer',
+  `question` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `message` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -414,18 +468,18 @@ CREATE TABLE `automated_messages` (
 
 CREATE TABLE `banners` (
   `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
-  `data` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `data` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `zone_id` bigint UNSIGNED NOT NULL,
   `module_id` bigint UNSIGNED NOT NULL,
   `featured` tinyint(1) NOT NULL DEFAULT '0',
-  `default_link` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `created_by` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'admin'
+  `default_link` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'admin'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -443,9 +497,9 @@ INSERT INTO `banners` (`id`, `title`, `type`, `image`, `status`, `data`, `create
 
 CREATE TABLE `brands` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -460,8 +514,8 @@ CREATE TABLE `brands` (
 
 CREATE TABLE `business_settings` (
   `id` bigint UNSIGNED NOT NULL,
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` text COLLATE utf8mb4_unicode_ci,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -606,7 +660,7 @@ INSERT INTO `business_settings` (`id`, `key`, `value`, `created_at`, `updated_at
 (136, 'dm_picture_upload_status', '1', NULL, NULL),
 (137, 'offline_payment_status', NULL, NULL, '2023-10-16 20:16:58'),
 (138, 'guest_checkout_status', '0', NULL, NULL),
-(139, 'check_daily_subscription_validity_check', '2025-02-18', '2024-06-05 20:15:07', '2025-02-18 17:33:37'),
+(139, 'check_daily_subscription_validity_check', '2026-06-28', '2024-06-05 20:15:07', '2026-06-28 17:30:27'),
 (140, 'commission_business_model', '1', '2024-06-05 20:16:14', '2024-06-05 20:16:14'),
 (141, 'subscription_business_model', '0', '2024-06-05 20:16:14', '2024-06-05 20:16:14'),
 (142, 'subscription_free_trial_days', '7', '2024-06-05 23:23:50', '2024-06-05 23:23:50'),
@@ -617,7 +671,10 @@ INSERT INTO `business_settings` (`id`, `key`, `value`, `created_at`, `updated_at
 (147, 'subscription_usage_max_time', '80', '2024-06-05 23:24:14', '2024-06-05 23:24:14'),
 (148, 'apple_login', '[{\"login_medium\":\"apple\",\"client_id\":\"\",\"client_secret\":\"\",\"team_id\":\"\",\"key_id\":\"\",\"service_file\":\"\",\"redirect_url\":\"\",\"status\":\"\"}]', '2024-06-05 23:39:00', '2024-06-05 23:39:00'),
 (149, 'country_picker_status', '1', NULL, NULL),
-(150, 'manual_login_status', '1', '2024-11-18 18:24:02', '2024-11-18 18:24:02');
+(150, 'manual_login_status', '1', '2024-11-18 18:24:02', '2024-11-18 18:24:02'),
+(151, 'backgroundChange', '{\"primary_1_hex\":\"#279b59\",\"primary_1_rgb\":\"39, 155, 89\",\"primary_2_hex\":null,\"primary_2_rgb\":\", , \"}', '2026-06-28 17:20:23', '2026-06-28 17:20:23'),
+(152, 'registration_mail_status_user', '0', '2026-06-28 17:33:17', '2026-06-28 17:33:21'),
+(153, 'review_section', '1', '2026-07-29 16:34:37', '2026-07-29 16:34:37');
 
 -- --------------------------------------------------------
 
@@ -626,10 +683,17 @@ INSERT INTO `business_settings` (`id`, `key`, `value`, `created_at`, `updated_at
 --
 
 CREATE TABLE `cache` (
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiration` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `cache`
+--
+
+INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('laravel_cachebusiness_settings_all_data', 'O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:150:{i:0;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:16:\"cash_on_delivery\";s:5:\"value\";s:14:\"{\"status\":\"1\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:16:\"cash_on_delivery\";s:5:\"value\";s:14:\"{\"status\":\"1\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:1;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:6:\"stripe\";s:5:\"value\";s:50:\"{\"status\":\"0\",\"api_key\":null,\"published_key\":null}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:6:\"stripe\";s:5:\"value\";s:50:\"{\"status\":\"0\",\"api_key\":null,\"published_key\":null}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:2;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:11:\"mail_config\";s:5:\"value\";s:175:\"{\"name\":\"6am Mart\",\"host\":\"mail.6amtech.com\",\"driver\":\"smtp\",\"port\":\"587\",\"username\":\"info@6amtech.com\",\"email_id\":\"info@6amtech.com\",\"encryption\":\"tls\",\"password\":\"password\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:11:\"mail_config\";s:5:\"value\";s:175:\"{\"name\":\"6am Mart\",\"host\":\"mail.6amtech.com\",\"driver\":\"smtp\",\"port\":\"587\",\"username\":\"info@6amtech.com\",\"email_id\":\"info@6amtech.com\",\"encryption\":\"tls\",\"password\":\"password\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:3;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:14:\"fcm_project_id\";s:5:\"value\";s:12:\"e-food-9e6e3\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:14:\"fcm_project_id\";s:5:\"value\";s:12:\"e-food-9e6e3\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:4;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:21:\"push_notification_key\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:21:\"push_notification_key\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:5;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:21:\"order_pending_message\";s:5:\"value\";s:58:\"{\"status\":1,\"message\":\"Your order is successfully placed\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:21:\"order_pending_message\";s:5:\"value\";s:58:\"{\"status\":1,\"message\":\"Your order is successfully placed\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:6;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:22:\"order_confirmation_msg\";s:5:\"value\";s:48:\"{\"status\":1,\"message\":\"Your order is confirmed\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:22:\"order_confirmation_msg\";s:5:\"value\";s:48:\"{\"status\":1,\"message\":\"Your order is confirmed\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:7;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:24:\"order_processing_message\";s:5:\"value\";s:58:\"{\"status\":1,\"message\":\"Your order is started for cooking\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:24:\"order_processing_message\";s:5:\"value\";s:58:\"{\"status\":1,\"message\":\"Your order is started for cooking\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:8;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:24:\"out_for_delivery_message\";s:5:\"value\";s:56:\"{\"status\":1,\"message\":\"Your food is ready for delivery\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:24:\"out_for_delivery_message\";s:5:\"value\";s:56:\"{\"status\":1,\"message\":\"Your food is ready for delivery\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:9;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:23:\"order_delivered_message\";s:5:\"value\";s:48:\"{\"status\":1,\"message\":\"Your order is delivered\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:23:\"order_delivered_message\";s:5:\"value\";s:48:\"{\"status\":1,\"message\":\"Your order is delivered\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:10;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:27:\"delivery_boy_assign_message\";s:5:\"value\";s:71:\"{\"status\":1,\"message\":\"Your order has been assigned to a delivery man\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:27:\"delivery_boy_assign_message\";s:5:\"value\";s:71:\"{\"status\":1,\"message\":\"Your order has been assigned to a delivery man\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:11;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:26:\"delivery_boy_start_message\";s:5:\"value\";s:64:\"{\"status\":1,\"message\":\"Your order is picked up by delivery man\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:26:\"delivery_boy_start_message\";s:5:\"value\";s:64:\"{\"status\":1,\"message\":\"Your order is picked up by delivery man\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:12;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:30:\"delivery_boy_delivered_message\";s:5:\"value\";s:53:\"{\"status\":1,\"message\":\"Order delivered successfully\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:30:\"delivery_boy_delivered_message\";s:5:\"value\";s:53:\"{\"status\":1,\"message\":\"Order delivered successfully\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:13;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:20:\"terms_and_conditions\";s:5:\"value\";s:11511:\"<p>This is a test Teams &amp; Conditions<br />\r\n<br />\r\nThese terms of use (the &quot;Terms of Use&quot;) govern your use of our website www.evaly.com.bd (the &quot;Website&quot;) and our &quot;StackFood&quot; application for mobile and handheld devices (the &quot;App&quot;). The Website and the App are jointly referred to as the &quot;Platform&quot;. Please read these Terms of Use carefully before you use the services. If you do not agree to these Terms of Use, you may not use the services on the Platform, and we request you to uninstall the App. By installing, downloading and/or even merely using the Platform, you shall be contracting with StackFood and you provide your acceptance to the Terms of Use and other StackFood policies (including but not limited to the Cancellation &amp; Refund Policy, Privacy Policy etc.) as posted on the Platform from time to time, which takes effect on the date on which you download, install or use the Services, and create a legally binding arrangement to abide by the same. The Platforms will be used by (i) natural persons who have reached 18 years of age and (ii) corporate legal entities, e.g companies. Where applicable, these Terms shall be subject to country-specific provisions as set out herein.</p>\r\n\r\n<h3>USE OF PLATFORM AND SERVICES</h3>\r\n\r\n<p>All commercial/contractual terms are offered by and agreed to between Buyers and Merchants alone. The commercial/contractual terms include without limitation to price, taxes, shipping costs, payment methods, payment terms, date, period and mode of delivery, warranties related to products and services and after sales services related to products and services. StackFood does not have any kind of control or does not determine or advise or in any way involve itself in the offering or acceptance of such commercial/contractual terms between the Buyers and Merchants. StackFood may, however, offer support services to Merchants in respect to order fulfilment, payment collection, call centre, and other services, pursuant to independent contracts executed by it with the Merchants. eFood is not responsible for any non-performance or breach of any contract entered into between Buyers and Merchants on the Platform. eFood cannot and does not guarantee that the concerned Buyers and/or Merchants shall perform any transaction concluded on the Platform. eFood is not responsible for unsatisfactory services or non-performance of services or damages or delays as a result of products which are out of stock, unavailable or back ordered.</p>\r\n\r\n<p>StackFood&nbsp;is operating an e-commerce platform and assumes and operates the role of facilitator, and does not at any point of time during any transaction between Buyer and Merchant on the Platform come into or take possession of any of the products or services offered by Merchant. At no time shall StackFood hold any right, title or interest over the products nor shall StackFood have any obligations or liabilities in respect of such contract entered into between Buyer and Merchant. You agree and acknowledge that we shall not be responsible for:</p>\r\n\r\n<ul>\r\n	<li>The goods provided by the shops or restaurants including, but not limited, serving of food orders suiting your requirements and needs;</li>\r\n	<li>The Merchant&quot;s goods not being up to your expectations or leading to any loss, harm or damage to you;</li>\r\n	<li>The availability or unavailability of certain items on the menu;</li>\r\n	<li>The Merchant serving the incorrect orders.</li>\r\n</ul>\r\n\r\n<p>The details of the menu and price list available on the Platform are based on the information provided by the Merchants and we shall not be responsible for any change or cancellation or unavailability. All Menu &amp; Food Images used on our platforms are only representative and shall/might not match with the actual Menu/Food Ordered, StackFood shall not be responsible or Liable for any discrepancies or variations on this aspect.</p>\r\n\r\n<h3>Personal Information that you provide</h3>\r\n\r\n<p>If you want to use our service, you must create an account on our Site. To establish your account, we will ask for personally identifiable information that can be used to contact or identify you, which may include your name, phone number, and e-mail address. We may also collect demographic information about you, such as your zip code, and allow you to submit additional information that will be part of your profile. Other than basic information that we need to establish your account, it will be up to you to decide how much information to share as part of your profile. We encourage you to think carefully about the information that you share and we recommend that you guard your identity and your sensitive information. Of course, you can review and revise your profile at any time.</p>\r\n\r\n<p>You understand that delivery periods quoted to you at the time of confirming the order is an approximate estimate and may vary. We shall not be responsible for any delay in the delivery of your order due to the delay at seller/merchant end for order processing or any other unavoidable circumstances.</p>\r\n\r\n<p>Your order shall be only delivered to the address designated by you at the time of placing the order on the Platform. We reserve the right to cancel the order, in our sole discretion, in the event of any change to the place of delivery and you shall not be entitled to any refund for the same. Delivery in the event of change of the delivery location shall be at our sole discretion and reserve the right to charge with additional delivery fee if required.</p>\r\n\r\n<p>You shall undertake to provide adequate directions, information and authorizations to accept delivery. In the event of any failure to accept delivery, failure to deliver within the estimated time due to your failure to provide appropriate instructions, or authorizations, then such goods shall be deemed to have been delivered to you and all risk and responsibility in relation to such goods shall pass to you and you shall not be entitled to any refund for the same. Our decision in relation to this shall be final and binding. You understand that our liability ends once your order has been delivered to you.</p>\r\n\r\n<p>You might be required to provide your credit or debit card details to the approved payment gateways while making the payment. In this regard, you agree to provide correct and accurate credit/ debit card details to the approved payment gateways for availing the Services. You shall not use the credit/ debit card which is not lawfully owned by you, i.e. in any transaction, you must use your own credit/ debit card. The information provided by you shall not be utilized or shared with any third party unless required in relation to fraud verifications or by law, regulation or court order. You shall be solely responsible for the security and confidentiality of your credit/ debit card details. We expressly disclaim all liabilities that may arise as a consequence of any unauthorized use of your credit/ debit card. You agree that the Services shall be provided by us only during the working hours of the relevant Merchants.</p>\r\n\r\n<h3>ACTIVITIES PROHIBITED ON THE PLATFORM</h3>\r\n\r\n<p>The following is a partial list of the kinds of conduct that are illegal or prohibited on the Websites. StackFood reserves the right to investigate and take appropriate legal action/s against anyone who, in StackFood sole discretion, engages in any of the prohibited activities. Prohibited activities include &mdash; but are not limited to &mdash; the following:</p>\r\n\r\n<ul>\r\n	<li>Using the Websites for any purpose in violation of laws or regulations;</li>\r\n	<li>Posting Content that infringes the intellectual property rights, privacy rights, publicity rights, trade secret rights, or any other rights of any party;</li>\r\n	<li>Posting Content that is unlawful, obscene, defamatory, threatening, harassing, abusive, slanderous, hateful, or embarrassing to any other person or entity as determined by StackFood in its sole discretion or pursuant to local community standards;</li>\r\n	<li>Posting Content that constitutes cyber-bullying, as determined by StackFood in its sole discretion;</li>\r\n	<li>Posting Content that depicts any dangerous, life-threatening, or otherwise risky behavior;</li>\r\n	<li>Posting telephone numbers, street addresses, or last names of any person;</li>\r\n	<li>Posting URLs to external websites or any form of HTML or programming code;</li>\r\n	<li>Posting anything that may be &quot;spam,&quot; as determined by StackFood in its sole discretion;</li>\r\n	<li>Impersonating another person when posting Content;</li>\r\n	<li>Harvesting or otherwise collecting information about others, including email addresses, without their consent;</li>\r\n	<li>Allowing any other person or entity to use your identification for posting or viewing comments;</li>\r\n	<li>Harassing, threatening, stalking, or abusing any person;</li>\r\n	<li>Engaging in any other conduct that restricts or inhibits any other person from using or enjoying the Websites, or which, in the sole discretion of StackFood , exposes eFood or any of its customers, suppliers, or any other parties to any liability or detriment of any type; or</li>\r\n	<li>Encouraging other people to engage in any prohibited activities as described herein.</li>\r\n</ul>\r\n\r\n<p>StackFood&nbsp;reserves the right but is not obligated to do any or all of the following:</p>\r\n\r\n<ul>\r\n	<li>Investigate an allegation that any Content posted on the Websites does not conform to these Terms of Use and determine in its sole discretion to remove or request the removal of the Content;</li>\r\n	<li>Remove Content which is abusive, illegal, or disruptive, or that otherwise fails to conform with these Terms of Use;</li>\r\n	<li>Terminate a user&#39;s access to the Websites upon any breach of these Terms of Use;</li>\r\n	<li>Monitor, edit, or disclose any Content on the Websites; and</li>\r\n	<li>Edit or delete any Content posted on the Websites, regardless of whether such Content violates these standards.</li>\r\n</ul>\r\n\r\n<h3>AMENDMENTS</h3>\r\n\r\n<p>StackFood&nbsp;reserves the right to change or modify these Terms (including our policies which are incorporated into these Terms) at any time by posting changes on the Platform. You are strongly recommended to read these Terms regularly. You will be deemed to have agreed to the amended Terms by your continued use of the Platforms following the date on which the amended Terms are posted.</p>\r\n\r\n<h3>PAYMENT</h3>\r\n\r\n<p>StackFood&nbsp;reserves the right to offer additional payment methods and/or remove existing payment methods at any time in its sole discretion. If you choose to pay using an online payment method, the payment shall be processed by our third party payment service provider(s). With your consent, your credit card / payment information will be stored with our third party payment service provider(s) for future orders. StackFood does not store your credit card or payment information. You must ensure that you have sufficient funds on your credit and debit card to fulfil payment of an Order. Insofar as required, StackFood takes responsibility for payments made on our Platforms including refunds, chargebacks, cancellations and dispute resolution, provided if reasonable and justifiable and in accordance with these Terms.</p>\r\n\r\n<h3>CANCELLATION</h3>\r\n\r\n<p>StackFood&nbsp;can cancel any order anytime due to the foods/products unavailability, out of coverage area and any other unavoidable circumstances.</p>\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:20:\"terms_and_conditions\";s:5:\"value\";s:11511:\"<p>This is a test Teams &amp; Conditions<br />\r\n<br />\r\nThese terms of use (the &quot;Terms of Use&quot;) govern your use of our website www.evaly.com.bd (the &quot;Website&quot;) and our &quot;StackFood&quot; application for mobile and handheld devices (the &quot;App&quot;). The Website and the App are jointly referred to as the &quot;Platform&quot;. Please read these Terms of Use carefully before you use the services. If you do not agree to these Terms of Use, you may not use the services on the Platform, and we request you to uninstall the App. By installing, downloading and/or even merely using the Platform, you shall be contracting with StackFood and you provide your acceptance to the Terms of Use and other StackFood policies (including but not limited to the Cancellation &amp; Refund Policy, Privacy Policy etc.) as posted on the Platform from time to time, which takes effect on the date on which you download, install or use the Services, and create a legally binding arrangement to abide by the same. The Platforms will be used by (i) natural persons who have reached 18 years of age and (ii) corporate legal entities, e.g companies. Where applicable, these Terms shall be subject to country-specific provisions as set out herein.</p>\r\n\r\n<h3>USE OF PLATFORM AND SERVICES</h3>\r\n\r\n<p>All commercial/contractual terms are offered by and agreed to between Buyers and Merchants alone. The commercial/contractual terms include without limitation to price, taxes, shipping costs, payment methods, payment terms, date, period and mode of delivery, warranties related to products and services and after sales services related to products and services. StackFood does not have any kind of control or does not determine or advise or in any way involve itself in the offering or acceptance of such commercial/contractual terms between the Buyers and Merchants. StackFood may, however, offer support services to Merchants in respect to order fulfilment, payment collection, call centre, and other services, pursuant to independent contracts executed by it with the Merchants. eFood is not responsible for any non-performance or breach of any contract entered into between Buyers and Merchants on the Platform. eFood cannot and does not guarantee that the concerned Buyers and/or Merchants shall perform any transaction concluded on the Platform. eFood is not responsible for unsatisfactory services or non-performance of services or damages or delays as a result of products which are out of stock, unavailable or back ordered.</p>\r\n\r\n<p>StackFood&nbsp;is operating an e-commerce platform and assumes and operates the role of facilitator, and does not at any point of time during any transaction between Buyer and Merchant on the Platform come into or take possession of any of the products or services offered by Merchant. At no time shall StackFood hold any right, title or interest over the products nor shall StackFood have any obligations or liabilities in respect of such contract entered into between Buyer and Merchant. You agree and acknowledge that we shall not be responsible for:</p>\r\n\r\n<ul>\r\n	<li>The goods provided by the shops or restaurants including, but not limited, serving of food orders suiting your requirements and needs;</li>\r\n	<li>The Merchant&quot;s goods not being up to your expectations or leading to any loss, harm or damage to you;</li>\r\n	<li>The availability or unavailability of certain items on the menu;</li>\r\n	<li>The Merchant serving the incorrect orders.</li>\r\n</ul>\r\n\r\n<p>The details of the menu and price list available on the Platform are based on the information provided by the Merchants and we shall not be responsible for any change or cancellation or unavailability. All Menu &amp; Food Images used on our platforms are only representative and shall/might not match with the actual Menu/Food Ordered, StackFood shall not be responsible or Liable for any discrepancies or variations on this aspect.</p>\r\n\r\n<h3>Personal Information that you provide</h3>\r\n\r\n<p>If you want to use our service, you must create an account on our Site. To establish your account, we will ask for personally identifiable information that can be used to contact or identify you, which may include your name, phone number, and e-mail address. We may also collect demographic information about you, such as your zip code, and allow you to submit additional information that will be part of your profile. Other than basic information that we need to establish your account, it will be up to you to decide how much information to share as part of your profile. We encourage you to think carefully about the information that you share and we recommend that you guard your identity and your sensitive information. Of course, you can review and revise your profile at any time.</p>\r\n\r\n<p>You understand that delivery periods quoted to you at the time of confirming the order is an approximate estimate and may vary. We shall not be responsible for any delay in the delivery of your order due to the delay at seller/merchant end for order processing or any other unavoidable circumstances.</p>\r\n\r\n<p>Your order shall be only delivered to the address designated by you at the time of placing the order on the Platform. We reserve the right to cancel the order, in our sole discretion, in the event of any change to the place of delivery and you shall not be entitled to any refund for the same. Delivery in the event of change of the delivery location shall be at our sole discretion and reserve the right to charge with additional delivery fee if required.</p>\r\n\r\n<p>You shall undertake to provide adequate directions, information and authorizations to accept delivery. In the event of any failure to accept delivery, failure to deliver within the estimated time due to your failure to provide appropriate instructions, or authorizations, then such goods shall be deemed to have been delivered to you and all risk and responsibility in relation to such goods shall pass to you and you shall not be entitled to any refund for the same. Our decision in relation to this shall be final and binding. You understand that our liability ends once your order has been delivered to you.</p>\r\n\r\n<p>You might be required to provide your credit or debit card details to the approved payment gateways while making the payment. In this regard, you agree to provide correct and accurate credit/ debit card details to the approved payment gateways for availing the Services. You shall not use the credit/ debit card which is not lawfully owned by you, i.e. in any transaction, you must use your own credit/ debit card. The information provided by you shall not be utilized or shared with any third party unless required in relation to fraud verifications or by law, regulation or court order. You shall be solely responsible for the security and confidentiality of your credit/ debit card details. We expressly disclaim all liabilities that may arise as a consequence of any unauthorized use of your credit/ debit card. You agree that the Services shall be provided by us only during the working hours of the relevant Merchants.</p>\r\n\r\n<h3>ACTIVITIES PROHIBITED ON THE PLATFORM</h3>\r\n\r\n<p>The following is a partial list of the kinds of conduct that are illegal or prohibited on the Websites. StackFood reserves the right to investigate and take appropriate legal action/s against anyone who, in StackFood sole discretion, engages in any of the prohibited activities. Prohibited activities include &mdash; but are not limited to &mdash; the following:</p>\r\n\r\n<ul>\r\n	<li>Using the Websites for any purpose in violation of laws or regulations;</li>\r\n	<li>Posting Content that infringes the intellectual property rights, privacy rights, publicity rights, trade secret rights, or any other rights of any party;</li>\r\n	<li>Posting Content that is unlawful, obscene, defamatory, threatening, harassing, abusive, slanderous, hateful, or embarrassing to any other person or entity as determined by StackFood in its sole discretion or pursuant to local community standards;</li>\r\n	<li>Posting Content that constitutes cyber-bullying, as determined by StackFood in its sole discretion;</li>\r\n	<li>Posting Content that depicts any dangerous, life-threatening, or otherwise risky behavior;</li>\r\n	<li>Posting telephone numbers, street addresses, or last names of any person;</li>\r\n	<li>Posting URLs to external websites or any form of HTML or programming code;</li>\r\n	<li>Posting anything that may be &quot;spam,&quot; as determined by StackFood in its sole discretion;</li>\r\n	<li>Impersonating another person when posting Content;</li>\r\n	<li>Harvesting or otherwise collecting information about others, including email addresses, without their consent;</li>\r\n	<li>Allowing any other person or entity to use your identification for posting or viewing comments;</li>\r\n	<li>Harassing, threatening, stalking, or abusing any person;</li>\r\n	<li>Engaging in any other conduct that restricts or inhibits any other person from using or enjoying the Websites, or which, in the sole discretion of StackFood , exposes eFood or any of its customers, suppliers, or any other parties to any liability or detriment of any type; or</li>\r\n	<li>Encouraging other people to engage in any prohibited activities as described herein.</li>\r\n</ul>\r\n\r\n<p>StackFood&nbsp;reserves the right but is not obligated to do any or all of the following:</p>\r\n\r\n<ul>\r\n	<li>Investigate an allegation that any Content posted on the Websites does not conform to these Terms of Use and determine in its sole discretion to remove or request the removal of the Content;</li>\r\n	<li>Remove Content which is abusive, illegal, or disruptive, or that otherwise fails to conform with these Terms of Use;</li>\r\n	<li>Terminate a user&#39;s access to the Websites upon any breach of these Terms of Use;</li>\r\n	<li>Monitor, edit, or disclose any Content on the Websites; and</li>\r\n	<li>Edit or delete any Content posted on the Websites, regardless of whether such Content violates these standards.</li>\r\n</ul>\r\n\r\n<h3>AMENDMENTS</h3>\r\n\r\n<p>StackFood&nbsp;reserves the right to change or modify these Terms (including our policies which are incorporated into these Terms) at any time by posting changes on the Platform. You are strongly recommended to read these Terms regularly. You will be deemed to have agreed to the amended Terms by your continued use of the Platforms following the date on which the amended Terms are posted.</p>\r\n\r\n<h3>PAYMENT</h3>\r\n\r\n<p>StackFood&nbsp;reserves the right to offer additional payment methods and/or remove existing payment methods at any time in its sole discretion. If you choose to pay using an online payment method, the payment shall be processed by our third party payment service provider(s). With your consent, your credit card / payment information will be stored with our third party payment service provider(s) for future orders. StackFood does not store your credit card or payment information. You must ensure that you have sufficient funds on your credit and debit card to fulfil payment of an Order. Insofar as required, StackFood takes responsibility for payments made on our Platforms including refunds, chargebacks, cancellations and dispute resolution, provided if reasonable and justifiable and in accordance with these Terms.</p>\r\n\r\n<h3>CANCELLATION</h3>\r\n\r\n<p>StackFood&nbsp;can cancel any order anytime due to the foods/products unavailability, out of coverage area and any other unavoidable circumstances.</p>\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:14;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:13:\"business_name\";s:5:\"value\";s:7:\"6ammart\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:13:\"business_name\";s:5:\"value\";s:7:\"6ammart\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:15;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:8:\"currency\";s:5:\"value\";s:3:\"USD\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:8:\"currency\";s:5:\"value\";s:3:\"USD\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:16;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:4:\"logo\";s:5:\"value\";s:28:\"2024-11-19-673c3141e4e1c.png\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:4:\"logo\";s:5:\"value\";s:28:\"2024-11-19-673c3141e4e1c.png\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:17;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:5:\"phone\";s:5:\"value\";s:14:\"+8801500000000\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:5:\"phone\";s:5:\"value\";s:14:\"+8801500000000\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:18;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:13:\"email_address\";s:5:\"value\";s:15:\"admin@admin.com\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:13:\"email_address\";s:5:\"value\";s:15:\"admin@admin.com\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:19;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:7:\"address\";s:5:\"value\";s:20:\"28HX+JM8, Bangladesh\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:7:\"address\";s:5:\"value\";s:20:\"28HX+JM8, Bangladesh\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:20;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:11:\"footer_text\";s:5:\"value\";s:23:\"Demo footer text @ 2025\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:11:\"footer_text\";s:5:\"value\";s:23:\"Demo footer text @ 2025\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:21;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:21:\"customer_verification\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:21:\"customer_verification\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:22;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:11:\"map_api_key\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:11:\"map_api_key\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:23;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:8:\"about_us\";s:5:\"value\";s:11012:\"<p>Lorem <strong>ipsum </strong>dolor sit amet, <em><strong>consectetur </strong></em>adipiscing elit. <em>Cras </em>dictum massa et dolor porta, rhoncus faucibus magna elementum. Sed porta mattis mollis. Donec ut est pretium, pretium nibh porttitor, <a href=\"http://google.com\">suscipit </a>metus. Sed viverra felis sed elit vehicula sodales. Nullam ante ante, tristique vel tincidunt ac, egestas eget sem. Sed lorem nunc, pellentesque vel ipsum venenatis, pellentesque interdum orci. Suspendisse mauris dui, accumsan at dapibus sed, volutpat quis erat. Nam fringilla nisl eu nunc lobortis, feugiat posuere libero venenatis. Nunc risus lorem, ornare eget congue in, pretium quis enim. Pellentesque elit elit, pharetra eget nunc at, maximus pellentesque diam.</p>\r\n\r\n<p>Praesent fermentum finibus lacus. Nulla tincidunt lectus sed purus facilisis hendrerit. Maecenas volutpat elementum orci, tincidunt euismod ante facilisis ac. Integer dignissim iaculis varius. Mauris iaculis elit vel posuere pellentesque. Praesent a mi sed neque ullamcorper dignissim sed ut nibh. Sed purus dui, sodales in varius in, accumsan at libero. Vestibulum posuere dui et orci tincidunt, ac consequat felis venenatis.</p>\r\n\r\n<p>Morbi sodales, nisl iaculis fringilla imperdiet, metus tortor semper quam, a fringilla nulla dui nec dolor. Phasellus lacinia aliquam ligula sed porttitor. Cras feugiat eros ut arcu commodo dictum. Integer tincidunt nisl id nisl consequat molestie. Integer elit tortor, ultrices sit amet nunc vitae, feugiat tempus mauris. Morbi volutpat consectetur felis sed porttitor. Praesent in urna erat.</p>\r\n\r\n<p>Aenean mollis luctus dolor, eu interdum velit faucibus eu. Suspendisse vitae efficitur erat. In facilisis nisi id arcu scelerisque bibendum. Nunc a placerat enim. Donec pharetra, velit quis facilisis tempus, lectus est imperdiet nisl, in tempus tortor dolor iaculis dolor. Nunc vitae molestie turpis. Nam vitae lobortis massa. Nam pharetra non felis in porta.</p>\r\n\r\n<p>Vivamus pulvinar diam vel felis dignissim tincidunt. Donec hendrerit non est sed volutpat. In egestas ex tortor, at convallis nunc porttitor at. Fusce sed cursus risus. Nam metus sapien, viverra eget felis id, maximus convallis lacus. Donec nec lacus vitae ex hendrerit ultricies non vel risus. Morbi malesuada ipsum iaculis augue convallis vehicula. Proin eget dolor dignissim, volutpat purus ac, ultricies risus. Pellentesque semper, mauris et pharetra accumsan, ante velit faucibus ex, a mattis metus odio vel ligula. Pellentesque elementum suscipit laoreet. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer a turpis sed massa blandit iaculis. Sed aliquet, justo vestibulum euismod rhoncus, nisi dui fringilla sapien, non tempor nunc lectus vitae dolor. Suspendisse potenti.</p>\r\n\r\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras dictum massa et dolor porta, rhoncus faucibus magna elementum. Sed porta mattis mollis. Donec ut est pretium, pretium nibh porttitor, suscipit metus. Sed viverra felis sed elit vehicula sodales. Nullam ante ante, tristique vel tincidunt ac, egestas eget sem. Sed lorem nunc, pellentesque vel ipsum venenatis, pellentesque interdum orci. Suspendisse mauris dui, accumsan at dapibus sed, volutpat quis erat. Nam fringilla nisl eu nunc lobortis, feugiat posuere libero venenatis. Nunc risus lorem, ornare eget congue in, pretium quis enim. Pellentesque elit elit, pharetra eget nunc at, maximus pellentesque diam.</p>\r\n\r\n<p>Praesent fermentum finibus lacus. Nulla tincidunt lectus sed purus facilisis hendrerit. Maecenas volutpat elementum orci, tincidunt euismod ante facilisis ac. Integer dignissim iaculis varius. Mauris iaculis elit vel posuere pellentesque. Praesent a mi sed neque ullamcorper dignissim sed ut nibh. Sed purus dui, sodales in varius in, accumsan at libero. Vestibulum posuere dui et orci tincidunt, ac consequat felis venenatis.</p>\r\n\r\n<p>Morbi sodales, nisl iaculis fringilla imperdiet, metus tortor semper quam, a fringilla nulla dui nec dolor. Phasellus lacinia aliquam ligula sed porttitor. Cras feugiat eros ut arcu commodo dictum. Integer tincidunt nisl id nisl consequat molestie. Integer elit tortor, ultrices sit amet nunc vitae, feugiat tempus mauris. Morbi volutpat consectetur felis sed porttitor. Praesent in urna erat.</p>\r\n\r\n<p>Aenean mollis luctus dolor, eu interdum velit faucibus eu. Suspendisse vitae efficitur erat. In facilisis nisi id arcu scelerisque bibendum. Nunc a placerat enim. Donec pharetra, velit quis facilisis tempus, lectus est imperdiet nisl, in tempus tortor dolor iaculis dolor. Nunc vitae molestie turpis. Nam vitae lobortis massa. Nam pharetra non felis in porta.</p>\r\n\r\n<p>Vivamus pulvinar diam vel felis dignissim tincidunt. Donec hendrerit non est sed volutpat. In egestas ex tortor, at convallis nunc porttitor at. Fusce sed cursus risus. Nam metus sapien, viverra eget felis id, maximus convallis lacus. Donec nec lacus vitae ex hendrerit ultricies non vel risus. Morbi malesuada ipsum iaculis augue convallis vehicula. Proin eget dolor dignissim, volutpat purus ac, ultricies risus. Pellentesque semper, mauris et pharetra accumsan, ante velit faucibus ex, a mattis metus odio vel ligula. Pellentesque elementum suscipit laoreet. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer a turpis sed massa blandit iaculis. Sed aliquet, justo vestibulum euismod rhoncus, nisi dui fringilla sapien, non tempor nunc lectus vitae dolor. Suspendisse potenti.</p>\r\n\r\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras dictum massa et dolor porta, rhoncus faucibus magna elementum. Sed porta mattis mollis. Donec ut est pretium, pretium nibh porttitor, suscipit metus. Sed viverra felis sed elit vehicula sodales. Nullam ante ante, tristique vel tincidunt ac, egestas eget sem. Sed lorem nunc, pellentesque vel ipsum venenatis, pellentesque interdum orci. Suspendisse mauris dui, accumsan at dapibus sed, volutpat quis erat. Nam fringilla nisl eu nunc lobortis, feugiat posuere libero venenatis. Nunc risus lorem, ornare eget congue in, pretium quis enim. Pellentesque elit elit, pharetra eget nunc at, maximus pellentesque diam.</p>\r\n\r\n<p>Praesent fermentum finibus lacus. Nulla tincidunt lectus sed purus facilisis hendrerit. Maecenas volutpat elementum orci, tincidunt euismod ante facilisis ac. Integer dignissim iaculis varius. Mauris iaculis elit vel posuere pellentesque. Praesent a mi sed neque ullamcorper dignissim sed ut nibh. Sed purus dui, sodales in varius in, accumsan at libero. Vestibulum posuere dui et orci tincidunt, ac consequat felis venenatis.</p>\r\n\r\n<p>Morbi sodales, nisl iaculis fringilla imperdiet, metus tortor semper quam, a fringilla nulla dui nec dolor. Phasellus lacinia aliquam ligula sed porttitor. Cras feugiat eros ut arcu commodo dictum. Integer tincidunt nisl id nisl consequat molestie. Integer elit tortor, ultrices sit amet nunc vitae, feugiat tempus mauris. Morbi volutpat consectetur felis sed porttitor. Praesent in urna erat.</p>\r\n\r\n<p>Aenean mollis luctus dolor, eu interdum velit faucibus eu. Suspendisse vitae efficitur erat. In facilisis nisi id arcu scelerisque bibendum. Nunc a placerat enim. Donec pharetra, velit quis facilisis tempus, lectus est imperdiet nisl, in tempus tortor dolor iaculis dolor. Nunc vitae molestie turpis. Nam vitae lobortis massa. Nam pharetra non felis in porta.</p>\r\n\r\n<p>Vivamus pulvinar diam vel felis dignissim tincidunt. Donec hendrerit non est sed volutpat. In egestas ex tortor, at convallis nunc porttitor at. Fusce sed cursus risus. Nam metus sapien, viverra eget felis id, maximus convallis lacus. Donec nec lacus vitae ex hendrerit ultricies non vel risus. Morbi malesuada ipsum iaculis augue convallis vehicula. Proin eget dolor dignissim, volutpat purus ac, ultricies risus. Pellentesque semper, mauris et pharetra accumsan, ante velit faucibus ex, a mattis metus odio vel ligula. Pellentesque elementum suscipit laoreet. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer a turpis sed massa blandit iaculis. Sed aliquet, justo vestibulum euismod rhoncus, nisi dui fringilla sapien, non tempor nunc lectus vitae dolor. Suspendisse potenti.</p>\r\n\r\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras dictum massa et dolor porta, rhoncus faucibus magna elementum. Sed porta mattis mollis. Donec ut est pretium, pretium nibh porttitor, suscipit metus. Sed viverra felis sed elit vehicula sodales. Nullam ante ante, tristique vel tincidunt ac, egestas eget sem. Sed lorem nunc, pellentesque vel ipsum venenatis, pellentesque interdum orci. Suspendisse mauris dui, accumsan at dapibus sed, volutpat quis erat. Nam fringilla nisl eu nunc lobortis, feugiat posuere libero venenatis. Nunc risus lorem, ornare eget congue in, pretium quis enim. Pellentesque elit elit, pharetra eget nunc at, maximus pellentesque diam.</p>\r\n\r\n<p>Praesent fermentum finibus lacus. Nulla tincidunt lectus sed purus facilisis hendrerit. Maecenas volutpat elementum orci, tincidunt euismod ante facilisis ac. Integer dignissim iaculis varius. Mauris iaculis elit vel posuere pellentesque. Praesent a mi sed neque ullamcorper dignissim sed ut nibh. Sed purus dui, sodales in varius in, accumsan at libero. Vestibulum posuere dui et orci tincidunt, ac consequat felis venenatis.</p>\r\n\r\n<p>Morbi sodales, nisl iaculis fringilla imperdiet, metus tortor semper quam, a fringilla nulla dui nec dolor. Phasellus lacinia aliquam ligula sed porttitor. Cras feugiat eros ut arcu commodo dictum. Integer tincidunt nisl id nisl consequat molestie. Integer elit tortor, ultrices sit amet nunc vitae, feugiat tempus mauris. Morbi volutpat consectetur felis sed porttitor. Praesent in urna erat.</p>\r\n\r\n<p>Aenean mollis luctus dolor, eu interdum velit faucibus eu. Suspendisse vitae efficitur erat. In facilisis nisi id arcu scelerisque bibendum. Nunc a placerat enim. Donec pharetra, velit quis facilisis tempus, lectus est imperdiet nisl, in tempus tortor dolor iaculis dolor. Nunc vitae molestie turpis. Nam vitae lobortis massa. Nam pharetra non felis in porta.</p>\r\n\r\n<p>Vivamus pulvinar diam vel felis dignissim tincidunt. Donec hendrerit non est sed volutpat. In egestas ex tortor, at convallis nunc porttitor at. Fusce sed cursus risus. Nam metus sapien, viverra eget felis id, maximus convallis lacus. Donec nec lacus vitae ex hendrerit ultricies non vel risus. Morbi malesuada ipsum iaculis augue convallis vehicula. Proin eget dolor dignissim, volutpat purus ac, ultricies risus. Pellentesque semper, mauris et pharetra accumsan, ante velit faucibus ex, a mattis metus odio vel ligula. Pellentesque elementum suscipit laoreet. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer a turpis sed massa blandit iaculis. Sed aliquet, justo vestibulum euismod rhoncus, nisi dui fringilla sapien, non tempor nunc lectus vitae dolor. Suspendisse potenti.</p>\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:8:\"about_us\";s:5:\"value\";s:11012:\"<p>Lorem <strong>ipsum </strong>dolor sit amet, <em><strong>consectetur </strong></em>adipiscing elit. <em>Cras </em>dictum massa et dolor porta, rhoncus faucibus magna elementum. Sed porta mattis mollis. Donec ut est pretium, pretium nibh porttitor, <a href=\"http://google.com\">suscipit </a>metus. Sed viverra felis sed elit vehicula sodales. Nullam ante ante, tristique vel tincidunt ac, egestas eget sem. Sed lorem nunc, pellentesque vel ipsum venenatis, pellentesque interdum orci. Suspendisse mauris dui, accumsan at dapibus sed, volutpat quis erat. Nam fringilla nisl eu nunc lobortis, feugiat posuere libero venenatis. Nunc risus lorem, ornare eget congue in, pretium quis enim. Pellentesque elit elit, pharetra eget nunc at, maximus pellentesque diam.</p>\r\n\r\n<p>Praesent fermentum finibus lacus. Nulla tincidunt lectus sed purus facilisis hendrerit. Maecenas volutpat elementum orci, tincidunt euismod ante facilisis ac. Integer dignissim iaculis varius. Mauris iaculis elit vel posuere pellentesque. Praesent a mi sed neque ullamcorper dignissim sed ut nibh. Sed purus dui, sodales in varius in, accumsan at libero. Vestibulum posuere dui et orci tincidunt, ac consequat felis venenatis.</p>\r\n\r\n<p>Morbi sodales, nisl iaculis fringilla imperdiet, metus tortor semper quam, a fringilla nulla dui nec dolor. Phasellus lacinia aliquam ligula sed porttitor. Cras feugiat eros ut arcu commodo dictum. Integer tincidunt nisl id nisl consequat molestie. Integer elit tortor, ultrices sit amet nunc vitae, feugiat tempus mauris. Morbi volutpat consectetur felis sed porttitor. Praesent in urna erat.</p>\r\n\r\n<p>Aenean mollis luctus dolor, eu interdum velit faucibus eu. Suspendisse vitae efficitur erat. In facilisis nisi id arcu scelerisque bibendum. Nunc a placerat enim. Donec pharetra, velit quis facilisis tempus, lectus est imperdiet nisl, in tempus tortor dolor iaculis dolor. Nunc vitae molestie turpis. Nam vitae lobortis massa. Nam pharetra non felis in porta.</p>\r\n\r\n<p>Vivamus pulvinar diam vel felis dignissim tincidunt. Donec hendrerit non est sed volutpat. In egestas ex tortor, at convallis nunc porttitor at. Fusce sed cursus risus. Nam metus sapien, viverra eget felis id, maximus convallis lacus. Donec nec lacus vitae ex hendrerit ultricies non vel risus. Morbi malesuada ipsum iaculis augue convallis vehicula. Proin eget dolor dignissim, volutpat purus ac, ultricies risus. Pellentesque semper, mauris et pharetra accumsan, ante velit faucibus ex, a mattis metus odio vel ligula. Pellentesque elementum suscipit laoreet. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer a turpis sed massa blandit iaculis. Sed aliquet, justo vestibulum euismod rhoncus, nisi dui fringilla sapien, non tempor nunc lectus vitae dolor. Suspendisse potenti.</p>\r\n\r\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras dictum massa et dolor porta, rhoncus faucibus magna elementum. Sed porta mattis mollis. Donec ut est pretium, pretium nibh porttitor, suscipit metus. Sed viverra felis sed elit vehicula sodales. Nullam ante ante, tristique vel tincidunt ac, egestas eget sem. Sed lorem nunc, pellentesque vel ipsum venenatis, pellentesque interdum orci. Suspendisse mauris dui, accumsan at dapibus sed, volutpat quis erat. Nam fringilla nisl eu nunc lobortis, feugiat posuere libero venenatis. Nunc risus lorem, ornare eget congue in, pretium quis enim. Pellentesque elit elit, pharetra eget nunc at, maximus pellentesque diam.</p>\r\n\r\n<p>Praesent fermentum finibus lacus. Nulla tincidunt lectus sed purus facilisis hendrerit. Maecenas volutpat elementum orci, tincidunt euismod ante facilisis ac. Integer dignissim iaculis varius. Mauris iaculis elit vel posuere pellentesque. Praesent a mi sed neque ullamcorper dignissim sed ut nibh. Sed purus dui, sodales in varius in, accumsan at libero. Vestibulum posuere dui et orci tincidunt, ac consequat felis venenatis.</p>\r\n\r\n<p>Morbi sodales, nisl iaculis fringilla imperdiet, metus tortor semper quam, a fringilla nulla dui nec dolor. Phasellus lacinia aliquam ligula sed porttitor. Cras feugiat eros ut arcu commodo dictum. Integer tincidunt nisl id nisl consequat molestie. Integer elit tortor, ultrices sit amet nunc vitae, feugiat tempus mauris. Morbi volutpat consectetur felis sed porttitor. Praesent in urna erat.</p>\r\n\r\n<p>Aenean mollis luctus dolor, eu interdum velit faucibus eu. Suspendisse vitae efficitur erat. In facilisis nisi id arcu scelerisque bibendum. Nunc a placerat enim. Donec pharetra, velit quis facilisis tempus, lectus est imperdiet nisl, in tempus tortor dolor iaculis dolor. Nunc vitae molestie turpis. Nam vitae lobortis massa. Nam pharetra non felis in porta.</p>\r\n\r\n<p>Vivamus pulvinar diam vel felis dignissim tincidunt. Donec hendrerit non est sed volutpat. In egestas ex tortor, at convallis nunc porttitor at. Fusce sed cursus risus. Nam metus sapien, viverra eget felis id, maximus convallis lacus. Donec nec lacus vitae ex hendrerit ultricies non vel risus. Morbi malesuada ipsum iaculis augue convallis vehicula. Proin eget dolor dignissim, volutpat purus ac, ultricies risus. Pellentesque semper, mauris et pharetra accumsan, ante velit faucibus ex, a mattis metus odio vel ligula. Pellentesque elementum suscipit laoreet. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer a turpis sed massa blandit iaculis. Sed aliquet, justo vestibulum euismod rhoncus, nisi dui fringilla sapien, non tempor nunc lectus vitae dolor. Suspendisse potenti.</p>\r\n\r\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras dictum massa et dolor porta, rhoncus faucibus magna elementum. Sed porta mattis mollis. Donec ut est pretium, pretium nibh porttitor, suscipit metus. Sed viverra felis sed elit vehicula sodales. Nullam ante ante, tristique vel tincidunt ac, egestas eget sem. Sed lorem nunc, pellentesque vel ipsum venenatis, pellentesque interdum orci. Suspendisse mauris dui, accumsan at dapibus sed, volutpat quis erat. Nam fringilla nisl eu nunc lobortis, feugiat posuere libero venenatis. Nunc risus lorem, ornare eget congue in, pretium quis enim. Pellentesque elit elit, pharetra eget nunc at, maximus pellentesque diam.</p>\r\n\r\n<p>Praesent fermentum finibus lacus. Nulla tincidunt lectus sed purus facilisis hendrerit. Maecenas volutpat elementum orci, tincidunt euismod ante facilisis ac. Integer dignissim iaculis varius. Mauris iaculis elit vel posuere pellentesque. Praesent a mi sed neque ullamcorper dignissim sed ut nibh. Sed purus dui, sodales in varius in, accumsan at libero. Vestibulum posuere dui et orci tincidunt, ac consequat felis venenatis.</p>\r\n\r\n<p>Morbi sodales, nisl iaculis fringilla imperdiet, metus tortor semper quam, a fringilla nulla dui nec dolor. Phasellus lacinia aliquam ligula sed porttitor. Cras feugiat eros ut arcu commodo dictum. Integer tincidunt nisl id nisl consequat molestie. Integer elit tortor, ultrices sit amet nunc vitae, feugiat tempus mauris. Morbi volutpat consectetur felis sed porttitor. Praesent in urna erat.</p>\r\n\r\n<p>Aenean mollis luctus dolor, eu interdum velit faucibus eu. Suspendisse vitae efficitur erat. In facilisis nisi id arcu scelerisque bibendum. Nunc a placerat enim. Donec pharetra, velit quis facilisis tempus, lectus est imperdiet nisl, in tempus tortor dolor iaculis dolor. Nunc vitae molestie turpis. Nam vitae lobortis massa. Nam pharetra non felis in porta.</p>\r\n\r\n<p>Vivamus pulvinar diam vel felis dignissim tincidunt. Donec hendrerit non est sed volutpat. In egestas ex tortor, at convallis nunc porttitor at. Fusce sed cursus risus. Nam metus sapien, viverra eget felis id, maximus convallis lacus. Donec nec lacus vitae ex hendrerit ultricies non vel risus. Morbi malesuada ipsum iaculis augue convallis vehicula. Proin eget dolor dignissim, volutpat purus ac, ultricies risus. Pellentesque semper, mauris et pharetra accumsan, ante velit faucibus ex, a mattis metus odio vel ligula. Pellentesque elementum suscipit laoreet. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer a turpis sed massa blandit iaculis. Sed aliquet, justo vestibulum euismod rhoncus, nisi dui fringilla sapien, non tempor nunc lectus vitae dolor. Suspendisse potenti.</p>\r\n\r\n<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras dictum massa et dolor porta, rhoncus faucibus magna elementum. Sed porta mattis mollis. Donec ut est pretium, pretium nibh porttitor, suscipit metus. Sed viverra felis sed elit vehicula sodales. Nullam ante ante, tristique vel tincidunt ac, egestas eget sem. Sed lorem nunc, pellentesque vel ipsum venenatis, pellentesque interdum orci. Suspendisse mauris dui, accumsan at dapibus sed, volutpat quis erat. Nam fringilla nisl eu nunc lobortis, feugiat posuere libero venenatis. Nunc risus lorem, ornare eget congue in, pretium quis enim. Pellentesque elit elit, pharetra eget nunc at, maximus pellentesque diam.</p>\r\n\r\n<p>Praesent fermentum finibus lacus. Nulla tincidunt lectus sed purus facilisis hendrerit. Maecenas volutpat elementum orci, tincidunt euismod ante facilisis ac. Integer dignissim iaculis varius. Mauris iaculis elit vel posuere pellentesque. Praesent a mi sed neque ullamcorper dignissim sed ut nibh. Sed purus dui, sodales in varius in, accumsan at libero. Vestibulum posuere dui et orci tincidunt, ac consequat felis venenatis.</p>\r\n\r\n<p>Morbi sodales, nisl iaculis fringilla imperdiet, metus tortor semper quam, a fringilla nulla dui nec dolor. Phasellus lacinia aliquam ligula sed porttitor. Cras feugiat eros ut arcu commodo dictum. Integer tincidunt nisl id nisl consequat molestie. Integer elit tortor, ultrices sit amet nunc vitae, feugiat tempus mauris. Morbi volutpat consectetur felis sed porttitor. Praesent in urna erat.</p>\r\n\r\n<p>Aenean mollis luctus dolor, eu interdum velit faucibus eu. Suspendisse vitae efficitur erat. In facilisis nisi id arcu scelerisque bibendum. Nunc a placerat enim. Donec pharetra, velit quis facilisis tempus, lectus est imperdiet nisl, in tempus tortor dolor iaculis dolor. Nunc vitae molestie turpis. Nam vitae lobortis massa. Nam pharetra non felis in porta.</p>\r\n\r\n<p>Vivamus pulvinar diam vel felis dignissim tincidunt. Donec hendrerit non est sed volutpat. In egestas ex tortor, at convallis nunc porttitor at. Fusce sed cursus risus. Nam metus sapien, viverra eget felis id, maximus convallis lacus. Donec nec lacus vitae ex hendrerit ultricies non vel risus. Morbi malesuada ipsum iaculis augue convallis vehicula. Proin eget dolor dignissim, volutpat purus ac, ultricies risus. Pellentesque semper, mauris et pharetra accumsan, ante velit faucibus ex, a mattis metus odio vel ligula. Pellentesque elementum suscipit laoreet. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Integer a turpis sed massa blandit iaculis. Sed aliquet, justo vestibulum euismod rhoncus, nisi dui fringilla sapien, non tempor nunc lectus vitae dolor. Suspendisse potenti.</p>\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:24;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:14:\"privacy_policy\";s:5:\"value\";s:4749:\"<h2>This is a Demo Privacy Policy</h2>\r\n\r\n<p>This policy explains how StackFood&nbsp;website and related applications (the &ldquo;Site&rdquo;, &ldquo;we&rdquo; or &ldquo;us&rdquo;) collects, uses, shares and protects the personal information that we collect through this site or different channels. StackFood has established the site to link up the users who need foods or grocery items to be shipped or delivered by the riders from the affiliated restaurants or shops to the desired location. This policy also applies to any mobile applications that we develop for use with our services on the Site, and references to this &ldquo;Site&rdquo;, &ldquo;we&rdquo; or &ldquo;us&rdquo; is intended to also include these mobile applications. Please read below to learn more about our information policies. By using this Site, you agree to these policies.</p>\r\n\r\n<h2>How the Information is collected</h2>\r\n\r\n<h3>Information provided by web browser</h3>\r\n\r\n<p>You have to provide us with personal information like your name, contact no, mailing address and email id, our app will also fetch your location information in order to give you the best service. Like many other websites, we may record information that your web browser routinely shares, such as your browser type, browser language, software and hardware attributes, the date and time of your visit, the web page from which you came, your Internet Protocol address and the geographic location associated with that address, the pages on this Site that you visit and the time you spent on those pages. This will generally be anonymous data that we collect on an aggregate basis.</p>\r\n\r\n<h3>Personal Information that you provide</h3>\r\n\r\n<p>If you want to use our service, you must create an account on our Site. To establish your account, we will ask for personally identifiable information that can be used to contact or identify you, which may include your name, phone number, and e-mail address. We may also collect demographic information about you, such as your zip code, and allow you to submit additional information that will be part of your profile. Other than basic information that we need to establish your account, it will be up to you to decide how much information to share as part of your profile. We encourage you to think carefully about the information that you share and we recommend that you guard your identity and your sensitive information. Of course, you can review and revise your profile at any time.</p>\r\n\r\n<h3>Payment Information</h3>\r\n\r\n<p>To make the payment online for availing our services, you have to provide the bank account, mobile financial service (MFS), debit card, credit card information to the StackFood platform.</p>\r\n\r\n<h2>How the Information is collected</h2>\r\n\r\n<h3>Session and Persistent Cookies</h3>\r\n\r\n<p>Cookies are small text files that are placed on your computer by websites that you visit. They are widely used in order to make websites work, or work more efficiently, as well as to provide information to the owners of the site. As is commonly done on websites, we may use cookies and similar technology to keep track of our users and the services they have elected. We use both &ldquo;session&rdquo; and &ldquo;persistent&rdquo; cookies. Session cookies are deleted after you leave our website and when you close your browser. We use data collected with session cookies to enable certain features on our Site, to help us understand how users interact with our Site, and to monitor at an aggregate level Site usage and web traffic routing. We may allow business partners who provide services to our Site to place cookies on your computer that assist us in analyzing usage data. We do not allow these business partners to collect your personal information from our website except as may be necessary for the services that they provide.</p>\r\n\r\n<h3>Web Beacons</h3>\r\n\r\n<p>We may also use web beacons or similar technology to help us track the effectiveness of our communications.</p>\r\n\r\n<h3>Advertising Cookies</h3>\r\n\r\n<p>We may use third parties, such as Google, to serve ads about our website over the internet. These third parties may use cookies to identify ads that may be relevant to your interest (for example, based on your recent visit to our website), to limit the number of times that you see an ad, and to measure the effectiveness of the ads.</p>\r\n\r\n<h3>Google Analytics</h3>\r\n\r\n<p>We may also use Google Analytics or a similar service to gather statistical information about the visitors to this Site and how they use the Site. This, also, is done on an anonymous basis. We will not try to associate anonymous data with your personally identifiable data. If you would like to learn more about Google Analytics, please click here.</p>\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:14:\"privacy_policy\";s:5:\"value\";s:4749:\"<h2>This is a Demo Privacy Policy</h2>\r\n\r\n<p>This policy explains how StackFood&nbsp;website and related applications (the &ldquo;Site&rdquo;, &ldquo;we&rdquo; or &ldquo;us&rdquo;) collects, uses, shares and protects the personal information that we collect through this site or different channels. StackFood has established the site to link up the users who need foods or grocery items to be shipped or delivered by the riders from the affiliated restaurants or shops to the desired location. This policy also applies to any mobile applications that we develop for use with our services on the Site, and references to this &ldquo;Site&rdquo;, &ldquo;we&rdquo; or &ldquo;us&rdquo; is intended to also include these mobile applications. Please read below to learn more about our information policies. By using this Site, you agree to these policies.</p>\r\n\r\n<h2>How the Information is collected</h2>\r\n\r\n<h3>Information provided by web browser</h3>\r\n\r\n<p>You have to provide us with personal information like your name, contact no, mailing address and email id, our app will also fetch your location information in order to give you the best service. Like many other websites, we may record information that your web browser routinely shares, such as your browser type, browser language, software and hardware attributes, the date and time of your visit, the web page from which you came, your Internet Protocol address and the geographic location associated with that address, the pages on this Site that you visit and the time you spent on those pages. This will generally be anonymous data that we collect on an aggregate basis.</p>\r\n\r\n<h3>Personal Information that you provide</h3>\r\n\r\n<p>If you want to use our service, you must create an account on our Site. To establish your account, we will ask for personally identifiable information that can be used to contact or identify you, which may include your name, phone number, and e-mail address. We may also collect demographic information about you, such as your zip code, and allow you to submit additional information that will be part of your profile. Other than basic information that we need to establish your account, it will be up to you to decide how much information to share as part of your profile. We encourage you to think carefully about the information that you share and we recommend that you guard your identity and your sensitive information. Of course, you can review and revise your profile at any time.</p>\r\n\r\n<h3>Payment Information</h3>\r\n\r\n<p>To make the payment online for availing our services, you have to provide the bank account, mobile financial service (MFS), debit card, credit card information to the StackFood platform.</p>\r\n\r\n<h2>How the Information is collected</h2>\r\n\r\n<h3>Session and Persistent Cookies</h3>\r\n\r\n<p>Cookies are small text files that are placed on your computer by websites that you visit. They are widely used in order to make websites work, or work more efficiently, as well as to provide information to the owners of the site. As is commonly done on websites, we may use cookies and similar technology to keep track of our users and the services they have elected. We use both &ldquo;session&rdquo; and &ldquo;persistent&rdquo; cookies. Session cookies are deleted after you leave our website and when you close your browser. We use data collected with session cookies to enable certain features on our Site, to help us understand how users interact with our Site, and to monitor at an aggregate level Site usage and web traffic routing. We may allow business partners who provide services to our Site to place cookies on your computer that assist us in analyzing usage data. We do not allow these business partners to collect your personal information from our website except as may be necessary for the services that they provide.</p>\r\n\r\n<h3>Web Beacons</h3>\r\n\r\n<p>We may also use web beacons or similar technology to help us track the effectiveness of our communications.</p>\r\n\r\n<h3>Advertising Cookies</h3>\r\n\r\n<p>We may use third parties, such as Google, to serve ads about our website over the internet. These third parties may use cookies to identify ads that may be relevant to your interest (for example, based on your recent visit to our website), to limit the number of times that you see an ad, and to measure the effectiveness of the ads.</p>\r\n\r\n<h3>Google Analytics</h3>\r\n\r\n<p>We may also use Google Analytics or a similar service to gather statistical information about the visitors to this Site and how they use the Site. This, also, is done on an anonymous basis. We will not try to associate anonymous data with your personally identifiable data. If you would like to learn more about Google Analytics, please click here.</p>\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:25;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:23:\"minimum_shipping_charge\";s:5:\"value\";s:2:\"10\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:23:\"minimum_shipping_charge\";s:5:\"value\";s:2:\"10\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:26;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:22:\"per_km_shipping_charge\";s:5:\"value\";s:1:\"2\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:22:\"per_km_shipping_charge\";s:5:\"value\";s:1:\"2\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:27;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:15:\"digital_payment\";s:5:\"value\";s:15:\"{\"status\":null}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:15:\"digital_payment\";s:5:\"value\";s:15:\"{\"status\":null}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:28;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:19:\"ssl_commerz_payment\";s:5:\"value\";s:52:\"{\"status\":\"0\",\"store_id\":null,\"store_password\":null}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:19:\"ssl_commerz_payment\";s:5:\"value\";s:52:\"{\"status\":\"0\",\"store_id\":null,\"store_password\":null}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:29;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:9:\"razor_pay\";s:5:\"value\";s:51:\"{\"status\":\"0\",\"razor_key\":null,\"razor_secret\":null}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:9:\"razor_pay\";s:5:\"value\";s:51:\"{\"status\":\"0\",\"razor_key\":null,\"razor_secret\":null}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:30;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:6:\"paypal\";s:5:\"value\";s:59:\"{\"status\":\"0\",\"paypal_client_id\":null,\"paypal_secret\":null}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:6:\"paypal\";s:5:\"value\";s:59:\"{\"status\":\"0\",\"paypal_client_id\":null,\"paypal_secret\":null}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:31;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:8:\"paystack\";s:5:\"value\";s:87:\"{\"status\":\"0\",\"publicKey\":null,\"secretKey\":null,\"paymentUrl\":null,\"merchantEmail\":null}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:8:\"paystack\";s:5:\"value\";s:87:\"{\"status\":\"0\",\"publicKey\":null,\"secretKey\":null,\"paymentUrl\":null,\"merchantEmail\":null}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:32;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:10:\"senang_pay\";s:5:\"value\";s:72:\"{\"status\":\"1\",\"secret_key\":null,\"published_key\":null,\"merchant_id\":null}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:10:\"senang_pay\";s:5:\"value\";s:72:\"{\"status\":\"1\",\"secret_key\":null,\"published_key\":null,\"merchant_id\":null}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:33;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:22:\"order_handover_message\";s:5:\"value\";s:51:\"{\"status\":1,\"message\":\"Delivery man is on the way\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:22:\"order_handover_message\";s:5:\"value\";s:51:\"{\"status\":1,\"message\":\"Delivery man is on the way\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:34;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:21:\"order_cancled_message\";s:5:\"value\";s:58:\"{\"status\":1,\"message\":\"Order is canceled by your request\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:21:\"order_cancled_message\";s:5:\"value\";s:58:\"{\"status\":1,\"message\":\"Order is canceled by your request\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:35;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:8:\"timezone\";s:5:\"value\";s:10:\"US/Central\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:8:\"timezone\";s:5:\"value\";s:10:\"US/Central\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:36;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:27:\"order_delivery_verification\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:27:\"order_delivery_verification\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:37;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:24:\"currency_symbol_position\";s:5:\"value\";s:4:\"left\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:24:\"currency_symbol_position\";s:5:\"value\";s:4:\"left\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:38;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:14:\"schedule_order\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:14:\"schedule_order\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:39;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:19:\"app_minimum_version\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:19:\"app_minimum_version\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:40;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:3:\"tax\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:3:\"tax\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:41;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:16:\"admin_commission\";s:5:\"value\";s:2:\"10\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:16:\"admin_commission\";s:5:\"value\";s:2:\"10\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:42;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:7:\"country\";s:5:\"value\";s:2:\"US\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:7:\"country\";s:5:\"value\";s:2:\"US\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:43;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:7:\"app_url\";s:5:\"value\";s:22:\"https://www.google.com\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:7:\"app_url\";s:5:\"value\";s:22:\"https://www.google.com\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:44;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:16:\"default_location\";s:5:\"value\";s:46:\"{\"lat\":\"23.02918734674459\",\"lng\":\"90.3515625\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:16:\"default_location\";s:5:\"value\";s:46:\"{\"lat\":\"23.02918734674459\",\"lng\":\"90.3515625\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:45;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:10:\"twilio_sms\";s:5:\"value\";s:114:\"{\"status\":\"0\",\"sid\":null,\"messaging_service_id\":null,\"token\":null,\"from\":null,\"otp_template\":\"Your otp is #OTP#.\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:10:\"twilio_sms\";s:5:\"value\";s:114:\"{\"status\":\"0\",\"sid\":null,\"messaging_service_id\":null,\"token\":null,\"from\":null,\"otp_template\":\"Your otp is #OTP#.\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:46;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:9:\"nexmo_sms\";s:5:\"value\";s:154:\"{\"status\":\"0\",\"api_key\":null,\"api_secret\":null,\"signature_secret\":\"\",\"private_key\":\"\",\"application_id\":\"\",\"from\":null,\"otp_template\":\"Your otp is #OTP#.\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:9:\"nexmo_sms\";s:5:\"value\";s:154:\"{\"status\":\"0\",\"api_key\":null,\"api_secret\":null,\"signature_secret\":\"\",\"private_key\":\"\",\"application_id\":\"\",\"from\":null,\"otp_template\":\"Your otp is #OTP#.\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:47;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:11:\"2factor_sms\";s:5:\"value\";s:29:\"{\"status\":\"0\",\"api_key\":null}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:11:\"2factor_sms\";s:5:\"value\";s:29:\"{\"status\":\"0\",\"api_key\":null}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:48;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:9:\"msg91_sms\";s:5:\"value\";s:48:\"{\"status\":\"0\",\"template_id\":null,\"authkey\":null}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:9:\"msg91_sms\";s:5:\"value\";s:48:\"{\"status\":\"0\",\"template_id\":null,\"authkey\":null}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:49;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:18:\"free_delivery_over\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:18:\"free_delivery_over\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:50;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:16:\"maintenance_mode\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:16:\"maintenance_mode\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:51;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:23:\"app_minimum_version_ios\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:23:\"app_minimum_version_ios\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:52;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:27:\"app_minimum_version_android\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:27:\"app_minimum_version_android\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:53;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:11:\"app_url_ios\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:11:\"app_url_ios\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:54;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:15:\"app_url_android\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:15:\"app_url_android\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:55;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:11:\"flutterwave\";s:5:\"value\";s:172:\"{\"status\":1,\"public_key\":\"FLWPUBK_TEST-3f6a0b6c3d621c4ecbb9beeff516c92b-X\",\"secret_key\":\"FLWSECK_TEST-ec27426eb062491500a9eb95723b5436-X\",\"hash\":\"FLWSECK_TEST951e36220f66\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:11:\"flutterwave\";s:5:\"value\";s:172:\"{\"status\":1,\"public_key\":\"FLWPUBK_TEST-3f6a0b6c3d621c4ecbb9beeff516c92b-X\",\"secret_key\":\"FLWSECK_TEST-ec27426eb062491500a9eb95723b5436-X\",\"hash\":\"FLWSECK_TEST951e36220f66\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:56;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:17:\"dm_maximum_orders\";s:5:\"value\";s:1:\"2\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:17:\"dm_maximum_orders\";s:5:\"value\";s:1:\"2\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:57;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:24:\"order_confirmation_model\";s:5:\"value\";s:11:\"deliveryman\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:24:\"order_confirmation_model\";s:5:\"value\";s:11:\"deliveryman\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:58;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:12:\"popular_food\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:12:\"popular_food\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:59;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:18:\"popular_restaurant\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:18:\"popular_restaurant\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:60;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:14:\"new_restaurant\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:14:\"new_restaurant\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:61;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:11:\"mercadopago\";s:5:\"value\";s:46:\"{\"status\":1,\"public_key\":\"\",\"access_token\":\"\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:11:\"mercadopago\";s:5:\"value\";s:46:\"{\"status\":1,\"public_key\":\"\",\"access_token\":\"\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:62;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:18:\"map_api_key_server\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:18:\"map_api_key_server\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:63;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:19:\"most_reviewed_foods\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:19:\"most_reviewed_foods\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:64;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:17:\"landing_page_text\";s:5:\"value\";s:526:\"{\"header_title_1\":\"Food App\",\"header_title_2\":\"Why stay hungry when you can order from StackFood\",\"header_title_3\":\"Get 10% OFF on your first order\",\"about_title\":\"StackFood is Best Delivery Service Near You\",\"why_choose_us\":\"Why Choose Us?\",\"why_choose_us_title\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"testimonial_title\":\"Trusted by Customer & Restaurant Owner\",\"footer_article\":\"Suspendisse ultrices at diam lectus nullam. Nisl, sagittis viverra enim erat tortor ultricies massa turpis. Arcu pulvinar.\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:17:\"landing_page_text\";s:5:\"value\";s:526:\"{\"header_title_1\":\"Food App\",\"header_title_2\":\"Why stay hungry when you can order from StackFood\",\"header_title_3\":\"Get 10% OFF on your first order\",\"about_title\":\"StackFood is Best Delivery Service Near You\",\"why_choose_us\":\"Why Choose Us?\",\"why_choose_us_title\":\"Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\"testimonial_title\":\"Trusted by Customer & Restaurant Owner\",\"footer_article\":\"Suspendisse ultrices at diam lectus nullam. Nisl, sagittis viverra enim erat tortor ultricies massa turpis. Arcu pulvinar.\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:65;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:18:\"landing_page_links\";s:5:\"value\";s:227:\"{\"app_url_android_status\":\"1\",\"app_url_android\":\"https:\\/\\/play.google.com\",\"app_url_ios_status\":\"1\",\"app_url_ios\":\"https:\\/\\/www.apple.com\\/app-store\",\"web_app_url_status\":\"1\",\"web_app_url\":\"https:\\/\\/stackfood.6amtech.com\\/\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:18:\"landing_page_links\";s:5:\"value\";s:227:\"{\"app_url_android_status\":\"1\",\"app_url_android\":\"https:\\/\\/play.google.com\",\"app_url_ios_status\":\"1\",\"app_url_ios\":\"https:\\/\\/www.apple.com\\/app-store\",\"web_app_url_status\":\"1\",\"web_app_url\":\"https:\\/\\/stackfood.6amtech.com\\/\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:66;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:10:\"speciality\";s:5:\"value\";s:202:\"[{\"img\":\"clean_&_cheap_icon.png\",\"title\":\"Clean & Cheap Price\"},{\"img\":\"best_dishes_icon.png\",\"title\":\"Best Dishes Near You\"},{\"img\":\"virtual_restaurant_icon.png\",\"title\":\"Your Own Virtual Restaurant\"}]\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:10:\"speciality\";s:5:\"value\";s:202:\"[{\"img\":\"clean_&_cheap_icon.png\",\"title\":\"Clean & Cheap Price\"},{\"img\":\"best_dishes_icon.png\",\"title\":\"Best Dishes Near You\"},{\"img\":\"virtual_restaurant_icon.png\",\"title\":\"Your Own Virtual Restaurant\"}]\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:67;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:11:\"testimonial\";s:5:\"value\";s:1586:\"[{\"img\":\"img-1.png\",\"name\":\"Barry Allen\",\"position\":\"Web Designer\",\"detail\":\"Lorem ipsum dolor sit amet, consectetur adipisicing elit. A\\r\\n                    aliquam amet animi blanditiis consequatur debitis dicta\\r\\n                    distinctio, enim error eum iste libero modi nam natus\\r\\n                    perferendis possimus quasi sint sit tempora voluptatem. Est,\\r\\n                    exercitationem id ipsa ipsum laboriosam perferendis temporibus!\"},{\"img\":\"img-2.png\",\"name\":\"Sophia Martino\",\"position\":\"Web Designer\",\"detail\":\"Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet animi blanditiis consequatur debitis dicta distinctio, enim error eum iste libero modi nam natus perferendis possimus quasi sint sit tempora voluptatem. Est, exercitationem id ipsa ipsum laboriosam perferendis temporibus!\"},{\"img\":\"img-3.png\",\"name\":\"Alan Turing\",\"position\":\"Web Designer\",\"detail\":\"Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet animi blanditiis consequatur debitis dicta distinctio, enim error eum iste libero modi nam natus perferendis possimus quasi sint sit tempora voluptatem. Est, exercitationem id ipsa ipsum laboriosam perferendis temporibus!\"},{\"img\":\"img-4.png\",\"name\":\"Ann Marie\",\"position\":\"Web Designer\",\"detail\":\"Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet animi blanditiis consequatur debitis dicta distinctio, enim error eum iste libero modi nam natus perferendis possimus quasi sint sit tempora voluptatem. Est, exercitationem id ipsa ipsum laboriosam perferendis temporibus!\"}]\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:11:\"testimonial\";s:5:\"value\";s:1586:\"[{\"img\":\"img-1.png\",\"name\":\"Barry Allen\",\"position\":\"Web Designer\",\"detail\":\"Lorem ipsum dolor sit amet, consectetur adipisicing elit. A\\r\\n                    aliquam amet animi blanditiis consequatur debitis dicta\\r\\n                    distinctio, enim error eum iste libero modi nam natus\\r\\n                    perferendis possimus quasi sint sit tempora voluptatem. Est,\\r\\n                    exercitationem id ipsa ipsum laboriosam perferendis temporibus!\"},{\"img\":\"img-2.png\",\"name\":\"Sophia Martino\",\"position\":\"Web Designer\",\"detail\":\"Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet animi blanditiis consequatur debitis dicta distinctio, enim error eum iste libero modi nam natus perferendis possimus quasi sint sit tempora voluptatem. Est, exercitationem id ipsa ipsum laboriosam perferendis temporibus!\"},{\"img\":\"img-3.png\",\"name\":\"Alan Turing\",\"position\":\"Web Designer\",\"detail\":\"Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet animi blanditiis consequatur debitis dicta distinctio, enim error eum iste libero modi nam natus perferendis possimus quasi sint sit tempora voluptatem. Est, exercitationem id ipsa ipsum laboriosam perferendis temporibus!\"},{\"img\":\"img-4.png\",\"name\":\"Ann Marie\",\"position\":\"Web Designer\",\"detail\":\"Lorem ipsum dolor sit amet, consectetur adipisicing elit. A aliquam amet animi blanditiis consequatur debitis dicta distinctio, enim error eum iste libero modi nam natus perferendis possimus quasi sint sit tempora voluptatem. Est, exercitationem id ipsa ipsum laboriosam perferendis temporibus!\"}]\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:68;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:19:\"landing_page_images\";s:5:\"value\";s:85:\"{\"top_content_image\":\"double_screen_image.png\",\"about_us_image\":\"about_us_image.png\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:19:\"landing_page_images\";s:5:\"value\";s:85:\"{\"top_content_image\":\"double_screen_image.png\",\"about_us_image\":\"about_us_image.png\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:69;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:13:\"paymob_accept\";s:5:\"value\";s:80:\"{\"status\":\"0\",\"api_key\":null,\"iframe_id\":null,\"integration_id\":null,\"hmac\":null}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:13:\"paymob_accept\";s:5:\"value\";s:80:\"{\"status\":\"0\",\"api_key\":null,\"iframe_id\":null,\"integration_id\":null,\"hmac\":null}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:70;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:24:\"admin_order_notification\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:24:\"admin_order_notification\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:71;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:13:\"swish_payment\";s:5:\"value\";s:14:\"{\"status\":\"1\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:13:\"swish_payment\";s:5:\"value\";s:14:\"{\"status\":\"1\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:72;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:14:\"service_charge\";s:5:\"value\";s:2:\"12\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:14:\"service_charge\";s:5:\"value\";s:2:\"12\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:73;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:12:\"social_login\";s:5:\"value\";s:157:\"[{\"login_medium\":\"google\",\"client_id\":null,\"client_secret\":null,\"status\":\"0\"},{\"login_medium\":\"facebook\",\"client_id\":null,\"client_secret\":null,\"status\":\"0\"}]\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:12:\"social_login\";s:5:\"value\";s:157:\"[{\"login_medium\":\"google\",\"client_id\":null,\"client_secret\":null,\"status\":\"0\"},{\"login_medium\":\"facebook\",\"client_id\":null,\"client_secret\":null,\"status\":\"0\"}]\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:74;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:8:\"language\";s:5:\"value\";s:6:\"[\"en\"]\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:8:\"language\";s:5:\"value\";s:6:\"[\"en\"]\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:75;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:10:\"timeformat\";s:5:\"value\";s:2:\"24\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:10:\"timeformat\";s:5:\"value\";s:2:\"24\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:76;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:22:\"canceled_by_restaurant\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:22:\"canceled_by_restaurant\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:77;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:23:\"canceled_by_deliveryman\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:23:\"canceled_by_deliveryman\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:78;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:15:\"show_dm_earning\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:15:\"show_dm_earning\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:79;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:9:\"recaptcha\";s:5:\"value\";s:48:\"{\"status\":\"0\",\"site_key\":null,\"secret_key\":null}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:9:\"recaptcha\";s:5:\"value\";s:48:\"{\"status\":\"0\",\"site_key\":null,\"secret_key\":null}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:80;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:18:\"toggle_veg_non_veg\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:18:\"toggle_veg_non_veg\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:81;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:22:\"toggle_dm_registration\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:22:\"toggle_dm_registration\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:82;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:30:\"toggle_restaurant_registration\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:30:\"toggle_restaurant_registration\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:83;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:22:\"order_refunded_message\";s:5:\"value\";s:55:\"{\"status\":1,\"message\":\"Order is refunded successfully\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:22:\"order_refunded_message\";s:5:\"value\";s:55:\"{\"status\":1,\"message\":\"Order is refunded successfully\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:84;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:6:\"liqpay\";s:5:\"value\";s:51:\"{\"status\":\"1\",\"public_key\":null,\"private_key\":null}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:6:\"liqpay\";s:5:\"value\";s:51:\"{\"status\":\"1\",\"public_key\":null,\"private_key\":null}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:85;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:6:\"klarna\";s:5:\"value\";s:97:\"{\"status\":\"1\",\"region\":\"america\",\"username\":\"PN06804_1a368db08f6d\",\"password\":\"6ljrP6BDJNKT6F2y\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:6:\"klarna\";s:5:\"value\";s:97:\"{\"status\":\"1\",\"region\":\"america\",\"username\":\"PN06804_1a368db08f6d\",\"password\":\"6ljrP6BDJNKT6F2y\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:86;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:8:\"fatoorah\";s:5:\"value\";s:715:\"{\"status\":\"1\",\"api_key\":\"rLtt6JWvbUHDDhsZnfpAhpYk4dxYDQkbcPTyGaKp2TYqQgG7FGZ5Th_WD53Oq8Ebz6A53njUoo1w3pjU1D4vs_ZMqFiz_j0urb_BH9Oq9VZoKFoJEDAbRZepGcQanImyYrry7Kt6MnMdgfG5jn4HngWoRdKduNNyP4kzcp3mRv7x00ahkm9LAK7ZRieg7k1PDAnBIOG3EyVSJ5kK4WLMvYr7sCwHbHcu4A5WwelxYK0GMJy37bNAarSJDFQsJ2ZvJjvMDmfWwDVFEVe_5tOomfVNt6bOg9mexbGjMrnHBnKnZR1vQbBtQieDlQepzTZMuQrSuKn-t5XZM7V6fCW7oP-uXGX-sMOajeX65JOf6XVpk29DP6ro8WTAflCDANC193yof8-f5_EYY-3hXhJj7RBXmizDpneEQDSaSz5sFk0sV5qPcARJ9zGG73vuGFyenjPPmtDtXtpx35A-BVcOSBYVIWe9kndG3nclfefjKEuZ3m4jL9Gg1h2JBvmXSMYiZtp9MR5I6pvbvylU_PP5xJFSjVTIz7IQSjcVGO41npnwIxRXNRxFOdIUHn0tjQ-7LwvEcTXyPsHXcMD8WtgBh-wxR8aKX7WPSsT1O8d8reb2aR7K3rkV3K82K_0OgawImEpwSvp9MNKynEAJQS6ZHe_J_l77652xwPNxMRTMASk1ZsJL\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:8:\"fatoorah\";s:5:\"value\";s:715:\"{\"status\":\"1\",\"api_key\":\"rLtt6JWvbUHDDhsZnfpAhpYk4dxYDQkbcPTyGaKp2TYqQgG7FGZ5Th_WD53Oq8Ebz6A53njUoo1w3pjU1D4vs_ZMqFiz_j0urb_BH9Oq9VZoKFoJEDAbRZepGcQanImyYrry7Kt6MnMdgfG5jn4HngWoRdKduNNyP4kzcp3mRv7x00ahkm9LAK7ZRieg7k1PDAnBIOG3EyVSJ5kK4WLMvYr7sCwHbHcu4A5WwelxYK0GMJy37bNAarSJDFQsJ2ZvJjvMDmfWwDVFEVe_5tOomfVNt6bOg9mexbGjMrnHBnKnZR1vQbBtQieDlQepzTZMuQrSuKn-t5XZM7V6fCW7oP-uXGX-sMOajeX65JOf6XVpk29DP6ro8WTAflCDANC193yof8-f5_EYY-3hXhJj7RBXmizDpneEQDSaSz5sFk0sV5qPcARJ9zGG73vuGFyenjPPmtDtXtpx35A-BVcOSBYVIWe9kndG3nclfefjKEuZ3m4jL9Gg1h2JBvmXSMYiZtp9MR5I6pvbvylU_PP5xJFSjVTIz7IQSjcVGO41npnwIxRXNRxFOdIUHn0tjQ-7LwvEcTXyPsHXcMD8WtgBh-wxR8aKX7WPSsT1O8d8reb2aR7K3rkV3K82K_0OgawImEpwSvp9MNKynEAJQS6ZHe_J_l77652xwPNxMRTMASk1ZsJL\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:87;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:5:\"bkash\";s:5:\"value\";s:174:\"{\"status\":\"1\",\"api_key\":\"5tunt4masn6pv2hnvte1sb5n3j\",\"api_secret\":\"1vggbqd4hqk9g96o9rrrp2jftvek578v7d2bnerim12a87dbrrka\",\"username\":\"sandboxTestUser\",\"password\":\"hWD@8vtzw0\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:5:\"bkash\";s:5:\"value\";s:174:\"{\"status\":\"1\",\"api_key\":\"5tunt4masn6pv2hnvte1sb5n3j\",\"api_secret\":\"1vggbqd4hqk9g96o9rrrp2jftvek578v7d2bnerim12a87dbrrka\",\"username\":\"sandboxTestUser\",\"password\":\"hWD@8vtzw0\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:88;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:7:\"paytabs\";s:5:\"value\";s:66:\"{\"status\":\"1\",\"profile_id\":null,\"server_key\":null,\"base_url\":null}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:7:\"paytabs\";s:5:\"value\";s:66:\"{\"status\":\"1\",\"profile_id\":null,\"server_key\":null,\"base_url\":null}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:89;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:5:\"paytm\";s:5:\"value\";s:120:\"{\"status\":\"1\",\"paytm_merchant_key\":null,\"paytm_merchant_mid\":null,\"paytm_merchant_website\":null,\"paytm_refund_url\":null}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:5:\"paytm\";s:5:\"value\";s:120:\"{\"status\":\"1\",\"paytm_merchant_key\":null,\"paytm_merchant_mid\":null,\"paytm_merchant_website\":null,\"paytm_refund_url\":null}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:90;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:28:\"schedule_order_slot_duration\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:28:\"schedule_order_slot_duration\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:91;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:25:\"digit_after_decimal_point\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:25:\"digit_after_decimal_point\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:92;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:4:\"icon\";s:5:\"value\";s:28:\"2024-11-19-673c3141ec163.png\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:4:\"icon\";s:5:\"value\";s:28:\"2024-11-19-673c3141ec163.png\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:93;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:25:\"toggle_store_registration\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:25:\"toggle_store_registration\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:94;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:17:\"canceled_by_store\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:17:\"canceled_by_store\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:95;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:29:\"parcel_per_km_shipping_charge\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:29:\"parcel_per_km_shipping_charge\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:96;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:30:\"parcel_minimum_shipping_charge\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:30:\"parcel_minimum_shipping_charge\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:97;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:20:\"parcel_commission_dm\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:20:\"parcel_commission_dm\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:98;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:18:\"landing_page_links\";s:5:\"value\";s:227:\"{\"app_url_android_status\":\"1\",\"app_url_android\":\"https:\\/\\/play.google.com\",\"app_url_ios_status\":\"1\",\"app_url_ios\":\"https:\\/\\/www.apple.com\\/app-store\",\"web_app_url_status\":\"1\",\"web_app_url\":\"https:\\/\\/stackfood.6amtech.com\\/\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:18:\"landing_page_links\";s:5:\"value\";s:227:\"{\"app_url_android_status\":\"1\",\"app_url_android\":\"https:\\/\\/play.google.com\",\"app_url_ios_status\":\"1\",\"app_url_ios\":\"https:\\/\\/www.apple.com\\/app-store\",\"web_app_url_status\":\"1\",\"web_app_url\":\"https:\\/\\/stackfood.6amtech.com\\/\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:99;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:13:\"wallet_status\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:13:\"wallet_status\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:100;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:20:\"loyalty_point_status\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:20:\"loyalty_point_status\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:101;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:18:\"ref_earning_status\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:18:\"ref_earning_status\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:102;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:17:\"wallet_add_refund\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:17:\"wallet_add_refund\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:103;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:27:\"loyalty_point_exchange_rate\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:27:\"loyalty_point_exchange_rate\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:104;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:25:\"ref_earning_exchange_rate\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:25:\"ref_earning_exchange_rate\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:105;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:33:\"loyalty_point_item_purchase_point\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:33:\"loyalty_point_item_purchase_point\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:106;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:27:\"loyalty_point_minimum_point\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:27:\"loyalty_point_minimum_point\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:107;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:20:\"refund_active_status\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:20:\"refund_active_status\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:108;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:14:\"dm_tips_status\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:14:\"dm_tips_status\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:109;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:15:\"system_language\";s:5:\"value\";s:66:\"[{\"id\":1,\"direction\":\"ltr\",\"code\":\"en\",\"status\":1,\"default\":true}]\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:15:\"system_language\";s:5:\"value\";s:66:\"[{\"id\":1,\"direction\":\"ltr\",\"code\":\"en\",\"status\":1,\"default\":true}]\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:110;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:14:\"site_direction\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:14:\"site_direction\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:111;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:12:\"cookies_text\";s:5:\"value\";s:16:\"Demo cookie text\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:12:\"cookies_text\";s:5:\"value\";s:16:\"Demo cookie text\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:112;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:12:\"tax_included\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:12:\"tax_included\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:113;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:22:\"partial_payment_status\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:22:\"partial_payment_status\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:114;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:22:\"partial_payment_method\";s:5:\"value\";s:4:\"both\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:22:\"partial_payment_method\";s:5:\"value\";s:4:\"both\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:115;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:23:\"order_notification_type\";s:5:\"value\";s:6:\"manual\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:23:\"order_notification_type\";s:5:\"value\";s:6:\"manual\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:116;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:26:\"admin_free_delivery_status\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:26:\"admin_free_delivery_status\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:117;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:24:\"additional_charge_status\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:24:\"additional_charge_status\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:118;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:22:\"additional_charge_name\";s:5:\"value\";s:17:\"Additional Charge\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:22:\"additional_charge_name\";s:5:\"value\";s:17:\"Additional Charge\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:119;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:17:\"additional_charge\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:17:\"additional_charge\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:120;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:25:\"prescription_order_status\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:25:\"prescription_order_status\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:121;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:25:\"delivery_charge_comission\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:25:\"delivery_charge_comission\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:122;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:12:\"opening_time\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:12:\"opening_time\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:123;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:12:\"closing_time\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:12:\"closing_time\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:124;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:12:\"landing_page\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:12:\"landing_page\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:125;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:24:\"landing_integration_type\";s:5:\"value\";s:11:\"file_upload\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:24:\"landing_integration_type\";s:5:\"value\";s:11:\"file_upload\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:126;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:26:\"mobile_app_section_heading\";s:5:\"value\";s:47:\"Download the App for Enjoy Best Restaurant Test\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:26:\"mobile_app_section_heading\";s:5:\"value\";s:47:\"Download the App for Enjoy Best Restaurant Test\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:127;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:23:\"mobile_app_section_text\";s:5:\"value\";s:31:\"Default Text Mobile App Section\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:23:\"mobile_app_section_text\";s:5:\"value\";s:31:\"Default Text Mobile App Section\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:128;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:27:\"feature_section_description\";s:5:\"value\";s:27:\"Feature section description\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:27:\"feature_section_description\";s:5:\"value\";s:27:\"Feature section description\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:129;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:27:\"Feature section description\";s:5:\"value\";s:229:\"{\"app_url_android_status\":\"0\",\"app_url_android\":\"https:\\/\\/play.google.com\",\"app_url_ios_status\":\"0\",\"app_url_ios\":\"https:\\/\\/www.apple.com\\/app-store\",\"web_app_url_status\":\"0\",\"web_app_url\":\"https:\\/\\/6ammart-web.6amtech.com\\/\"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:27:\"Feature section description\";s:5:\"value\";s:229:\"{\"app_url_android_status\":\"0\",\"app_url_android\":\"https:\\/\\/play.google.com\",\"app_url_ios_status\":\"0\",\"app_url_ios\":\"https:\\/\\/www.apple.com\\/app-store\",\"web_app_url_status\":\"0\",\"web_app_url\":\"https:\\/\\/6ammart-web.6amtech.com\\/\"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:130;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:20:\"home_delivery_status\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:20:\"home_delivery_status\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:131;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:15:\"takeaway_status\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:15:\"takeaway_status\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:132;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:24:\"dm_picture_upload_status\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:24:\"dm_picture_upload_status\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:133;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:22:\"offline_payment_status\";s:5:\"value\";N;}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:22:\"offline_payment_status\";s:5:\"value\";N;}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:134;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:21:\"guest_checkout_status\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:21:\"guest_checkout_status\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:135;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:39:\"check_daily_subscription_validity_check\";s:5:\"value\";s:10:\"2026-06-28\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:39:\"check_daily_subscription_validity_check\";s:5:\"value\";s:10:\"2026-06-28\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:136;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:25:\"commission_business_model\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:25:\"commission_business_model\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:137;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:27:\"subscription_business_model\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:27:\"subscription_business_model\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:138;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:28:\"subscription_free_trial_days\";s:5:\"value\";s:1:\"7\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:28:\"subscription_free_trial_days\";s:5:\"value\";s:1:\"7\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:139;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:28:\"subscription_free_trial_type\";s:5:\"value\";s:3:\"day\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:28:\"subscription_free_trial_type\";s:5:\"value\";s:3:\"day\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:140;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:30:\"subscription_free_trial_status\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:30:\"subscription_free_trial_status\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:141;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:34:\"subscription_deadline_warning_days\";s:5:\"value\";s:1:\"7\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:34:\"subscription_deadline_warning_days\";s:5:\"value\";s:1:\"7\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:142;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:37:\"subscription_deadline_warning_message\";s:5:\"value\";s:63:\"Your subscription ending soon. Please renew to continue access.\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:37:\"subscription_deadline_warning_message\";s:5:\"value\";s:63:\"Your subscription ending soon. Please renew to continue access.\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:143;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:27:\"subscription_usage_max_time\";s:5:\"value\";s:2:\"80\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:27:\"subscription_usage_max_time\";s:5:\"value\";s:2:\"80\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:144;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:11:\"apple_login\";s:5:\"value\";s:133:\"[{\"login_medium\":\"apple\",\"client_id\":\"\",\"client_secret\":\"\",\"team_id\":\"\",\"key_id\":\"\",\"service_file\":\"\",\"redirect_url\":\"\",\"status\":\"\"}]\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:11:\"apple_login\";s:5:\"value\";s:133:\"[{\"login_medium\":\"apple\",\"client_id\":\"\",\"client_secret\":\"\",\"team_id\":\"\",\"key_id\":\"\",\"service_file\":\"\",\"redirect_url\":\"\",\"status\":\"\"}]\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:145;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:21:\"country_picker_status\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:21:\"country_picker_status\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:146;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:19:\"manual_login_status\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:19:\"manual_login_status\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:147;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:16:\"backgroundChange\";s:5:\"value\";s:101:\"{\"primary_1_hex\":\"#279b59\",\"primary_1_rgb\":\"39, 155, 89\",\"primary_2_hex\":null,\"primary_2_rgb\":\", , \"}\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:16:\"backgroundChange\";s:5:\"value\";s:101:\"{\"primary_1_hex\":\"#279b59\",\"primary_1_rgb\":\"39, 155, 89\",\"primary_2_hex\":null,\"primary_2_rgb\":\", , \"}\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:148;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:29:\"registration_mail_status_user\";s:5:\"value\";s:1:\"0\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:29:\"registration_mail_status_user\";s:5:\"value\";s:1:\"0\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}i:149;O:26:\"App\\Models\\BusinessSetting\":33:{s:13:\"\0*\0connection\";s:5:\"mysql\";s:8:\"\0*\0table\";s:17:\"business_settings\";s:13:\"\0*\0primaryKey\";s:2:\"id\";s:10:\"\0*\0keyType\";s:3:\"int\";s:12:\"incrementing\";b:1;s:7:\"\0*\0with\";a:0:{}s:12:\"\0*\0withCount\";a:0:{}s:19:\"preventsLazyLoading\";b:0;s:10:\"\0*\0perPage\";i:15;s:6:\"exists\";b:1;s:18:\"wasRecentlyCreated\";b:0;s:28:\"\0*\0escapeWhenCastingToString\";b:0;s:13:\"\0*\0attributes\";a:2:{s:3:\"key\";s:14:\"review_section\";s:5:\"value\";s:1:\"1\";}s:11:\"\0*\0original\";a:2:{s:3:\"key\";s:14:\"review_section\";s:5:\"value\";s:1:\"1\";}s:10:\"\0*\0changes\";a:0:{}s:11:\"\0*\0previous\";a:0:{}s:8:\"\0*\0casts\";a:0:{}s:17:\"\0*\0classCastCache\";a:0:{}s:21:\"\0*\0attributeCastCache\";a:0:{}s:13:\"\0*\0dateFormat\";N;s:10:\"\0*\0appends\";a:0:{}s:19:\"\0*\0dispatchesEvents\";a:0:{}s:14:\"\0*\0observables\";a:0:{}s:12:\"\0*\0relations\";a:1:{s:7:\"storage\";O:39:\"Illuminate\\Database\\Eloquent\\Collection\":2:{s:8:\"\0*\0items\";a:0:{}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}}s:10:\"\0*\0touches\";a:0:{}s:27:\"\0*\0relationAutoloadCallback\";N;s:26:\"\0*\0relationAutoloadContext\";N;s:10:\"timestamps\";b:1;s:13:\"usesUniqueIds\";b:0;s:9:\"\0*\0hidden\";a:0:{}s:10:\"\0*\0visible\";a:0:{}s:11:\"\0*\0fillable\";a:2:{i:0;s:3:\"key\";i:1;s:5:\"value\";}s:10:\"\0*\0guarded\";a:1:{i:0;s:2:\"id\";}}}s:28:\"\0*\0escapeWhenCastingToString\";b:0;}', 2100742477);
 
 -- --------------------------------------------------------
 
@@ -638,8 +702,8 @@ CREATE TABLE `cache` (
 --
 
 CREATE TABLE `cache_locks` (
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `owner` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `owner` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiration` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -651,9 +715,9 @@ CREATE TABLE `cache_locks` (
 
 CREATE TABLE `campaigns` (
   `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
+  `title` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `admin_id` bigint UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -662,7 +726,8 @@ CREATE TABLE `campaigns` (
   `end_date` date DEFAULT NULL,
   `start_time` time DEFAULT NULL,
   `end_time` time DEFAULT NULL,
-  `module_id` bigint UNSIGNED NOT NULL
+  `module_id` bigint UNSIGNED NOT NULL,
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -674,7 +739,9 @@ CREATE TABLE `campaigns` (
 CREATE TABLE `campaign_store` (
   `campaign_id` bigint UNSIGNED NOT NULL,
   `store_id` bigint UNSIGNED NOT NULL,
-  `campaign_status` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT 'pending'
+  `campaign_status` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -687,14 +754,16 @@ CREATE TABLE `carts` (
   `id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED NOT NULL,
   `module_id` bigint UNSIGNED NOT NULL,
+  `store_id` bigint UNSIGNED DEFAULT NULL,
   `item_id` bigint UNSIGNED NOT NULL,
+  `reel_id` bigint UNSIGNED DEFAULT NULL,
   `is_guest` tinyint(1) NOT NULL DEFAULT '0',
-  `add_on_ids` text COLLATE utf8mb4_unicode_ci,
-  `add_on_qtys` text COLLATE utf8mb4_unicode_ci,
-  `item_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `add_on_ids` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `add_on_qtys` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `item_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `price` double(24,3) NOT NULL,
   `quantity` int NOT NULL,
-  `variation` text COLLATE utf8mb4_unicode_ci,
+  `variation` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -707,9 +776,9 @@ CREATE TABLE `carts` (
 
 CREATE TABLE `cash_backs` (
   `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `customer_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '["all"]',
-  `cashback_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `customer_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '["all"]',
+  `cashback_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `same_user_limit` int NOT NULL DEFAULT '1',
   `total_used` int NOT NULL DEFAULT '0',
   `cashback_amount` double(23,3) NOT NULL DEFAULT '0.000',
@@ -720,7 +789,8 @@ CREATE TABLE `cash_backs` (
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `is_rental` tinyint(1) NOT NULL DEFAULT '0'
+  `is_rental` tinyint(1) NOT NULL DEFAULT '0',
+  `is_service` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -734,14 +804,15 @@ CREATE TABLE `cash_back_histories` (
   `cash_back_id` bigint UNSIGNED DEFAULT NULL,
   `order_id` bigint UNSIGNED DEFAULT NULL,
   `user_id` bigint UNSIGNED DEFAULT NULL,
-  `cashback_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `cashback_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `calculated_amount` double(23,3) NOT NULL DEFAULT '0.000',
   `cashback_amount` double(23,3) NOT NULL DEFAULT '0.000',
   `min_purchase` double(23,3) NOT NULL DEFAULT '0.000',
   `max_discount` double(23,3) NOT NULL DEFAULT '0.000',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `trip_id` bigint UNSIGNED DEFAULT NULL
+  `trip_id` bigint UNSIGNED DEFAULT NULL,
+  `service_booking_id` bigint UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -752,8 +823,8 @@ CREATE TABLE `cash_back_histories` (
 
 CREATE TABLE `categories` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `image` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'def.png',
+  `name` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'def.png',
   `parent_id` int NOT NULL,
   `position` int NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
@@ -761,7 +832,7 @@ CREATE TABLE `categories` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `priority` int NOT NULL DEFAULT '0',
   `module_id` bigint UNSIGNED NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `featured` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -781,8 +852,8 @@ INSERT INTO `categories` (`id`, `name`, `image`, `parent_id`, `position`, `statu
 
 CREATE TABLE `common_conditions` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -796,13 +867,13 @@ CREATE TABLE `common_conditions` (
 
 CREATE TABLE `contacts` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `subject` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `subject` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `seen` tinyint NOT NULL DEFAULT '0',
-  `feedback` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
-  `reply` longtext COLLATE utf8mb4_unicode_ci,
+  `feedback` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
+  `reply` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -816,9 +887,9 @@ CREATE TABLE `contacts` (
 CREATE TABLE `conversations` (
   `id` bigint UNSIGNED NOT NULL,
   `sender_id` bigint UNSIGNED NOT NULL,
-  `sender_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sender_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `receiver_id` bigint UNSIGNED NOT NULL,
-  `receiver_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `receiver_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `last_message_id` bigint UNSIGNED DEFAULT NULL,
   `last_message_time` timestamp NULL DEFAULT NULL,
   `unread_message_count` int NOT NULL DEFAULT '0',
@@ -834,25 +905,25 @@ CREATE TABLE `conversations` (
 
 CREATE TABLE `coupons` (
   `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `code` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `code` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `start_date` date DEFAULT NULL,
   `expire_date` date DEFAULT NULL,
   `min_purchase` decimal(24,2) NOT NULL DEFAULT '0.00',
   `max_discount` decimal(24,2) NOT NULL DEFAULT '0.00',
   `discount` decimal(24,2) NOT NULL DEFAULT '0.00',
-  `discount_type` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percentage',
-  `coupon_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'default',
+  `discount_type` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percentage',
+  `coupon_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'default',
   `limit` int DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `data` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `data` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `total_uses` bigint DEFAULT '0',
   `module_id` bigint UNSIGNED NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'admin',
-  `customer_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT '["all"]',
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'admin',
+  `customer_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '["all"]',
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `store_id` bigint UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -864,9 +935,9 @@ CREATE TABLE `coupons` (
 
 CREATE TABLE `currencies` (
   `id` bigint UNSIGNED NOT NULL,
-  `country` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `currency_code` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `currency_symbol` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `country` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `currency_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `currency_symbol` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `exchange_rate` decimal(8,2) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -1005,19 +1076,59 @@ INSERT INTO `currencies` (`id`, `country`, `currency_code`, `currency_symbol`, `
 
 CREATE TABLE `customer_addresses` (
   `id` bigint UNSIGNED NOT NULL,
-  `address_type` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `contact_person_number` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `address` text COLLATE utf8mb4_unicode_ci,
-  `latitude` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `longitude` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `contact_person_number` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `latitude` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `longitude` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `user_id` bigint UNSIGNED DEFAULT NULL,
-  `contact_person_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `contact_person_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `zone_id` bigint UNSIGNED NOT NULL,
-  `floor` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `road` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `house` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `floor` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `road` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `house` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `customer_preferences`
+--
+
+CREATE TABLE `customer_preferences` (
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `preference_type` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reference_id` bigint UNSIGNED NOT NULL,
+  `score` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `module_id` bigint UNSIGNED DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `customer_preference_summaries`
+--
+
+CREATE TABLE `customer_preference_summaries` (
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `module_id` bigint UNSIGNED DEFAULT NULL,
+  `top_items` json DEFAULT NULL,
+  `top_categories` json DEFAULT NULL,
+  `top_stores` json DEFAULT NULL,
+  `ai_keywords` json DEFAULT NULL,
+  `keyword_item_ids` json DEFAULT NULL,
+  `keyword_category_ids` json DEFAULT NULL,
+  `keyword_store_ids` json DEFAULT NULL,
+  `update_count` int UNSIGNED NOT NULL DEFAULT '0',
+  `last_rebuilt_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1028,9 +1139,9 @@ CREATE TABLE `customer_addresses` (
 
 CREATE TABLE `data_settings` (
   `id` bigint UNSIGNED NOT NULL,
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `value` text COLLATE utf8mb4_unicode_ci,
-  `type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1085,7 +1196,7 @@ INSERT INTO `data_settings` (`id`, `key`, `value`, `type`, `created_at`, `update
 (43, 'company_button_url', 'https://6ammart-react.6amtech.com/', 'react_landing_page', '2023-06-12 16:35:07', '2023-06-12 16:35:07'),
 (44, 'download_user_app_title', 'Complete Multipurpose eBusiness Solution', 'react_landing_page', '2023-06-12 16:40:30', '2023-06-12 16:40:30'),
 (45, 'download_user_app_sub_title', '6amMart is a Laravel and Flutter Framework-based multi-vendor food, grocery, eCommerce, parcel, and pharmacy delivery system. It has six modules to cover all your business function', 'react_landing_page', '2023-06-12 16:40:30', '2023-06-12 16:40:30'),
-(46, 'download_user_app_image', NULL, 'react_landing_page', '2023-06-12 16:40:30', '2023-06-12 16:40:30'),
+(46, 'download_user_app_image', '2025-11-16-691a95858f825.png', 'react_landing_page', '2023-06-12 16:40:30', '2025-11-16 21:24:53'),
 (47, 'download_user_app_links', '{\"playstore_url_status\":\"1\",\"playstore_url\":\"https:\\/\\/play.google.com\\/store\\/\",\"apple_store_url_status\":\"1\",\"apple_store_url\":\"https:\\/\\/www.apple.com\\/app-store\\/\"}', 'react_landing_page', NULL, NULL),
 (48, 'earning_title', 'Let’s Start Earning with $6amMart$', 'react_landing_page', '2023-06-12 16:43:22', '2023-06-12 16:43:22'),
 (49, 'earning_sub_title', 'Join our online marketplace revolution and boost your income.', 'react_landing_page', '2023-06-12 16:43:22', '2023-06-12 16:43:22'),
@@ -1124,7 +1235,120 @@ INSERT INTO `data_settings` (`id`, `key`, `value`, `type`, `created_at`, `update
 (82, 'download_user_app_title', 'Download app and enjoy more!', 'flutter_landing_page', '2023-06-12 18:17:56', '2023-06-12 18:17:56'),
 (83, 'download_user_app_sub_title', 'Download app from', 'flutter_landing_page', '2023-06-12 18:17:56', '2023-06-12 18:17:56'),
 (84, 'download_user_app_image', '2024-11-19-673c3fa0f0e3d.png', 'flutter_landing_page', '2023-06-12 18:17:56', '2024-11-18 19:34:56'),
-(85, 'download_user_app_links', '{\"playstore_url_status\":\"1\",\"playstore_url\":\"https:\\/\\/play.google.com\\/store\\/\",\"apple_store_url_status\":\"1\",\"apple_store_url\":\"https:\\/\\/www.apple.com\\/app-store\\/\"}', 'flutter_landing_page', NULL, NULL);
+(85, 'download_user_app_links', '{\"playstore_url_status\":\"1\",\"playstore_url\":\"https:\\/\\/play.google.com\\/store\\/\",\"apple_store_url_status\":\"1\",\"apple_store_url\":\"https:\\/\\/www.apple.com\\/app-store\\/\"}', 'flutter_landing_page', NULL, NULL),
+(86, 'pick_location_title', 'Enter location to search store', 'react_landing_page', '2025-11-16 21:12:08', '2025-11-16 21:12:08'),
+(87, 'trust_section_status', '1', 'react_landing_page', '2025-11-16 21:15:13', '2025-11-16 21:15:13'),
+(88, 'trust_status_card_1', '1', 'react_landing_page', '2025-11-16 21:16:55', '2025-11-16 21:16:55'),
+(89, 'trust_title_card_1', '10,000+', 'react_landing_page', '2025-11-16 21:16:55', '2025-11-16 21:16:55'),
+(90, 'trust_sub_title_card_1', 'Orders Delivered', 'react_landing_page', '2025-11-16 21:16:55', '2025-11-16 21:16:55'),
+(91, 'trust_image_card_1', '2025-11-16-691a93a7eeac7.png', 'react_landing_page', '2025-11-16 21:16:55', '2025-11-16 21:16:55'),
+(92, 'trust_status_card_2', '1', 'react_landing_page', '2025-11-16 21:18:25', '2025-11-16 21:18:25'),
+(93, 'trust_title_card_2', '10,000+', 'react_landing_page', '2025-11-16 21:18:25', '2025-11-16 21:18:25'),
+(94, 'trust_sub_title_card_2', 'Happy Customers', 'react_landing_page', '2025-11-16 21:18:25', '2025-11-16 21:18:25'),
+(95, 'trust_image_card_2', '2025-11-16-691a9401dbe38.png', 'react_landing_page', '2025-11-16 21:18:25', '2025-11-16 21:18:25'),
+(96, 'trust_status_card_3', '1', 'react_landing_page', '2025-11-16 21:19:16', '2025-11-16 21:19:16'),
+(97, 'trust_title_card_3', '10,000+', 'react_landing_page', '2025-11-16 21:19:16', '2025-11-16 21:19:16'),
+(98, 'trust_sub_title_card_3', 'Active Vendors', 'react_landing_page', '2025-11-16 21:19:16', '2025-11-16 21:19:16'),
+(99, 'trust_image_card_3', '2025-11-16-691a9434cd7b7.png', 'react_landing_page', '2025-11-16 21:19:17', '2025-11-16 21:19:17'),
+(100, 'trust_status_card_4', '1', 'react_landing_page', '2025-11-16 21:19:54', '2025-11-16 21:19:54'),
+(101, 'trust_title_card_4', '10,000+', 'react_landing_page', '2025-11-16 21:19:54', '2025-11-16 21:19:54'),
+(102, 'trust_sub_title_card_4', 'Registered Deliverymen', 'react_landing_page', '2025-11-16 21:19:54', '2025-11-16 21:19:54'),
+(103, 'trust_image_card_4', '2025-11-16-691a945a16409.png', 'react_landing_page', '2025-11-16 21:19:54', '2025-11-16 21:19:54'),
+(104, 'available_zone_status', '1', 'react_landing_page', '2025-11-16 21:20:10', '2025-11-16 21:20:10'),
+(105, 'available_zone_title', 'Available Delivery Areas / Zone', 'react_landing_page', '2025-11-16 21:20:49', '2025-11-16 21:20:49'),
+(106, 'available_zone_short_description', '<p>We offer delivery services across a wide range of regions. To see if we deliver to your area, check our list of available delivery zones or use our delivery<br />\r\n✅ 25+ Active Zones<br />\r\n🚚 Fast Coverage Expanding<br />\r\n⏱ Avg Delivery 30 Min<br />\r\n📦 Parcel, Grocery, Food &amp; More</p>', 'react_landing_page', '2025-11-16 21:20:49', '2025-11-16 21:20:49'),
+(107, 'promotional_banner_section_status', '1', 'react_landing_page', '2025-11-16 21:21:05', '2025-11-16 21:21:05'),
+(108, 'faq_section_status', '1', 'react_landing_page', '2025-11-16 21:22:08', '2025-11-16 21:22:08'),
+(109, 'faq_title', 'Frequently Asked Questions', 'react_landing_page', '2025-11-16 21:23:43', '2025-11-16 21:23:43'),
+(110, 'download_user_app_section_status', '1', 'react_landing_page', '2025-11-16 21:24:44', '2025-11-16 21:24:44'),
+(111, 'download_user_app_button_title', 'Download the Customer App', 'react_landing_page', '2025-11-16 21:25:04', '2025-11-16 21:25:04'),
+(112, 'download_user_app_button_sub_title', 'Smart shopping starts here.', 'react_landing_page', '2025-11-16 21:25:04', '2025-11-16 21:25:04'),
+(113, 'popular_client_section_status', '1', 'react_landing_page', '2025-11-16 21:25:14', '2025-11-16 21:25:14'),
+(114, 'popular_client_title', 'Our Popular $Clients$', 'react_landing_page', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(115, 'popular_client_sub_title', 'Trusted by leading brands for fast and reliable delivery services.', 'react_landing_page', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(116, 'popular_client_image', '2025-11-16-691a95bf75817.png', 'react_landing_page', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(117, 'popular_client_image', '2025-11-16-691a95bf78d61.png', 'react_landing_page', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(118, 'popular_client_image', '2025-11-16-691a95bf7bd08.png', 'react_landing_page', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(119, 'popular_client_image', '2025-11-16-691a95bf7e167.png', 'react_landing_page', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(120, 'popular_client_image', '2025-11-16-691a95bf7fca0.png', 'react_landing_page', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(121, 'popular_client_image', '2025-11-16-691a95bf817f7.png', 'react_landing_page', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(122, 'popular_client_image', '2025-11-16-691a95bf839a2.png', 'react_landing_page', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(123, 'popular_client_image', '2025-11-16-691a95bf85728.png', 'react_landing_page', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(124, 'download_seller_app_section_status', '1', 'react_landing_page', '2025-11-16 21:26:07', '2025-11-16 21:26:07'),
+(125, 'download_seller_app_title', 'Start Selling with $6amMart$', 'react_landing_page', '2025-11-16 21:26:32', '2025-11-16 21:26:32'),
+(126, 'download_seller_app_sub_title', 'Turn your local shop into an online business and grow your sales with our powerful platform', 'react_landing_page', '2025-11-16 21:26:32', '2025-11-16 21:26:32'),
+(127, 'download_seller_app_button_title', 'Start Selling', 'react_landing_page', '2025-11-16 21:26:32', '2025-11-16 21:26:32'),
+(128, 'download_seller_app_image', '2025-11-16-691a95e847ec0.png', 'react_landing_page', '2025-11-16 21:26:32', '2025-11-16 21:26:32'),
+(129, 'download_seller_app_main_button_title', 'Download the Seller App', 'react_landing_page', '2025-11-16 21:26:49', '2025-11-16 21:26:49'),
+(130, 'download_seller_app_main_button_sub_title', 'Stay in control, wherever you are.', 'react_landing_page', '2025-11-16 21:26:49', '2025-11-16 21:26:49'),
+(131, 'download_seller_app_links', '{\"playstore_url_status\":1,\"playstore_url\":\"https:\\/\\/play.google.com\\/store\\/\",\"apple_store_url_status\":1,\"apple_store_url\":\"https:\\/\\/www.apple.com\\/app-store\\/\"}', 'react_landing_page', '2025-11-16 21:26:49', '2025-11-16 21:26:49'),
+(132, 'highlight_image', '2025-11-16-691a96132d953.png', 'react_landing_page', '2025-11-16 21:27:15', '2025-11-16 21:27:15'),
+(133, 'highlight_title', 'Ride Anytime, Anywhere', 'react_landing_page', '2025-11-16 21:27:15', '2025-11-16 21:27:15'),
+(134, 'highlight_sub_title', '6amMart makes it easy to rent vehicles quickly and affordably.', 'react_landing_page', '2025-11-16 21:27:15', '2025-11-16 21:27:15'),
+(135, 'highlight_section_status', '1', 'react_landing_page', '2025-11-16 21:27:21', '2025-11-16 21:27:21'),
+(136, 'download_dm_app_title', 'Deliver More. $Earn$ More.', 'react_landing_page', '2025-11-16 21:27:22', '2025-11-16 21:27:22'),
+(137, 'download_dm_app_sub_title', '<p>Join 6amMart as a delivery partner and turn every ride into income. Work on your own schedule and get paid faster, every day.</p>\r\n\r\n<p>&bull; Choose your ride &ndash; car, bike, or bicycle &nbsp;<br />\r\n&bull; Flexible hours that fit your lifestyle &nbsp;<br />\r\n&bull; Instant payouts &amp; bonus opportunities</p>', 'react_landing_page', '2025-11-16 21:27:22', '2025-11-16 21:27:22'),
+(138, 'download_dm_app_button_title', 'Start Earning', 'react_landing_page', '2025-11-16 21:27:22', '2025-11-16 21:27:22'),
+(139, 'download_dm_app_image', '2025-11-16-691a961a727ed.png', 'react_landing_page', '2025-11-16 21:27:22', '2025-11-16 21:27:22'),
+(140, 'download_dm_app_section_status', '1', 'react_landing_page', '2025-11-16 21:27:25', '2025-11-16 21:27:25'),
+(141, 'download_dm_app_main_button_title', 'Download the Driver App', 'react_landing_page', '2025-11-16 21:27:39', '2025-11-16 21:27:39'),
+(142, 'download_dm_app_main_button_sub_title', 'Take control of your rides anywhere.', 'react_landing_page', '2025-11-16 21:27:39', '2025-11-16 21:27:39'),
+(143, 'download_dm_app_links', '{\"playstore_url_status\":1,\"playstore_url\":\"https:\\/\\/play.google.com\\/store\\/\",\"apple_store_url_status\":1,\"apple_store_url\":\"https:\\/\\/www.apple.com\\/app-store\\/\"}', 'react_landing_page', '2025-11-16 21:27:39', '2025-11-16 21:27:39'),
+(144, 'gallery_section_status', '1', 'react_landing_page', '2025-11-16 21:27:44', '2025-11-16 21:27:44'),
+(145, 'gallery_content_title', 'See $6amMart$ in Action', 'react_landing_page', '2025-11-16 21:27:57', '2025-11-16 21:27:57'),
+(146, 'gallery_content_sub_title', 'Explore how customers use our services, vendors grow their business', 'react_landing_page', '2025-11-16 21:27:57', '2025-11-16 21:27:57'),
+(147, 'gallery_image_1_status', '1', 'react_landing_page', '2025-11-16 21:28:08', '2025-11-16 21:28:08'),
+(148, 'gallery_image_1', '2025-11-16-691a9648ca9c9.png', 'react_landing_page', '2025-11-16 21:28:08', '2025-11-16 21:28:08'),
+(149, 'gallery_image_2_status', '1', 'react_landing_page', '2025-11-16 21:28:15', '2025-11-16 21:28:15'),
+(150, 'gallery_image_2', '2025-11-16-691a964f55e11.png', 'react_landing_page', '2025-11-16 21:28:15', '2025-11-16 21:28:15'),
+(151, 'gallery_image_3_status', '1', 'react_landing_page', '2025-11-16 21:28:21', '2025-11-16 21:28:21'),
+(152, 'gallery_image_3', '2025-11-16-691a9655d982e.png', 'react_landing_page', '2025-11-16 21:28:21', '2025-11-16 21:28:21'),
+(153, 'gallery_image_4_status', '1', 'react_landing_page', '2025-11-16 21:28:26', '2025-11-16 21:28:42'),
+(154, 'gallery_image_4', '2025-11-16-691a965a965a8.png', 'react_landing_page', '2025-11-16 21:28:26', '2025-11-16 21:28:26'),
+(155, 'testimonial_section_status', '1', 'react_landing_page', '2025-11-16 21:29:04', '2025-11-16 21:29:04'),
+(156, 'testimonial_sub_title', 'Hear from customers and partners who enjoy seamless shopping and fast delivery.', 'react_landing_page', '2025-11-16 21:29:28', '2025-11-16 21:29:28'),
+(157, 'testimonial_button_title', 'Get Started', 'react_landing_page', '2025-11-16 21:29:28', '2025-11-16 21:29:28'),
+(158, 'banner_section_status', '1', 'react_landing_page', '2025-11-16 21:29:33', '2025-11-16 21:29:33'),
+(159, 'banner', '2025-11-16-691a96a3c0e08.png', 'react_landing_page', '2025-11-16 21:29:39', '2025-11-16 21:29:39'),
+(160, 'subscription_expiry_last_run_at', '2026-06-28 23:20:53', 'notification_settings', '2026-06-28 17:20:53', '2026-06-28 17:20:53'),
+(161, 'service_review_section', '1', 'service_business_settings', '2026-07-29 16:34:37', '2026-07-29 16:34:37');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `deliveryman_loyalty_point_histories`
+--
+
+CREATE TABLE `deliveryman_loyalty_point_histories` (
+  `id` bigint UNSIGNED NOT NULL,
+  `delivery_man_id` bigint UNSIGNED NOT NULL,
+  `transaction_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `transaction_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `point_conversion_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `point` decimal(24,3) NOT NULL DEFAULT '0.000',
+  `converted_amount` decimal(24,3) NOT NULL DEFAULT '0.000',
+  `reference` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `deliveryman_referral_histories`
+--
+
+CREATE TABLE `deliveryman_referral_histories` (
+  `id` bigint UNSIGNED NOT NULL,
+  `delivery_man_id` bigint UNSIGNED NOT NULL,
+  `referrer_id` bigint UNSIGNED DEFAULT NULL,
+  `transaction_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `refer_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'referral',
+  `amount` decimal(24,3) NOT NULL DEFAULT '0.000',
+  `reference` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -1137,9 +1361,9 @@ CREATE TABLE `delivery_histories` (
   `order_id` bigint UNSIGNED DEFAULT NULL,
   `delivery_man_id` bigint UNSIGNED DEFAULT NULL,
   `time` datetime DEFAULT NULL,
-  `longitude` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `latitude` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `longitude` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `latitude` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `location` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1169,30 +1393,35 @@ CREATE TABLE `delivery_man_wallets` (
 
 CREATE TABLE `delivery_men` (
   `id` bigint UNSIGNED NOT NULL,
-  `f_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `l_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `identity_number` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `identity_type` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `identity_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `password` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `auth_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `fcm_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `f_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `l_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `identity_number` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `identity_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `identity_image` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `auth_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fcm_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `zone_id` bigint DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `active` tinyint(1) NOT NULL DEFAULT '1',
-  `earning` tinyint(1) NOT NULL DEFAULT '1',
+  `earning` tinyint(1) DEFAULT NULL,
   `current_orders` int NOT NULL DEFAULT '0',
-  `type` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'zone_wise',
+  `type` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'zone_wise',
   `store_id` bigint DEFAULT NULL,
-  `application_status` enum('approved','denied','pending') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'approved',
+  `application_status` enum('approved','denied','pending') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'approved',
   `order_count` int UNSIGNED NOT NULL DEFAULT '0',
   `assigned_order_count` int UNSIGNED NOT NULL DEFAULT '0',
-  `vehicle_id` bigint UNSIGNED DEFAULT NULL
+  `vehicle_id` bigint UNSIGNED DEFAULT NULL,
+  `loyalty_point` double DEFAULT '0',
+  `ref_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ref_by` bigint UNSIGNED DEFAULT NULL,
+  `is_delivery` tinyint(1) NOT NULL DEFAULT '1',
+  `is_ride` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1203,11 +1432,11 @@ CREATE TABLE `delivery_men` (
 
 CREATE TABLE `disbursements` (
   `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `total_amount` double(23,3) NOT NULL DEFAULT '0.000',
-  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
-  `created_for` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `created_for` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1225,7 +1454,7 @@ CREATE TABLE `disbursement_details` (
   `delivery_man_id` bigint UNSIGNED DEFAULT NULL,
   `disbursement_amount` double(23,3) NOT NULL DEFAULT '0.000',
   `payment_method` bigint UNSIGNED NOT NULL,
-  `status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1241,8 +1470,8 @@ CREATE TABLE `disbursement_withdrawal_methods` (
   `store_id` bigint UNSIGNED DEFAULT NULL,
   `delivery_man_id` bigint UNSIGNED DEFAULT NULL,
   `withdrawal_method_id` bigint UNSIGNED NOT NULL,
-  `method_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `method_fields` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `method_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `method_fields` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `is_default` tinyint NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -1263,7 +1492,7 @@ CREATE TABLE `discounts` (
   `min_purchase` decimal(24,2) NOT NULL DEFAULT '0.00',
   `max_discount` decimal(24,2) NOT NULL DEFAULT '0.00',
   `discount` decimal(24,2) NOT NULL DEFAULT '0.00',
-  `discount_type` varchar(15) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percentage',
+  `discount_type` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percentage',
   `store_id` bigint UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -1280,8 +1509,8 @@ CREATE TABLE `d_m_reviews` (
   `delivery_man_id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED NOT NULL,
   `order_id` bigint UNSIGNED NOT NULL,
-  `comment` mediumtext COLLATE utf8mb4_unicode_ci,
-  `attachment` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `comment` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `attachment` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `rating` int NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -1296,13 +1525,18 @@ CREATE TABLE `d_m_reviews` (
 
 CREATE TABLE `d_m_vehicles` (
   `id` bigint UNSIGNED NOT NULL,
-  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `starting_coverage_area` double(16,2) NOT NULL,
-  `maximum_coverage_area` double(16,2) NOT NULL,
-  `extra_charges` double(16,2) NOT NULL,
+  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `starting_coverage_area` double NOT NULL DEFAULT '0',
+  `maximum_coverage_area` double NOT NULL DEFAULT '0',
+  `extra_charges` double NOT NULL DEFAULT '0',
   `status` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_delivery` tinyint(1) NOT NULL DEFAULT '1',
+  `is_ride` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1328,19 +1562,19 @@ CREATE TABLE `ecommerce_item_details` (
 
 CREATE TABLE `email_templates` (
   `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `body` text COLLATE utf8mb4_unicode_ci,
-  `background_image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `logo` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `icon` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `button_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `button_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `footer_text` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `copyright_text` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email_template` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `body` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `background_image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `logo` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `icon` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `button_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `button_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `footer_text` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `copyright_text` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email_template` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `privacy` tinyint(1) NOT NULL DEFAULT '0',
   `refund` tinyint(1) NOT NULL DEFAULT '0',
   `cancelation` tinyint(1) NOT NULL DEFAULT '0',
@@ -1353,7 +1587,7 @@ CREATE TABLE `email_templates` (
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `body_2` text COLLATE utf8mb4_unicode_ci
+  `body_2` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -1400,10 +1634,12 @@ INSERT INTO `email_templates` (`id`, `title`, `body`, `background_image`, `image
 
 CREATE TABLE `email_verifications` (
   `id` bigint UNSIGNED NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `tenant_id` bigint UNSIGNED NOT NULL DEFAULT '0',
+  `sub_tenant_id` bigint UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1414,8 +1650,8 @@ CREATE TABLE `email_verifications` (
 
 CREATE TABLE `employee_roles` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `modules` text COLLATE utf8mb4_unicode_ci,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `modules` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -1430,17 +1666,19 @@ CREATE TABLE `employee_roles` (
 
 CREATE TABLE `expenses` (
   `id` bigint UNSIGNED NOT NULL,
-  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'custom',
+  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'custom',
   `amount` decimal(23,3) NOT NULL DEFAULT '0.000',
   `order_id` bigint UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'admin',
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'admin',
   `store_id` bigint UNSIGNED DEFAULT NULL,
   `delivery_man_id` bigint UNSIGNED DEFAULT NULL,
   `user_id` bigint UNSIGNED DEFAULT NULL,
-  `trip_id` bigint UNSIGNED DEFAULT NULL
+  `trip_id` bigint UNSIGNED DEFAULT NULL,
+  `ride_id` bigint UNSIGNED DEFAULT NULL,
+  `service_booking_id` bigint UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -1451,8 +1689,8 @@ CREATE TABLE `expenses` (
 
 CREATE TABLE `external_configurations` (
   `id` bigint UNSIGNED NOT NULL,
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` text COLLATE utf8mb4_unicode_ci,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1465,11 +1703,11 @@ CREATE TABLE `external_configurations` (
 
 CREATE TABLE `failed_jobs` (
   `id` bigint UNSIGNED NOT NULL,
-  `uuid` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `connection` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `queue` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `exception` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `uuid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `connection` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `exception` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `failed_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1482,7 +1720,7 @@ CREATE TABLE `failed_jobs` (
 CREATE TABLE `flash_sales` (
   `id` bigint UNSIGNED NOT NULL,
   `module_id` bigint UNSIGNED NOT NULL,
-  `title` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_publish` tinyint(1) NOT NULL DEFAULT '1',
   `admin_discount_percentage` double(24,3) NOT NULL,
   `vendor_discount_percentage` double(24,3) NOT NULL,
@@ -1505,7 +1743,7 @@ CREATE TABLE `flash_sale_items` (
   `stock` int NOT NULL,
   `sold` int NOT NULL DEFAULT '0',
   `available_stock` int NOT NULL,
-  `discount_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `discount_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `discount` double(23,3) NOT NULL DEFAULT '0.000',
   `discount_amount` double(23,3) NOT NULL DEFAULT '0.000',
   `price` double(23,3) NOT NULL DEFAULT '0.000',
@@ -1522,8 +1760,8 @@ CREATE TABLE `flash_sale_items` (
 
 CREATE TABLE `flutter_special_criterias` (
   `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -1541,12 +1779,43 @@ INSERT INTO `flutter_special_criterias` (`id`, `title`, `image`, `status`, `crea
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `f_a_q_s`
+--
+
+CREATE TABLE `f_a_q_s` (
+  `id` bigint UNSIGNED NOT NULL,
+  `question` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `answer` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `page_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `faqable_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `faqable_id` bigint UNSIGNED DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `f_a_q_s`
+--
+
+INSERT INTO `f_a_q_s` (`id`, `question`, `answer`, `page_type`, `user_type`, `status`, `created_at`, `updated_at`, `faqable_type`, `faqable_id`) VALUES
+(1, 'How do I place an order?', 'Browse your favorite items, add them to your cart, and confirm checkout — it’s that simple!', 'react_landing_page', 'customer', 1, '2025-11-16 21:24:17', '2025-11-16 21:24:17', NULL, NULL),
+(2, 'How do I cancel or change my order?', 'You can cancel or modify your order before it’s confirmed by the store.', 'react_landing_page', 'customer', 1, '2025-11-16 21:24:39', '2025-11-16 21:24:39', NULL, NULL),
+(3, 'How can my store join the platform?', 'Fill out our partner registration form — our team will contact you for setup.', 'react_landing_page', 'vendor', 1, '2025-11-16 21:24:58', '2025-11-16 21:24:58', NULL, NULL),
+(4, 'Can I update my menu or prices anytime?', 'Yes, you can easily update items, prices, and availability through your dashboard.', 'react_landing_page', 'vendor', 1, '2025-11-16 21:25:19', '2025-11-16 21:25:19', NULL, NULL),
+(5, 'How do I become a delivery partner?', 'Apply through our website or app — submit your details and required documents.', 'react_landing_page', 'deliveryman', 1, '2025-11-16 21:25:38', '2025-11-16 21:25:38', NULL, NULL),
+(6, 'How do I get delivery requests?', 'Once online, nearby orders will automatically appear on your driver app.', 'react_landing_page', 'deliveryman', 1, '2025-11-16 21:25:57', '2025-11-16 21:25:57', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `generic_names`
 --
 
 CREATE TABLE `generic_names` (
   `id` bigint UNSIGNED NOT NULL,
-  `generic_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `generic_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1559,8 +1828,8 @@ CREATE TABLE `generic_names` (
 
 CREATE TABLE `guests` (
   `id` bigint UNSIGNED NOT NULL,
-  `ip_address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `fcm_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ip_address` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `fcm_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1578,7 +1847,8 @@ INSERT INTO `guests` (`id`, `ip_address`, `fcm_token`, `created_at`, `updated_at
 (6, '61.247.177.142', '@', '2024-04-20 00:39:09', '2024-04-20 00:39:09'),
 (7, '61.247.177.142', '@', '2024-04-20 01:26:20', '2024-04-20 01:26:20'),
 (8, '61.247.177.142', '@', '2024-04-20 01:26:20', '2024-04-20 01:26:20'),
-(9, '61.247.177.142', NULL, '2024-04-20 01:27:30', '2024-04-20 01:27:30');
+(9, '61.247.177.142', NULL, '2024-04-20 01:27:30', '2024-04-20 01:27:30'),
+(10, '172.70.147.142', NULL, '2025-11-16 21:28:21', '2025-11-16 21:28:21');
 
 -- --------------------------------------------------------
 
@@ -1588,37 +1858,40 @@ INSERT INTO `guests` (`id`, `ip_address`, `fcm_token`, `created_at`, `updated_at
 
 CREATE TABLE `items` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `image` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `image` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `video` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `video_link` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `category_id` bigint UNSIGNED DEFAULT NULL,
-  `category_ids` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `variations` text COLLATE utf8mb4_unicode_ci,
-  `add_ons` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `attributes` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `choice_options` text COLLATE utf8mb4_unicode_ci,
+  `category_ids` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `variations` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `add_ons` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `attributes` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `choice_options` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `price` decimal(24,2) NOT NULL DEFAULT '0.00',
   `tax` decimal(24,2) NOT NULL DEFAULT '0.00',
-  `tax_type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percent',
+  `tax_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percent',
   `discount` decimal(24,2) NOT NULL DEFAULT '0.00',
-  `discount_type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percent',
+  `discount_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percent',
   `available_time_starts` time DEFAULT NULL,
   `available_time_ends` time DEFAULT NULL,
   `veg` tinyint(1) NOT NULL DEFAULT '0',
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `store_id` bigint UNSIGNED NOT NULL,
+  `store_category_id` bigint UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `order_count` int NOT NULL DEFAULT '0',
   `avg_rating` double(16,14) NOT NULL DEFAULT '0.00000000000000',
   `rating_count` int NOT NULL DEFAULT '0',
-  `rating` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rating` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `module_id` bigint UNSIGNED NOT NULL,
   `stock` int DEFAULT '0',
   `unit_id` bigint UNSIGNED DEFAULT NULL,
   `images` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
-  `food_variations` text COLLATE utf8mb4_unicode_ci,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `food_variations` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `recommended` tinyint(1) NOT NULL DEFAULT '0',
   `organic` tinyint(1) NOT NULL DEFAULT '0',
   `maximum_cart_quantity` int DEFAULT NULL,
@@ -1630,8 +1903,8 @@ CREATE TABLE `items` (
 -- Dumping data for table `items`
 --
 
-INSERT INTO `items` (`id`, `name`, `description`, `image`, `category_id`, `category_ids`, `variations`, `add_ons`, `attributes`, `choice_options`, `price`, `tax`, `tax_type`, `discount`, `discount_type`, `available_time_starts`, `available_time_ends`, `veg`, `status`, `store_id`, `created_at`, `updated_at`, `order_count`, `avg_rating`, `rating_count`, `rating`, `module_id`, `stock`, `unit_id`, `images`, `food_variations`, `slug`, `recommended`, `organic`, `maximum_cart_quantity`, `is_approved`, `is_halal`) VALUES
-(1, 'Demo Product', 'Demo Product Description', '2024-11-19-673c408cf104a.png', 2, '[{\"id\":\"1\",\"position\":1},{\"id\":\"2\",\"position\":2}]', '[]', '[]', '[]', '[]', 10.00, 0.00, 'percent', 0.00, 'percent', '00:00:00', '23:59:59', 0, 1, 1, '2023-08-15 23:46:44', '2024-11-18 19:38:52', 0, 0.00000000000000, 0, NULL, 1, 10, NULL, '[{\"img\":\"2024-11-19-673c408cedb59.png\",\"storage\":\"public\"},{\"img\":\"2024-11-19-673c408cef130.png\",\"storage\":\"public\"}]', '[]', 'demo-product', 0, 1, 2, 1, 0);
+INSERT INTO `items` (`id`, `name`, `description`, `image`, `video`, `video_link`, `category_id`, `category_ids`, `variations`, `add_ons`, `attributes`, `choice_options`, `price`, `tax`, `tax_type`, `discount`, `discount_type`, `available_time_starts`, `available_time_ends`, `veg`, `status`, `store_id`, `store_category_id`, `created_at`, `updated_at`, `order_count`, `avg_rating`, `rating_count`, `rating`, `module_id`, `stock`, `unit_id`, `images`, `food_variations`, `slug`, `recommended`, `organic`, `maximum_cart_quantity`, `is_approved`, `is_halal`) VALUES
+(1, 'Demo Product', 'Demo Product Description', '2024-11-19-673c408cf104a.png', NULL, NULL, 2, '[{\"id\":\"1\",\"position\":1},{\"id\":\"2\",\"position\":2}]', '[]', '[]', '[]', '[]', 10.00, 0.00, 'percent', 0.00, 'percent', '00:00:00', '23:59:59', 0, 1, 1, NULL, '2023-08-15 23:46:44', '2024-11-18 19:38:52', 0, 0.00000000000000, 0, NULL, 1, 10, NULL, '[{\"img\":\"2024-11-19-673c408cedb59.png\",\"storage\":\"public\"},{\"img\":\"2024-11-19-673c408cef130.png\",\"storage\":\"public\"}]', '[]', 'demo-product', 0, 1, 2, 1, 0);
 
 -- --------------------------------------------------------
 
@@ -1641,9 +1914,9 @@ INSERT INTO `items` (`id`, `name`, `description`, `image`, `category_id`, `categ
 
 CREATE TABLE `item_campaigns` (
   `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
+  `title` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `admin_id` bigint UNSIGNED NOT NULL,
   `start_date` date DEFAULT NULL,
@@ -1651,16 +1924,16 @@ CREATE TABLE `item_campaigns` (
   `start_time` time DEFAULT NULL,
   `end_time` time DEFAULT NULL,
   `category_id` bigint UNSIGNED DEFAULT NULL,
-  `category_ids` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `variations` text COLLATE utf8mb4_unicode_ci,
-  `add_ons` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `attributes` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `choice_options` text COLLATE utf8mb4_unicode_ci,
+  `category_ids` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `variations` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `add_ons` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `attributes` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `choice_options` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `price` decimal(24,2) NOT NULL DEFAULT '0.00',
   `tax` decimal(24,2) NOT NULL DEFAULT '0.00',
-  `tax_type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percent',
+  `tax_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percent',
   `discount` decimal(24,2) NOT NULL DEFAULT '0.00',
-  `discount_type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percent',
+  `discount_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percent',
   `store_id` bigint UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -1668,8 +1941,8 @@ CREATE TABLE `item_campaigns` (
   `module_id` bigint UNSIGNED NOT NULL,
   `stock` int DEFAULT '0',
   `unit_id` bigint UNSIGNED DEFAULT NULL,
-  `food_variations` text COLLATE utf8mb4_unicode_ci,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `food_variations` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `maximum_cart_quantity` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1726,6 +1999,24 @@ CREATE TABLE `item_nutrition` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `item_seo_data`
+--
+
+CREATE TABLE `item_seo_data` (
+  `id` bigint UNSIGNED NOT NULL,
+  `item_id` bigint UNSIGNED DEFAULT NULL,
+  `temp_item_id` bigint UNSIGNED DEFAULT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_data` json DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `item_tag`
 --
 
@@ -1743,8 +2034,8 @@ CREATE TABLE `item_tag` (
 
 CREATE TABLE `jobs` (
   `id` bigint UNSIGNED NOT NULL,
-  `queue` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payload` longtext COLLATE utf8mb4_unicode_ci NOT NULL,
+  `queue` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payload` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `attempts` tinyint UNSIGNED NOT NULL,
   `reserved_at` int UNSIGNED DEFAULT NULL,
   `available_at` int UNSIGNED NOT NULL,
@@ -1760,12 +2051,12 @@ CREATE TABLE `jobs` (
 CREATE TABLE `loyalty_point_transactions` (
   `id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED DEFAULT NULL,
-  `transaction_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `transaction_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `credit` decimal(24,3) NOT NULL DEFAULT '0.000',
   `debit` decimal(24,3) NOT NULL DEFAULT '0.000',
   `balance` decimal(24,3) NOT NULL DEFAULT '0.000',
-  `reference` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `transaction_type` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reference` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `transaction_type` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -1780,8 +2071,8 @@ CREATE TABLE `messages` (
   `id` bigint UNSIGNED NOT NULL,
   `conversation_id` bigint UNSIGNED DEFAULT NULL,
   `sender_id` bigint UNSIGNED DEFAULT NULL,
-  `message` text COLLATE utf8mb4_unicode_ci,
-  `file` text COLLATE utf8mb4_unicode_ci,
+  `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `file` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `is_seen` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -1796,7 +2087,7 @@ CREATE TABLE `messages` (
 
 CREATE TABLE `migrations` (
   `id` int UNSIGNED NOT NULL,
-  `migration` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `migration` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -2012,7 +2303,99 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (207, '2025_07_24_123609_add_index_to_items_table', 55),
 (208, '2025_07_24_131029_add_index_to_reviews_table', 55),
 (209, '2025_07_24_131340_add_index_to_wishlists_table', 55),
-(210, '2025_07_27_152011_add_index_to_categories_table', 55);
+(210, '2025_07_27_152011_add_index_to_categories_table', 55),
+(211, '2025_09_15_143154_create_parcel_cancellation_reasons_table', 56),
+(212, '2025_09_16_173917_create_parcel_cancellations_table', 56),
+(213, '2025_09_20_141407_add_bring_change_amount_col_to_orders_table', 56),
+(214, '2025_09_20_155910_create_analytic_scripts_table', 56),
+(215, '2025_09_21_171906_add_section_wise_ai_use_count_to_store_configs', 56),
+(216, '2025_09_21_174228_add_sender_note_to_withdraw_requests', 56),
+(217, '2025_09_25_181108_rename_bank_name_to_rejection_note_in_vendors_table', 56),
+(218, '2023_05_14_104308_create_react_promotional_banners_table', 57),
+(219, '2025_10_23_160409_create_f_a_q_s_table', 57),
+(220, '2025_11_27_132943_update_identity_image_column_in_delivery_men_table', 58),
+(221, '2025_11_27_141050_create_deliveryman_loyalty_point_histories_table', 58),
+(222, '2025_11_30_093640_create_deliveryman_referral_histories_table', 58),
+(223, '2025_11_09_014948_create_page_seo_data_table', 59),
+(224, '2026_01_08_121542_add_meta_data_column_to_stores_table', 59),
+(225, '2026_01_08_150355_create_item_seo_data_table', 59),
+(226, '2026_01_12_101427_add_is_default_col_to_zones_table', 59),
+(227, '2026_01_21_103359_add_slug_to_modules_table', 59),
+(228, '2026_01_21_112637_add_slug_column_to_campaigns_table', 59),
+(229, '2026_01_27_141523_create_parcel_return_fees_table', 59),
+(230, '2026_01_27_141620_create_parcel_penalty_fees_table', 59),
+(231, '2026_02_04_152345_add_ride_related_columns_in_d_m_vehicles_table', 60),
+(232, '2026_02_04_164604_add_question_column_in_automated_messages_table', 60),
+(233, '2026_02_04_165904_add_user_note_col_to_withdraw_requests_table', 60),
+(234, '2026_02_08_113515_add_rider_wise_topic_to_zones_table', 60),
+(235, '2026_03_09_151700_add_extra_discount_amount_col_to_orders_table', 60),
+(236, '2026_03_25_171011_add_timestamps_to_campaign_store_table', 60),
+(237, '2026_06_04_162817_add_join_as_col_to_delivery_men_table', 60),
+(238, '2023_02_19_164536_create_visitor_logs_table', 61),
+(239, '2026_04_06_000001_add_verified_seller_to_store_configs_table', 61),
+(240, '2026_04_07_000001_create_user_files_table', 61),
+(241, '2026_04_07_160000_create_reels_table', 61),
+(242, '2026_04_08_000001_create_reel_engagements_table', 61),
+(243, '2026_04_13_000001_add_product_video_columns_to_items_and_temp_products_tables', 61),
+(244, '2026_04_13_120000_add_show_low_stock_count_to_store_configs_table', 61),
+(245, '2026_04_16_140158_add_ride_id_col_to_expenses_table', 61),
+(246, '2026_04_20_000001_create_customer_preferences_table', 62),
+(247, '2026_04_20_000002_create_customer_preference_summaries_table', 62),
+(248, '2026_04_20_000003_add_ai_persona_to_users_table', 62),
+(249, '2026_04_21_000001_add_resolved_ids_to_customer_preference_summaries_table', 62),
+(250, '2026_04_22_000001_create_ai_conversations_table', 62),
+(251, '2026_04_22_000002_create_ai_messages_table', 62),
+(252, '2026_04_30_152616_add_website_builder_status_column_to_store_configs_table', 62),
+(253, '2026_05_12_120000_add_tenant_scope_to_auth_tables', 62),
+(254, '2026_05_13_000000_add_store_id_to_carts_table', 62),
+(255, '2026_05_13_000001_add_additional_delivery_option_columns_to_module_zone_table', 62),
+(256, '2026_05_13_000002_create_module_zone_delivery_options_table', 62),
+(257, '2026_05_13_000003_add_delivery_type_columns_to_orders_table', 62),
+(258, '2026_05_13_100000_create_pro_customer_subscription_plans_table', 62),
+(259, '2026_05_13_100001_create_pro_customer_faqs_table', 62),
+(260, '2026_05_13_100002_add_pro_status_to_users_table', 62),
+(261, '2026_05_13_100003_create_pro_customer_subscriptions_table', 62),
+(262, '2026_05_13_100004_create_pro_customer_transactions_table', 62),
+(263, '2026_05_13_100005_create_order_pro_discounts_table', 62),
+(264, '2026_05_14_173407_add_can_edit_order_column_to_store_configs_table', 62),
+(265, '2026_05_16_000001_create_pro_customer_benefit_settings_table', 62),
+(266, '2026_05_20_120000_add_unit_value_col_to_pharmacy_item_details_table', 62),
+(267, '2026_05_20_120100_add_manufacturer_col_to_pharmacy_item_details_table', 62),
+(268, '2026_05_21_000001_add_pro_discount_cols_to_order_transactions_table', 62),
+(269, '2026_05_21_000001_create_search_logs_table', 62),
+(270, '2026_05_22_101207_create_monthly_order_reminders_table', 62),
+(271, '2026_05_22_170000_create_smart_banners_table', 62),
+(272, '2026_06_01_000001_add_trip_and_ride_request_to_order_pro_discounts_table', 62),
+(273, '2026_06_11_000001_add_short_description_to_modules_table', 62),
+(274, '2026_06_17_000001_add_order_fields_to_reels_table', 62),
+(275, '2026_06_17_000002_add_amount_to_reel_engagements_table', 62),
+(276, '2026_06_17_000003_add_reel_id_to_carts_table', 62),
+(277, '2026_06_18_000001_add_is_hidden_to_orders_table', 62),
+(278, '2026_06_28_000001_add_resume_indexes_to_ai_conversations_table', 62),
+(279, '2026_07_12_000001_create_store_categories_table', 62),
+(280, '2026_07_12_000002_add_store_category_id_to_items_table', 62),
+(281, '2026_07_12_000004_add_store_category_id_to_temp_products_table', 62),
+(282, '2026_07_12_000005_add_module_id_to_store_categories_table', 62),
+(283, '2026_07_13_000001_add_edited_columns_to_orders_table', 62),
+(284, '2026_07_13_000002_create_order_edit_logs_table', 62),
+(285, '2026_07_14_000002_add_dashboard_indexes_to_tables', 62),
+(286, '2026_07_01_000001_rename_service_tax_payer_to_service_provider', 63),
+(287, '2026_07_01_000002_add_service_id_to_wishlists_table', 63),
+(288, '2026_07_06_000001_add_service_booking_id_col_to_expense_table', 63),
+(289, '2026_07_07_000000_add_booking_settings_columns_to_store_configs_table', 63),
+(290, '2026_07_07_000100_add_service_setting_columns_to_store_configs_table', 63),
+(291, '2026_07_07_000200_add_choose_service_location_to_store_configs_table', 63),
+(292, '2026_07_07_000300_drop_schedule_time_restriction_from_store_configs_table', 63),
+(293, '2026_07_07_000400_add_serviceman_can_cancel_booking_to_store_configs_table', 63),
+(294, '2026_07_14_000003_add_faqable_to_faqs_table', 63),
+(295, '2026_07_15_000001_seed_review_section_business_settings', 63),
+(296, '2026_07_16_000001_add_is_pos_to_orders_table', 63),
+(297, '2026_07_25_000001_add_order_type_to_user_notifications_table', 63),
+(298, '2026_07_28_000001_backfill_and_consolidate_role_permissions', 63),
+(299, '2026_07_29_000001_delete_unused_module_wise_promotional_banners', 63),
+(300, '2026_07_30_000001_add_service_columns_to_cash_back_tables', 63),
+(301, '2026_07_30_000002_add_service_booking_id_to_order_pro_discounts_table', 63),
+(302, '2026_07_30_000003_add_serviceman_columns_to_core_tables', 63);
 
 -- --------------------------------------------------------
 
@@ -2022,25 +2405,27 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 
 CREATE TABLE `modules` (
   `id` bigint UNSIGNED NOT NULL,
-  `module_name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `module_type` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `thumbnail` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `module_name` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `module_type` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `thumbnail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `stores_count` int NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `icon` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `icon` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `theme_id` int NOT NULL DEFAULT '1',
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `all_zone_service` tinyint(1) NOT NULL DEFAULT '0'
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `short_description` varchar(1000) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `all_zone_service` tinyint(1) NOT NULL DEFAULT '0',
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `modules`
 --
 
-INSERT INTO `modules` (`id`, `module_name`, `module_type`, `thumbnail`, `status`, `stores_count`, `created_at`, `updated_at`, `icon`, `theme_id`, `description`, `all_zone_service`) VALUES
-(1, 'Demo Module', 'grocery', '2024-11-19-673c37a92984b.png', 1, 1, '2023-08-15 23:31:17', '2024-11-18 19:00:57', '2024-04-20-662398cb7f2e7.png', 1, '<p><strong>We make grocery shopping more interesting.</strong><br />\r\nFind the greatest deals from the grocery stores near you.<br />\r\n<br />\r\n<strong>Nature &amp; Organic Products</strong><br />\r\nBring Nature into your home.<br />\r\n<br />\r\n<strong>Stay home &amp; get your daily needs from our shop</strong><br />\r\nStart You&#39;r Daily Shopping with 6amMart</p>', 0);
+INSERT INTO `modules` (`id`, `module_name`, `module_type`, `thumbnail`, `status`, `stores_count`, `created_at`, `updated_at`, `icon`, `theme_id`, `description`, `short_description`, `all_zone_service`, `slug`) VALUES
+(1, 'Demo Module', 'grocery', '2024-11-19-673c37a92984b.png', 1, 1, '2023-08-15 23:31:17', '2024-11-18 19:00:57', '2024-04-20-662398cb7f2e7.png', 1, '<p><strong>We make grocery shopping more interesting.</strong><br />\r\nFind the greatest deals from the grocery stores near you.<br />\r\n<br />\r\n<strong>Nature &amp; Organic Products</strong><br />\r\nBring Nature into your home.<br />\r\n<br />\r\n<strong>Stay home &amp; get your daily needs from our shop</strong><br />\r\nStart You&#39;r Daily Shopping with 6amMart</p>', NULL, 0, 'demo-module');
 
 -- --------------------------------------------------------
 
@@ -2050,8 +2435,8 @@ INSERT INTO `modules` (`id`, `module_name`, `module_type`, `thumbnail`, `status`
 
 CREATE TABLE `module_types` (
   `id` bigint UNSIGNED NOT NULL,
-  `type` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
+  `type` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2065,9 +2450,9 @@ CREATE TABLE `module_types` (
 CREATE TABLE `module_wise_banners` (
   `id` bigint UNSIGNED NOT NULL,
   `module_id` bigint UNSIGNED NOT NULL,
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `value` text COLLATE utf8mb4_unicode_ci,
-  `type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -2082,9 +2467,9 @@ CREATE TABLE `module_wise_banners` (
 CREATE TABLE `module_wise_why_chooses` (
   `id` bigint UNSIGNED NOT NULL,
   `module_id` bigint UNSIGNED NOT NULL,
-  `title` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `short_description` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `short_description` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -2104,16 +2489,59 @@ CREATE TABLE `module_zone` (
   `minimum_shipping_charge` double(23,2) DEFAULT NULL,
   `maximum_cod_order_amount` double(23,2) DEFAULT NULL,
   `maximum_shipping_charge` double(23,2) DEFAULT NULL,
-  `delivery_charge_type` enum('fixed','distance') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'distance',
-  `fixed_shipping_charge` double(23,2) DEFAULT NULL
+  `delivery_charge_type` enum('fixed','distance') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'distance',
+  `fixed_shipping_charge` double(23,2) DEFAULT NULL,
+  `additional_delivery_option_status` tinyint(1) NOT NULL DEFAULT '0',
+  `minimum_delivery_time` int DEFAULT NULL,
+  `minimum_delivery_charge` decimal(10,4) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `module_zone`
 --
 
-INSERT INTO `module_zone` (`id`, `module_id`, `zone_id`, `per_km_shipping_charge`, `minimum_shipping_charge`, `maximum_cod_order_amount`, `maximum_shipping_charge`, `delivery_charge_type`, `fixed_shipping_charge`) VALUES
-(1, 1, 1, 10.00, 10.00, 10.00, 10.00, 'distance', NULL);
+INSERT INTO `module_zone` (`id`, `module_id`, `zone_id`, `per_km_shipping_charge`, `minimum_shipping_charge`, `maximum_cod_order_amount`, `maximum_shipping_charge`, `delivery_charge_type`, `fixed_shipping_charge`, `additional_delivery_option_status`, `minimum_delivery_time`, `minimum_delivery_charge`) VALUES
+(1, 1, 1, 10.00, 10.00, 10.00, 10.00, 'distance', NULL, 0, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `module_zone_delivery_options`
+--
+
+CREATE TABLE `module_zone_delivery_options` (
+  `id` bigint UNSIGNED NOT NULL,
+  `module_id` bigint UNSIGNED NOT NULL,
+  `zone_id` bigint UNSIGNED NOT NULL,
+  `delivery_type` enum('standard','express','slightly_delay') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'standard',
+  `extra_charge` decimal(10,4) DEFAULT NULL,
+  `reduce_charge` decimal(10,4) DEFAULT NULL,
+  `add_delivery_time` int DEFAULT NULL,
+  `reduce_delivery_time` int DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `monthly_order_reminders`
+--
+
+CREATE TABLE `monthly_order_reminders` (
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED DEFAULT NULL,
+  `order_id` bigint UNSIGNED DEFAULT NULL,
+  `module_id` int UNSIGNED DEFAULT NULL,
+  `module_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `zone_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `remind_at` date DEFAULT NULL,
+  `dispatched_at` timestamp NULL DEFAULT NULL,
+  `notified_at` timestamp NULL DEFAULT NULL,
+  `status` enum('pending','sent','cancelled') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -2123,7 +2551,7 @@ INSERT INTO `module_zone` (`id`, `module_id`, `zone_id`, `per_km_shipping_charge
 
 CREATE TABLE `newsletters` (
   `id` bigint UNSIGNED NOT NULL,
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Subscribers email',
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Subscribers email',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2136,13 +2564,13 @@ CREATE TABLE `newsletters` (
 
 CREATE TABLE `notifications` (
   `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `image` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `image` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `tergat` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tergat` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `zone_id` bigint UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -2154,9 +2582,9 @@ CREATE TABLE `notifications` (
 
 CREATE TABLE `notification_messages` (
   `id` bigint UNSIGNED NOT NULL,
-  `module_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `message` text COLLATE utf8mb4_unicode_ci,
+  `module_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `message` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -2227,16 +2655,16 @@ INSERT INTO `notification_messages` (`id`, `module_type`, `key`, `message`, `sta
 
 CREATE TABLE `notification_settings` (
   `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `sub_title` text COLLATE utf8mb4_unicode_ci,
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `type` enum('admin','customer','store','deliveryman','provider') COLLATE utf8mb4_unicode_ci DEFAULT 'admin',
-  `mail_status` enum('active','inactive','disable') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'disable',
-  `sms_status` enum('active','inactive','disable') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'disable',
-  `push_notification_status` enum('active','inactive','disable') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'disable',
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sub_title` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` enum('admin','customer','store','deliveryman','provider') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'admin',
+  `mail_status` enum('active','inactive','disable') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'disable',
+  `sms_status` enum('active','inactive','disable') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'disable',
+  `push_notification_status` enum('active','inactive','disable') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'disable',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `module_type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'all'
+  `module_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'all'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -2299,7 +2727,14 @@ INSERT INTO `notification_settings` (`id`, `title`, `sub_title`, `key`, `type`, 
 (56, 'customer_referral_bonus_earning', 'Sent_notification_on_customer_referral_bonus_earning', 'customer_referral_bonus_earning', 'customer', 'disable', 'disable', 'active', '2024-08-06 22:40:34', '2024-08-06 22:40:34', 'all'),
 (57, 'customer_new_referral_join', 'Sent_notification_on_customer_new_referral_join', 'customer_new_referral_join', 'customer', 'disable', 'disable', 'active', '2024-08-06 22:40:34', '2024-08-06 22:40:34', 'all'),
 (58, 'customer_pos_order_wallet_notification', 'Sent_notification_on_wallet_payment_on_POS', 'customer_pos_order_wallet_notification', 'customer', 'disable', 'disable', 'active', '2025-02-18 17:35:09', '2025-02-18 17:35:09', 'all'),
-(59, 'customer_loyalty_point_earning', 'Sent_notification_on_loyalty_point_earning', 'customer_loyalty_point_earning', 'customer', 'disable', 'disable', 'active', '2025-02-18 17:35:09', '2025-02-18 17:35:09', 'all');
+(59, 'customer_loyalty_point_earning', 'Sent_notification_on_loyalty_point_earning', 'customer_loyalty_point_earning', 'customer', 'disable', 'disable', 'active', '2025-02-18 17:35:09', '2025-02-18 17:35:09', 'all'),
+(60, 'customer_delivery_verification_otp', 'Sent_customer_delivery_verification_otp', 'customer_delivery_verification_otp', 'customer', 'disable', 'inactive', 'disable', '2026-06-28 17:33:34', '2026-06-28 17:33:34', 'all'),
+(61, 'deliveryman_withdraw_approve', 'Sent_notification_on_deliveryman_withdraw_approve', 'deliveryman_withdraw_approve', 'deliveryman', 'active', 'disable', 'active', '2026-06-28 17:33:34', '2026-06-28 17:33:34', 'all'),
+(62, 'deliveryman_withdraw_rejaction', 'Sent_notification_on_deliveryman_withdraw_rejaction', 'deliveryman_withdraw_rejaction', 'deliveryman', 'active', 'disable', 'active', '2026-06-28 17:33:34', '2026-06-28 17:33:34', 'all'),
+(63, 'deliveryman_loyalty_point_transaction', 'Sent_notification_on_deliveryman_loyalty_point_transaction', 'deliveryman_loyalty_point_transaction', 'deliveryman', 'disable', 'disable', 'active', '2026-06-28 17:33:34', '2026-06-28 17:33:34', 'all'),
+(64, 'deliveryman_referral_notification', 'Sent_notification_on_deliveryman_referral_notification', 'deliveryman_referral_notification', 'deliveryman', 'disable', 'disable', 'active', '2026-06-28 17:33:34', '2026-06-28 17:33:34', 'all'),
+(65, 'deliveryman_referral_bonus', 'Sent_notification_on_deliveryman_referral_bonus', 'deliveryman_referral_bonus', 'deliveryman', 'disable', 'disable', 'active', '2026-06-28 17:33:34', '2026-06-28 17:33:34', 'all'),
+(66, 'deliveryman_withdraw_request', 'Sent_notification_on_withdraw_request', 'dm_withdraw_request', 'admin', 'active', 'disable', 'disable', '2026-06-28 17:33:34', '2026-06-28 17:33:34', 'all');
 
 -- --------------------------------------------------------
 
@@ -2309,7 +2744,7 @@ INSERT INTO `notification_settings` (`id`, `title`, `sub_title`, `key`, `type`, 
 
 CREATE TABLE `nutritions` (
   `id` bigint UNSIGNED NOT NULL,
-  `nutrition` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nutrition` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2321,11 +2756,11 @@ CREATE TABLE `nutritions` (
 --
 
 CREATE TABLE `oauth_access_tokens` (
-  `id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` bigint UNSIGNED DEFAULT NULL,
   `client_id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `scopes` text COLLATE utf8mb4_unicode_ci,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `scopes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `revoked` tinyint(1) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -2339,10 +2774,10 @@ CREATE TABLE `oauth_access_tokens` (
 --
 
 CREATE TABLE `oauth_auth_codes` (
-  `id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `user_id` bigint UNSIGNED NOT NULL,
   `client_id` bigint UNSIGNED NOT NULL,
-  `scopes` text COLLATE utf8mb4_unicode_ci,
+  `scopes` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `revoked` tinyint(1) NOT NULL,
   `expires_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2356,10 +2791,10 @@ CREATE TABLE `oauth_auth_codes` (
 CREATE TABLE `oauth_clients` (
   `id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED DEFAULT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `secret` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `provider` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `redirect` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `secret` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `provider` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `redirect` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `personal_access_client` tinyint(1) NOT NULL,
   `password_client` tinyint(1) NOT NULL,
   `revoked` tinyint(1) NOT NULL,
@@ -2405,8 +2840,8 @@ INSERT INTO `oauth_personal_access_clients` (`id`, `client_id`, `created_at`, `u
 --
 
 CREATE TABLE `oauth_refresh_tokens` (
-  `id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `access_token_id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `access_token_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `revoked` tinyint(1) NOT NULL,
   `expires_at` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2421,10 +2856,10 @@ CREATE TABLE `offline_payments` (
   `id` bigint UNSIGNED NOT NULL,
   `order_id` bigint UNSIGNED NOT NULL,
   `payment_info` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
-  `status` varchar(10) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
-  `note` text COLLATE utf8mb4_unicode_ci,
-  `customer_note` text COLLATE utf8mb4_unicode_ci,
-  `method_fields` text COLLATE utf8mb4_unicode_ci,
+  `status` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `customer_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `method_fields` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2437,9 +2872,9 @@ CREATE TABLE `offline_payments` (
 
 CREATE TABLE `offline_payment_methods` (
   `id` bigint UNSIGNED NOT NULL,
-  `method_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `method_fields` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `method_informations` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `method_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `method_fields` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `method_informations` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` tinyint NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -2456,25 +2891,27 @@ CREATE TABLE `orders` (
   `user_id` bigint UNSIGNED DEFAULT NULL,
   `order_amount` decimal(24,2) NOT NULL DEFAULT '0.00',
   `coupon_discount_amount` decimal(24,2) NOT NULL DEFAULT '0.00',
-  `coupon_discount_title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `payment_status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'unpaid',
-  `order_status` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `coupon_discount_title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'unpaid',
+  `order_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
   `total_tax_amount` decimal(24,2) NOT NULL DEFAULT '0.00',
-  `payment_method` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `transaction_reference` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_method` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `transaction_reference` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `delivery_address_id` bigint DEFAULT NULL,
   `delivery_man_id` bigint UNSIGNED DEFAULT NULL,
-  `coupon_code` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `order_note` text COLLATE utf8mb4_unicode_ci,
-  `order_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'delivery',
+  `coupon_code` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `order_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `order_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'delivery',
   `checked` tinyint(1) NOT NULL DEFAULT '0',
   `store_id` bigint UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `delivery_charge` decimal(24,2) NOT NULL DEFAULT '0.00',
+  `delivery_type` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `delivery_type_charge` decimal(10,4) NOT NULL DEFAULT '0.0000',
   `schedule_at` timestamp NULL DEFAULT NULL,
-  `callback` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `otp` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `callback` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `otp` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `pending` timestamp NULL DEFAULT NULL,
   `accepted` timestamp NULL DEFAULT NULL,
   `confirmed` timestamp NULL DEFAULT NULL,
@@ -2485,46 +2922,51 @@ CREATE TABLE `orders` (
   `canceled` timestamp NULL DEFAULT NULL,
   `refund_requested` timestamp NULL DEFAULT NULL,
   `refunded` timestamp NULL DEFAULT NULL,
-  `delivery_address` text COLLATE utf8mb4_unicode_ci,
+  `delivery_address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `scheduled` tinyint(1) NOT NULL DEFAULT '0',
   `store_discount_amount` decimal(24,2) NOT NULL DEFAULT '0.00',
   `original_delivery_charge` decimal(24,2) NOT NULL DEFAULT '0.00',
   `failed` timestamp NULL DEFAULT NULL,
   `adjusment` decimal(24,2) NOT NULL DEFAULT '0.00',
   `edited` tinyint(1) NOT NULL DEFAULT '0',
-  `delivery_time` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `delivery_time` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `zone_id` bigint UNSIGNED DEFAULT NULL,
   `module_id` bigint UNSIGNED NOT NULL,
-  `order_attachment` text COLLATE utf8mb4_unicode_ci,
+  `order_attachment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `parcel_category_id` bigint UNSIGNED DEFAULT NULL,
   `receiver_details` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
-  `charge_payer` enum('sender','receiver') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `charge_payer` enum('sender','receiver') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `distance` double(16,3) NOT NULL DEFAULT '0.000',
   `dm_tips` double(24,2) NOT NULL DEFAULT '0.00',
-  `free_delivery_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `free_delivery_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `refund_request_canceled` timestamp NULL DEFAULT NULL,
   `prescription_order` tinyint(1) NOT NULL DEFAULT '0',
-  `tax_status` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tax_status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `dm_vehicle_id` bigint UNSIGNED DEFAULT NULL,
-  `cancellation_reason` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `canceled_by` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `coupon_created_by` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `discount_on_product_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'vendor',
-  `processing_time` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `unavailable_item_note` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cancellation_reason` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `canceled_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `coupon_created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `discount_on_product_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'vendor',
+  `processing_time` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `unavailable_item_note` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `cutlery` tinyint(1) NOT NULL DEFAULT '0',
-  `delivery_instruction` text COLLATE utf8mb4_unicode_ci,
+  `delivery_instruction` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `tax_percentage` double(24,3) DEFAULT NULL,
   `additional_charge` double(23,3) NOT NULL DEFAULT '0.000',
-  `order_proof` text COLLATE utf8mb4_unicode_ci,
+  `order_proof` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `partially_paid_amount` double(23,3) NOT NULL DEFAULT '0.000',
   `is_guest` tinyint(1) NOT NULL DEFAULT '0',
+  `is_hidden` tinyint(1) NOT NULL DEFAULT '0',
   `flash_admin_discount_amount` double(24,3) NOT NULL DEFAULT '0.000',
   `flash_store_discount_amount` double(24,3) NOT NULL DEFAULT '0.000',
   `cash_back_id` bigint UNSIGNED DEFAULT NULL,
   `extra_packaging_amount` double(23,3) NOT NULL DEFAULT '0.000',
   `ref_bonus_amount` double(23,3) NOT NULL DEFAULT '0.000',
-  `tax_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `tax_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `bring_change_amount` int DEFAULT '0',
+  `cancellation_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `extra_discount_amount` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `is_pos` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -2535,8 +2977,8 @@ CREATE TABLE `orders` (
 
 CREATE TABLE `order_cancel_reasons` (
   `id` bigint UNSIGNED NOT NULL,
-  `reason` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `user_type` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reason` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -2554,8 +2996,8 @@ CREATE TABLE `order_delivery_histories` (
   `delivery_man_id` bigint UNSIGNED DEFAULT NULL,
   `start_time` datetime DEFAULT NULL,
   `end_time` datetime DEFAULT NULL,
-  `start_location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `end_location` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `start_location` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `end_location` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2571,23 +3013,38 @@ CREATE TABLE `order_details` (
   `item_id` bigint UNSIGNED DEFAULT NULL,
   `order_id` bigint UNSIGNED DEFAULT NULL,
   `price` decimal(24,2) NOT NULL DEFAULT '0.00',
-  `item_details` text COLLATE utf8mb4_unicode_ci,
-  `variation` text COLLATE utf8mb4_unicode_ci,
-  `add_ons` text COLLATE utf8mb4_unicode_ci,
+  `item_details` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `variation` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `add_ons` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `discount_on_item` decimal(24,2) DEFAULT NULL,
-  `discount_type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'amount',
+  `discount_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'amount',
   `quantity` int NOT NULL DEFAULT '1',
   `tax_amount` decimal(24,2) NOT NULL DEFAULT '1.00',
-  `variant` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `variant` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `item_campaign_id` bigint UNSIGNED DEFAULT NULL,
   `total_add_on_price` decimal(24,2) NOT NULL DEFAULT '0.00',
   `category_id` bigint UNSIGNED DEFAULT NULL,
-  `discount_on_product_by` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `tax_status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `discount_on_product_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tax_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `discount_percentage` double(23,8) DEFAULT '0.00000000',
   `addon_discount` double(23,8) DEFAULT '0.00000000'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `order_edit_logs`
+--
+
+CREATE TABLE `order_edit_logs` (
+  `id` bigint UNSIGNED NOT NULL,
+  `order_id` bigint UNSIGNED NOT NULL,
+  `log` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `edited_by` enum('customer','admin','vendor','delivery_man') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -2599,12 +3056,41 @@ CREATE TABLE `order_details` (
 CREATE TABLE `order_payments` (
   `id` bigint UNSIGNED NOT NULL,
   `order_id` bigint UNSIGNED NOT NULL,
-  `transaction_ref` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `transaction_ref` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `amount` decimal(8,2) NOT NULL DEFAULT '0.00',
-  `payment_status` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payment_method` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payment_status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payment_method` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `order_pro_discounts`
+--
+
+CREATE TABLE `order_pro_discounts` (
+  `id` bigint UNSIGNED NOT NULL,
+  `order_id` bigint UNSIGNED DEFAULT NULL,
+  `trip_id` bigint UNSIGNED DEFAULT NULL,
+  `ride_request_id` bigint UNSIGNED DEFAULT NULL,
+  `user_id` int UNSIGNED NOT NULL,
+  `subscription_id` bigint UNSIGNED DEFAULT NULL,
+  `transaction_id` bigint UNSIGNED DEFAULT NULL,
+  `plan_id` bigint UNSIGNED DEFAULT NULL,
+  `benefit_type` enum('discount','delivery_fee','coupon') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `amount_saved` double NOT NULL DEFAULT '0',
+  `discount_percentage` double DEFAULT NULL,
+  `max_discount_amount` double DEFAULT NULL,
+  `min_order_amount` double DEFAULT NULL,
+  `delivery_offer_type` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `delivery_charge_discount_percentage` double DEFAULT NULL,
+  `delivery_fee_reduction_amount` double DEFAULT NULL,
+  `original_delivery_charge` double DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `service_booking_id` bigint UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -2630,23 +3116,23 @@ CREATE TABLE `order_references` (
 
 CREATE TABLE `order_taxes` (
   `id` bigint UNSIGNED NOT NULL,
-  `tax_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tax_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tax_on` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tax_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tax_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tax_on` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `tax_rate` double(23,8) NOT NULL DEFAULT '0.00000000',
   `tax_amount` double(23,8) NOT NULL DEFAULT '0.00000000',
   `before_tax_amount` double(23,8) NOT NULL DEFAULT '0.00000000',
   `after_tax_amount` double(23,8) NOT NULL DEFAULT '0.00000000',
-  `tax_payer` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `country_code` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tax_payer` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `country_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `order_id` bigint UNSIGNED DEFAULT NULL,
-  `order_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `order_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `quantity` int DEFAULT '1',
   `tax_id` bigint UNSIGNED NOT NULL,
   `taxable_id` bigint UNSIGNED DEFAULT NULL,
-  `taxable_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `taxable_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `store_id` bigint UNSIGNED DEFAULT NULL,
-  `store_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `store_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `system_tax_setup_id` bigint UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -2666,8 +3152,8 @@ CREATE TABLE `order_transactions` (
   `order_amount` decimal(24,2) NOT NULL,
   `store_amount` decimal(24,2) NOT NULL DEFAULT '0.00',
   `admin_commission` decimal(24,2) NOT NULL,
-  `received_by` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `received_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `delivery_charge` decimal(24,2) NOT NULL DEFAULT '0.00',
@@ -2685,7 +3171,70 @@ CREATE TABLE `order_transactions` (
   `extra_packaging_amount` double(23,3) NOT NULL DEFAULT '0.000',
   `ref_bonus_amount` double(23,3) NOT NULL DEFAULT '0.000',
   `commission_percentage` double(16,3) DEFAULT '0.000',
-  `is_subscribed` tinyint(1) NOT NULL DEFAULT '0'
+  `is_subscribed` tinyint(1) NOT NULL DEFAULT '0',
+  `pro_discount` double NOT NULL DEFAULT '0',
+  `pro_delivery_discount` double NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `page_seo_data`
+--
+
+CREATE TABLE `page_seo_data` (
+  `id` bigint UNSIGNED NOT NULL,
+  `page_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_data` json DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `parcel_cancellations`
+--
+
+CREATE TABLE `parcel_cancellations` (
+  `id` bigint UNSIGNED NOT NULL,
+  `order_id` bigint UNSIGNED NOT NULL,
+  `reason` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `cancel_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `return_otp` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `return_fee` double DEFAULT '0',
+  `return_fee_payment_status` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'unpaid',
+  `return_date` datetime DEFAULT NULL,
+  `dm_penalty_fee` double DEFAULT '0',
+  `before_pickup` tinyint(1) NOT NULL DEFAULT '1',
+  `set_return_date` tinyint(1) NOT NULL DEFAULT '0',
+  `is_delivery_charge_refundable` tinyint(1) NOT NULL DEFAULT '0',
+  `is_refunded` tinyint(1) NOT NULL DEFAULT '0',
+  `refund_amount` double NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `parcel_cancellation_reasons`
+--
+
+CREATE TABLE `parcel_cancellation_reasons` (
+  `id` bigint UNSIGNED NOT NULL,
+  `reason` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_type` enum('customer','admin','deliveryman','vendor') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'customer',
+  `cancellation_type` enum('before_pickup','after_pickup') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'before_pickup',
+  `status` tinyint NOT NULL DEFAULT '1' COMMENT '1=active,0=inactive',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -2696,9 +3245,9 @@ CREATE TABLE `order_transactions` (
 
 CREATE TABLE `parcel_categories` (
   `id` bigint UNSIGNED NOT NULL,
-  `image` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `image` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `orders_count` int NOT NULL DEFAULT '0',
   `module_id` bigint UNSIGNED NOT NULL,
@@ -2716,8 +3265,41 @@ CREATE TABLE `parcel_categories` (
 
 CREATE TABLE `parcel_delivery_instructions` (
   `id` bigint UNSIGNED NOT NULL,
-  `instruction` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `instruction` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `parcel_penalty_fees`
+--
+
+CREATE TABLE `parcel_penalty_fees` (
+  `id` bigint UNSIGNED NOT NULL,
+  `transaction_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `delivery_man_id` bigint UNSIGNED NOT NULL,
+  `order_id` bigint UNSIGNED NOT NULL,
+  `amount` decimal(10,5) NOT NULL DEFAULT '0.00000',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `parcel_return_fees`
+--
+
+CREATE TABLE `parcel_return_fees` (
+  `id` bigint UNSIGNED NOT NULL,
+  `transaction_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `delivery_man_id` bigint UNSIGNED DEFAULT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `order_id` bigint UNSIGNED NOT NULL,
+  `amount` decimal(10,5) NOT NULL DEFAULT '0.00000',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2729,15 +3311,17 @@ CREATE TABLE `parcel_delivery_instructions` (
 --
 
 CREATE TABLE `password_resets` (
-  `email` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `otp_hit_count` tinyint NOT NULL DEFAULT '0',
   `is_blocked` tinyint(1) NOT NULL DEFAULT '0',
   `is_temp_blocked` tinyint(1) NOT NULL DEFAULT '0',
   `temp_block_time` timestamp NULL DEFAULT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'user',
-  `phone` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'user',
+  `phone` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tenant_id` bigint UNSIGNED NOT NULL DEFAULT '0',
+  `sub_tenant_id` bigint UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -2747,26 +3331,26 @@ CREATE TABLE `password_resets` (
 --
 
 CREATE TABLE `payment_requests` (
-  `id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payer_id` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `receiver_id` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payer_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `receiver_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `payment_amount` decimal(24,2) NOT NULL DEFAULT '0.00',
-  `gateway_callback_url` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `success_hook` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `failure_hook` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `transaction_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `currency_code` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'USD',
-  `payment_method` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `gateway_callback_url` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `success_hook` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `failure_hook` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `transaction_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `currency_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'USD',
+  `payment_method` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `additional_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
   `is_paid` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `payer_information` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
-  `external_redirect_link` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `external_redirect_link` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `receiver_information` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
-  `attribute_id` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `attribute` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `payment_platform` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `attribute_id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `attribute` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_platform` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -2783,7 +3367,9 @@ CREATE TABLE `pharmacy_item_details` (
   `temp_product_id` bigint UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `is_prescription_required` tinyint(1) NOT NULL DEFAULT '0'
+  `is_prescription_required` tinyint(1) NOT NULL DEFAULT '0',
+  `unit_value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `manufacturer` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -2794,14 +3380,16 @@ CREATE TABLE `pharmacy_item_details` (
 
 CREATE TABLE `phone_verifications` (
   `id` bigint UNSIGNED NOT NULL,
-  `phone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `otp_hit_count` tinyint NOT NULL DEFAULT '0',
   `is_blocked` tinyint(1) NOT NULL DEFAULT '0',
   `is_temp_blocked` tinyint(1) NOT NULL DEFAULT '0',
-  `temp_block_time` timestamp NULL DEFAULT NULL
+  `temp_block_time` timestamp NULL DEFAULT NULL,
+  `tenant_id` bigint UNSIGNED NOT NULL DEFAULT '0',
+  `sub_tenant_id` bigint UNSIGNED NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -2812,9 +3400,9 @@ CREATE TABLE `phone_verifications` (
 
 CREATE TABLE `priority_lists` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `value` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2829,11 +3417,130 @@ CREATE TABLE `provide_d_m_earnings` (
   `id` bigint UNSIGNED NOT NULL,
   `delivery_man_id` bigint UNSIGNED NOT NULL,
   `amount` decimal(24,2) NOT NULL DEFAULT '0.00',
-  `method` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `ref` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `method` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `ref` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pro_customer_benefit_settings`
+--
+
+CREATE TABLE `pro_customer_benefit_settings` (
+  `id` bigint UNSIGNED NOT NULL,
+  `benefit_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `module_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `settings` json NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pro_customer_faqs`
+--
+
+CREATE TABLE `pro_customer_faqs` (
+  `id` bigint UNSIGNED NOT NULL,
+  `question` varchar(150) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `answer` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `priority` int UNSIGNED NOT NULL DEFAULT '0',
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pro_customer_subscriptions`
+--
+
+CREATE TABLE `pro_customer_subscriptions` (
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `plan_id` bigint UNSIGNED DEFAULT NULL,
+  `plan_name` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `plan_type` enum('free_trial','paid') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'paid',
+  `plan_price` double NOT NULL DEFAULT '0',
+  `start_at` datetime NOT NULL,
+  `end_at` datetime NOT NULL,
+  `status` enum('active','expired','canceled') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
+  `auto_renew` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pro_customer_subscription_plans`
+--
+
+CREATE TABLE `pro_customer_subscription_plans` (
+  `id` bigint UNSIGNED NOT NULL,
+  `plan_name` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `plan_type` enum('free_trial','paid') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'paid',
+  `price` double NOT NULL DEFAULT '0',
+  `duration` int NOT NULL DEFAULT '0',
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `pro_customer_transactions`
+--
+
+CREATE TABLE `pro_customer_transactions` (
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `subscription_id` bigint UNSIGNED DEFAULT NULL,
+  `plan_id` bigint UNSIGNED DEFAULT NULL,
+  `transaction_reference` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `plan_name` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `plan_type` enum('free_trial','paid') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'paid',
+  `plan_price` double NOT NULL DEFAULT '0',
+  `amount` double NOT NULL DEFAULT '0',
+  `payment_method` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_status` enum('success','pending','failed','refunded') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `start_at` datetime DEFAULT NULL,
+  `end_at` datetime DEFAULT NULL,
+  `order_count` int UNSIGNED NOT NULL DEFAULT '0',
+  `paid_at` datetime DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `react_promotional_banners`
+--
+
+CREATE TABLE `react_promotional_banners` (
+  `id` bigint UNSIGNED NOT NULL,
+  `title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `react_promotional_banners`
+--
+
+INSERT INTO `react_promotional_banners` (`id`, `title`, `description`, `image`, `status`, `created_at`, `updated_at`) VALUES
+(1, NULL, NULL, '2025-11-16-691a956cac0f5.png', 1, '2025-11-16 21:24:28', '2025-11-16 21:24:28'),
+(2, NULL, NULL, '2025-11-16-691a9572ab821.png', 1, '2025-11-16 21:24:34', '2025-11-16 21:24:34');
 
 -- --------------------------------------------------------
 
@@ -2843,11 +3550,11 @@ CREATE TABLE `provide_d_m_earnings` (
 
 CREATE TABLE `react_testimonials` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `designation` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `review` text COLLATE utf8mb4_unicode_ci,
-  `reviewer_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `company_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `designation` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `review` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `reviewer_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `company_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -2870,11 +3577,60 @@ CREATE TABLE `recent_searches` (
   `id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED DEFAULT NULL,
   `module_id` bigint UNSIGNED DEFAULT NULL,
-  `user_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `route_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `route_uri` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `route_full_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `keyword` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `route_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `route_uri` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `route_full_url` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `keyword` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reels`
+--
+
+CREATE TABLE `reels` (
+  `id` bigint UNSIGNED NOT NULL,
+  `store_id` bigint UNSIGNED NOT NULL,
+  `module_id` bigint UNSIGNED NOT NULL,
+  `module_type` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `thumbnail` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `video` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_always_visible` tinyint(1) NOT NULL DEFAULT '0',
+  `start_date` datetime DEFAULT NULL,
+  `end_date` datetime DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  `total_views` bigint UNSIGNED NOT NULL DEFAULT '0',
+  `total_likes` bigint UNSIGNED NOT NULL DEFAULT '0',
+  `total_store_visits` bigint UNSIGNED NOT NULL DEFAULT '0',
+  `order_count` bigint UNSIGNED NOT NULL DEFAULT '0',
+  `total_sale_amount` decimal(12,4) NOT NULL DEFAULT '0.0000',
+  `created_by_id` bigint UNSIGNED DEFAULT NULL,
+  `created_by_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `productable_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `productable_id` bigint UNSIGNED DEFAULT NULL,
+  `order_now_button` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `reel_engagements`
+--
+
+CREATE TABLE `reel_engagements` (
+  `id` bigint UNSIGNED NOT NULL,
+  `reel_id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED DEFAULT NULL,
+  `guest_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `amount` decimal(12,4) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2889,14 +3645,14 @@ CREATE TABLE `refunds` (
   `id` bigint UNSIGNED NOT NULL,
   `order_id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED NOT NULL,
-  `order_status` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `customer_reason` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `customer_note` text COLLATE utf8mb4_unicode_ci,
-  `admin_note` text COLLATE utf8mb4_unicode_ci,
+  `order_status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `customer_reason` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `customer_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `admin_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `refund_amount` decimal(23,3) NOT NULL DEFAULT '0.000',
-  `refund_status` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `refund_method` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `refund_status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `refund_method` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2909,7 +3665,7 @@ CREATE TABLE `refunds` (
 
 CREATE TABLE `refund_reasons` (
   `id` bigint UNSIGNED NOT NULL,
-  `reason` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reason` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` tinyint(1) DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -2932,8 +3688,8 @@ CREATE TABLE `reviews` (
   `id` bigint UNSIGNED NOT NULL,
   `item_id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED NOT NULL,
-  `comment` mediumtext COLLATE utf8mb4_unicode_ci,
-  `attachment` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `comment` mediumtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `attachment` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `rating` int NOT NULL DEFAULT '0',
   `order_id` bigint UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -2942,9 +3698,51 @@ CREATE TABLE `reviews` (
   `status` tinyint(1) DEFAULT '1',
   `module_id` bigint UNSIGNED NOT NULL,
   `store_id` bigint UNSIGNED DEFAULT NULL,
-  `reply` text COLLATE utf8mb4_unicode_ci,
-  `review_id` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reply` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `review_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `replied_at` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `search_logs`
+--
+
+CREATE TABLE `search_logs` (
+  `id` bigint UNSIGNED NOT NULL,
+  `keyword` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_id` bigint UNSIGNED DEFAULT NULL,
+  `guest_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `module_id` int UNSIGNED NOT NULL,
+  `zone_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `result_count` int UNSIGNED NOT NULL DEFAULT '0',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `smart_banners`
+--
+
+CREATE TABLE `smart_banners` (
+  `id` bigint UNSIGNED NOT NULL,
+  `zone_id` bigint UNSIGNED NOT NULL,
+  `module_id` bigint UNSIGNED DEFAULT NULL,
+  `active_days` enum('everyday','custom_date') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'custom_date',
+  `start_date` date DEFAULT NULL,
+  `end_date` date DEFAULT NULL,
+  `start_time` time DEFAULT NULL,
+  `end_time` time DEFAULT NULL,
+  `position` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'top',
+  `redirect_type` enum('category','module_home','store_page','offer_page') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'category',
+  `redirect_target_id` bigint UNSIGNED DEFAULT NULL,
+  `image` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT '1',
+  `created_by` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -2955,8 +3753,8 @@ CREATE TABLE `reviews` (
 
 CREATE TABLE `social_media` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `link` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `link` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -2970,8 +3768,8 @@ CREATE TABLE `social_media` (
 
 CREATE TABLE `soft_credentials` (
   `id` bigint UNSIGNED NOT NULL,
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `value` longtext COLLATE utf8mb4_unicode_ci,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `value` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2984,10 +3782,10 @@ CREATE TABLE `soft_credentials` (
 
 CREATE TABLE `storages` (
   `id` bigint UNSIGNED NOT NULL,
-  `data_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `data_id` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `value` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `data_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `data_id` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `value` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -3005,7 +3803,7 @@ INSERT INTO `storages` (`id`, `data_type`, `data_id`, `key`, `value`, `created_a
 (6, 'App\\Models\\BusinessSetting', '145', NULL, 'public', '2024-06-05 23:27:22', '2024-06-05 23:27:22'),
 (7, 'App\\Models\\BusinessSetting', '146', NULL, 'public', '2024-06-05 23:27:22', '2024-06-05 23:27:22'),
 (8, 'App\\Models\\BusinessSetting', '147', NULL, 'public', '2024-06-05 23:24:14', '2024-06-05 23:24:14'),
-(9, 'App\\Models\\BusinessSetting', '139', NULL, 'public', '2025-02-18 17:33:37', '2025-02-18 17:33:37'),
+(9, 'App\\Models\\BusinessSetting', '139', NULL, 'public', '2026-06-28 17:30:27', '2026-06-28 17:30:27'),
 (10, 'App\\Models\\DataSetting', '24', NULL, 'public', '2024-11-18 18:35:41', '2024-11-18 18:35:41'),
 (11, 'App\\Models\\DataSetting', '25', NULL, 'public', '2024-11-18 18:35:41', '2024-11-18 18:35:41'),
 (12, 'App\\Models\\DataSetting', '26', NULL, 'public', '2024-11-18 18:35:41', '2024-11-18 18:35:41'),
@@ -3026,11 +3824,11 @@ INSERT INTO `storages` (`id`, `data_type`, `data_id`, `key`, `value`, `created_a
 (27, 'App\\Models\\DataSetting', '30', NULL, 'public', '2024-11-18 18:59:12', '2024-11-18 18:59:12'),
 (28, 'App\\Models\\DataSetting', '31', NULL, 'public', '2024-11-18 18:59:12', '2024-11-18 18:59:12'),
 (29, 'App\\Models\\Module', '1', 'thumbnail', 'public', '2024-11-18 19:00:57', '2024-11-18 19:00:57'),
-(30, 'App\\Models\\DataSetting', '34', NULL, 'public', '2024-11-18 23:59:56', '2024-11-18 23:59:56'),
-(31, 'App\\Models\\DataSetting', '35', NULL, 'public', '2024-11-18 23:59:56', '2024-11-18 23:59:56'),
-(32, 'App\\Models\\DataSetting', '36', NULL, 'public', '2024-11-18 23:59:56', '2024-11-18 23:59:56'),
-(33, 'App\\Models\\DataSetting', '37', NULL, 'public', '2024-11-18 23:59:56', '2024-11-18 23:59:56'),
-(34, 'App\\Models\\DataSetting', '38', NULL, 'public', '2024-11-18 23:59:56', '2024-11-18 23:59:56'),
+(30, 'App\\Models\\DataSetting', '34', NULL, 'public', '2025-11-16 21:12:07', '2025-11-16 21:12:07'),
+(31, 'App\\Models\\DataSetting', '35', NULL, 'public', '2025-11-16 21:12:07', '2025-11-16 21:12:07'),
+(32, 'App\\Models\\DataSetting', '36', NULL, 'public', '2025-11-16 21:12:07', '2025-11-16 21:12:07'),
+(33, 'App\\Models\\DataSetting', '37', NULL, 'public', '2025-11-16 21:12:08', '2025-11-16 21:12:08'),
+(34, 'App\\Models\\DataSetting', '38', NULL, 'public', '2025-11-16 21:12:08', '2025-11-16 21:12:08'),
 (35, 'App\\Models\\DataSetting', '58', NULL, 'public', '2024-11-18 19:22:21', '2024-11-18 19:22:21'),
 (36, 'App\\Models\\ReactTestimonial', '1', 'reviewer_image', 'public', '2024-11-18 19:24:20', '2024-11-18 19:24:20'),
 (37, 'App\\Models\\DataSetting', '59', NULL, 'public', '2024-11-18 19:24:41', '2024-11-18 19:24:41'),
@@ -3083,7 +3881,93 @@ INSERT INTO `storages` (`id`, `data_type`, `data_id`, `key`, `value`, `created_a
 (84, 'App\\Models\\BusinessSetting', '95', NULL, 'public', '2025-02-18 17:36:18', '2025-02-18 17:36:18'),
 (85, 'App\\Models\\BusinessSetting', '125', NULL, 'public', '2025-02-18 17:36:18', '2025-02-18 17:36:18'),
 (86, 'App\\Models\\BusinessSetting', '140', NULL, 'public', '2025-02-18 17:36:18', '2025-02-18 17:36:18'),
-(87, 'App\\Models\\BusinessSetting', '141', NULL, 'public', '2025-02-18 17:36:18', '2025-02-18 17:36:18');
+(87, 'App\\Models\\BusinessSetting', '141', NULL, 'public', '2025-02-18 17:36:18', '2025-02-18 17:36:18'),
+(88, 'App\\Models\\DataSetting', '86', NULL, 'public', '2025-11-16 21:12:08', '2025-11-16 21:12:08'),
+(89, 'App\\Models\\DataSetting', '87', NULL, 'public', '2025-11-16 21:15:13', '2025-11-16 21:15:13'),
+(90, 'App\\Models\\DataSetting', '88', NULL, 'public', '2025-11-16 21:16:55', '2025-11-16 21:16:55'),
+(91, 'App\\Models\\DataSetting', '89', NULL, 'public', '2025-11-16 21:16:55', '2025-11-16 21:16:55'),
+(92, 'App\\Models\\DataSetting', '90', NULL, 'public', '2025-11-16 21:16:55', '2025-11-16 21:16:55'),
+(93, 'App\\Models\\DataSetting', '91', NULL, 'public', '2025-11-16 21:16:55', '2025-11-16 21:16:55'),
+(94, 'App\\Models\\DataSetting', '92', NULL, 'public', '2025-11-16 21:18:25', '2025-11-16 21:18:25'),
+(95, 'App\\Models\\DataSetting', '93', NULL, 'public', '2025-11-16 21:18:25', '2025-11-16 21:18:25'),
+(96, 'App\\Models\\DataSetting', '94', NULL, 'public', '2025-11-16 21:18:25', '2025-11-16 21:18:25'),
+(97, 'App\\Models\\DataSetting', '95', NULL, 'public', '2025-11-16 21:18:25', '2025-11-16 21:18:25'),
+(98, 'App\\Models\\DataSetting', '96', NULL, 'public', '2025-11-16 21:19:16', '2025-11-16 21:19:16'),
+(99, 'App\\Models\\DataSetting', '97', NULL, 'public', '2025-11-16 21:19:16', '2025-11-16 21:19:16'),
+(100, 'App\\Models\\DataSetting', '98', NULL, 'public', '2025-11-16 21:19:16', '2025-11-16 21:19:16'),
+(101, 'App\\Models\\DataSetting', '99', NULL, 'public', '2025-11-16 21:19:17', '2025-11-16 21:19:17'),
+(102, 'App\\Models\\DataSetting', '100', NULL, 'public', '2025-11-16 21:19:54', '2025-11-16 21:19:54'),
+(103, 'App\\Models\\DataSetting', '101', NULL, 'public', '2025-11-16 21:19:54', '2025-11-16 21:19:54'),
+(104, 'App\\Models\\DataSetting', '102', NULL, 'public', '2025-11-16 21:19:54', '2025-11-16 21:19:54'),
+(105, 'App\\Models\\DataSetting', '103', NULL, 'public', '2025-11-16 21:19:54', '2025-11-16 21:19:54'),
+(106, 'App\\Models\\DataSetting', '104', NULL, 'public', '2025-11-16 21:20:10', '2025-11-16 21:20:10'),
+(107, 'App\\Models\\DataSetting', '105', NULL, 'public', '2025-11-16 21:20:49', '2025-11-16 21:20:49'),
+(108, 'App\\Models\\DataSetting', '106', NULL, 'public', '2025-11-16 21:20:49', '2025-11-16 21:20:49'),
+(109, 'App\\Models\\DataSetting', '107', NULL, 'public', '2025-11-16 21:21:05', '2025-11-16 21:21:05'),
+(110, 'App\\Models\\DataSetting', '108', NULL, 'public', '2025-11-16 21:22:08', '2025-11-16 21:22:08'),
+(111, 'App\\Models\\DataSetting', '109', NULL, 'public', '2025-11-16 21:23:43', '2025-11-16 21:23:43'),
+(112, 'App\\Models\\ReactPromotionalBanner', '1', 'image', 'public', '2025-11-16 21:24:28', '2025-11-16 21:24:28'),
+(113, 'App\\Models\\ReactPromotionalBanner', '2', 'image', 'public', '2025-11-16 21:24:34', '2025-11-16 21:24:34'),
+(114, 'App\\Models\\DataSetting', '110', NULL, 'public', '2025-11-16 21:24:44', '2025-11-16 21:24:44'),
+(115, 'App\\Models\\DataSetting', '44', NULL, 'public', '2025-11-16 21:24:53', '2025-11-16 21:24:53'),
+(116, 'App\\Models\\DataSetting', '45', NULL, 'public', '2025-11-16 21:24:53', '2025-11-16 21:24:53'),
+(117, 'App\\Models\\DataSetting', '46', NULL, 'public', '2025-11-16 21:24:53', '2025-11-16 21:24:53'),
+(118, 'App\\Models\\DataSetting', '111', NULL, 'public', '2025-11-16 21:25:04', '2025-11-16 21:25:04'),
+(119, 'App\\Models\\DataSetting', '112', NULL, 'public', '2025-11-16 21:25:04', '2025-11-16 21:25:04'),
+(120, 'App\\Models\\DataSetting', '47', NULL, 'public', '2025-11-16 21:25:04', '2025-11-16 21:25:04'),
+(121, 'App\\Models\\DataSetting', '113', NULL, 'public', '2025-11-16 21:25:14', '2025-11-16 21:25:14'),
+(122, 'App\\Models\\DataSetting', '114', NULL, 'public', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(123, 'App\\Models\\DataSetting', '115', NULL, 'public', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(124, 'App\\Models\\DataSetting', '116', NULL, 'public', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(125, 'App\\Models\\DataSetting', '117', NULL, 'public', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(126, 'App\\Models\\DataSetting', '118', NULL, 'public', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(127, 'App\\Models\\DataSetting', '119', NULL, 'public', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(128, 'App\\Models\\DataSetting', '120', NULL, 'public', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(129, 'App\\Models\\DataSetting', '121', NULL, 'public', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(130, 'App\\Models\\DataSetting', '122', NULL, 'public', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(131, 'App\\Models\\DataSetting', '123', NULL, 'public', '2025-11-16 21:25:51', '2025-11-16 21:25:51'),
+(132, 'App\\Models\\DataSetting', '124', NULL, 'public', '2025-11-16 21:26:07', '2025-11-16 21:26:07'),
+(133, 'App\\Models\\DataSetting', '125', NULL, 'public', '2025-11-16 21:26:32', '2025-11-16 21:26:32'),
+(134, 'App\\Models\\DataSetting', '126', NULL, 'public', '2025-11-16 21:26:32', '2025-11-16 21:26:32'),
+(135, 'App\\Models\\DataSetting', '127', NULL, 'public', '2025-11-16 21:26:32', '2025-11-16 21:26:32'),
+(136, 'App\\Models\\DataSetting', '128', NULL, 'public', '2025-11-16 21:26:32', '2025-11-16 21:26:32'),
+(137, 'App\\Models\\DataSetting', '129', NULL, 'public', '2025-11-16 21:26:49', '2025-11-16 21:26:49'),
+(138, 'App\\Models\\DataSetting', '130', NULL, 'public', '2025-11-16 21:26:49', '2025-11-16 21:26:49'),
+(139, 'App\\Models\\DataSetting', '131', NULL, 'public', '2025-11-16 21:26:49', '2025-11-16 21:26:49'),
+(140, 'App\\Models\\DataSetting', '132', NULL, 'public', '2025-11-16 21:27:15', '2025-11-16 21:27:15'),
+(141, 'App\\Models\\DataSetting', '133', NULL, 'public', '2025-11-16 21:27:23', '2025-11-16 21:27:23'),
+(142, 'App\\Models\\DataSetting', '134', NULL, 'public', '2025-11-16 21:27:23', '2025-11-16 21:27:23'),
+(143, 'App\\Models\\DataSetting', '135', NULL, 'public', '2025-11-16 21:27:21', '2025-11-16 21:27:21'),
+(144, 'App\\Models\\DataSetting', '136', NULL, 'public', '2025-11-16 21:27:22', '2025-11-16 21:27:22'),
+(145, 'App\\Models\\DataSetting', '137', NULL, 'public', '2025-11-16 21:27:22', '2025-11-16 21:27:22'),
+(146, 'App\\Models\\DataSetting', '138', NULL, 'public', '2025-11-16 21:27:22', '2025-11-16 21:27:22'),
+(147, 'App\\Models\\DataSetting', '139', NULL, 'public', '2025-11-16 21:27:22', '2025-11-16 21:27:22'),
+(148, 'App\\Models\\DataSetting', '140', NULL, 'public', '2025-11-16 21:27:25', '2025-11-16 21:27:25'),
+(149, 'App\\Models\\DataSetting', '141', NULL, 'public', '2025-11-16 21:27:39', '2025-11-16 21:27:39'),
+(150, 'App\\Models\\DataSetting', '142', NULL, 'public', '2025-11-16 21:27:39', '2025-11-16 21:27:39'),
+(151, 'App\\Models\\DataSetting', '143', NULL, 'public', '2025-11-16 21:27:39', '2025-11-16 21:27:39'),
+(152, 'App\\Models\\DataSetting', '144', NULL, 'public', '2025-11-16 21:27:44', '2025-11-16 21:27:44'),
+(153, 'App\\Models\\DataSetting', '145', NULL, 'public', '2025-11-16 21:27:57', '2025-11-16 21:27:57'),
+(154, 'App\\Models\\DataSetting', '146', NULL, 'public', '2025-11-16 21:27:57', '2025-11-16 21:27:57'),
+(155, 'App\\Models\\DataSetting', '147', NULL, 'public', '2025-11-16 21:28:08', '2025-11-16 21:28:08'),
+(156, 'App\\Models\\DataSetting', '148', NULL, 'public', '2025-11-16 21:28:08', '2025-11-16 21:28:08'),
+(157, 'App\\Models\\DataSetting', '149', NULL, 'public', '2025-11-16 21:28:15', '2025-11-16 21:28:15'),
+(158, 'App\\Models\\DataSetting', '150', NULL, 'public', '2025-11-16 21:28:15', '2025-11-16 21:28:15'),
+(159, 'App\\Models\\DataSetting', '151', NULL, 'public', '2025-11-16 21:28:21', '2025-11-16 21:28:21'),
+(160, 'App\\Models\\DataSetting', '152', NULL, 'public', '2025-11-16 21:28:21', '2025-11-16 21:28:21'),
+(161, 'App\\Models\\DataSetting', '153', NULL, 'public', '2025-11-16 21:28:42', '2025-11-16 21:28:42'),
+(162, 'App\\Models\\DataSetting', '154', NULL, 'public', '2025-11-16 21:28:26', '2025-11-16 21:28:26'),
+(163, 'App\\Models\\DataSetting', '155', NULL, 'public', '2025-11-16 21:29:04', '2025-11-16 21:29:04'),
+(164, 'App\\Models\\DataSetting', '63', NULL, 'public', '2025-11-16 21:29:28', '2025-11-16 21:29:28'),
+(165, 'App\\Models\\DataSetting', '156', NULL, 'public', '2025-11-16 21:29:28', '2025-11-16 21:29:28'),
+(166, 'App\\Models\\DataSetting', '157', NULL, 'public', '2025-11-16 21:29:28', '2025-11-16 21:29:28'),
+(167, 'App\\Models\\DataSetting', '158', NULL, 'public', '2025-11-16 21:29:33', '2025-11-16 21:29:33'),
+(168, 'App\\Models\\DataSetting', '159', NULL, 'public', '2025-11-16 21:29:39', '2025-11-16 21:29:39'),
+(169, 'App\\Models\\BusinessSetting', '151', NULL, 'public', '2026-06-28 17:20:23', '2026-06-28 17:20:23'),
+(170, 'App\\Models\\DataSetting', '160', NULL, 'public', '2026-06-28 17:20:53', '2026-06-28 17:20:53'),
+(171, 'App\\Models\\BusinessSetting', '152', NULL, 'public', '2026-06-28 17:33:21', '2026-06-28 17:33:21'),
+(172, 'App\\Models\\BusinessSetting', '153', NULL, 'public', '2026-07-29 16:34:37', '2026-07-29 16:34:37'),
+(173, 'App\\Models\\DataSetting', '161', NULL, 'public', '2026-07-29 16:34:37', '2026-07-29 16:34:37');
 
 -- --------------------------------------------------------
 
@@ -3093,14 +3977,14 @@ INSERT INTO `storages` (`id`, `data_type`, `data_id`, `key`, `value`, `created_a
 
 CREATE TABLE `stores` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `phone` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `logo` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `latitude` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `longitude` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `address` text COLLATE utf8mb4_unicode_ci,
-  `footer_text` text COLLATE utf8mb4_unicode_ci,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `logo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `latitude` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `longitude` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `address` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `footer_text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `minimum_order` decimal(24,2) NOT NULL DEFAULT '0.00',
   `comission` decimal(24,2) DEFAULT NULL,
   `schedule_order` tinyint(1) NOT NULL DEFAULT '0',
@@ -3109,8 +3993,8 @@ CREATE TABLE `stores` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `free_delivery` tinyint(1) NOT NULL DEFAULT '0',
-  `rating` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `cover_photo` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rating` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `cover_photo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `delivery` tinyint(1) NOT NULL DEFAULT '1',
   `take_away` tinyint(1) NOT NULL DEFAULT '1',
   `item_section` tinyint(1) NOT NULL DEFAULT '1',
@@ -3118,12 +4002,12 @@ CREATE TABLE `stores` (
   `zone_id` bigint UNSIGNED DEFAULT NULL,
   `reviews_section` tinyint(1) NOT NULL DEFAULT '1',
   `active` tinyint(1) NOT NULL DEFAULT '1',
-  `off_day` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT ' ',
-  `gst` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `off_day` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT ' ',
+  `gst` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `self_delivery_system` tinyint(1) NOT NULL DEFAULT '0',
   `pos_system` tinyint(1) NOT NULL DEFAULT '0',
   `minimum_shipping_charge` decimal(24,2) NOT NULL DEFAULT '0.00',
-  `delivery_time` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT '30-40',
+  `delivery_time` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT '30-40',
   `veg` tinyint(1) NOT NULL DEFAULT '1',
   `non_veg` tinyint(1) NOT NULL DEFAULT '1',
   `order_count` int UNSIGNED NOT NULL DEFAULT '0',
@@ -3133,29 +4017,49 @@ CREATE TABLE `stores` (
   `featured` tinyint(1) NOT NULL DEFAULT '0',
   `per_km_shipping_charge` double(16,3) UNSIGNED NOT NULL DEFAULT '0.000',
   `prescription_order` tinyint(1) NOT NULL DEFAULT '0',
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `maximum_shipping_charge` double(23,3) DEFAULT NULL,
   `cutlery` tinyint(1) NOT NULL DEFAULT '0',
-  `meta_title` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `meta_description` text COLLATE utf8mb4_unicode_ci,
-  `meta_image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_title` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `meta_image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `meta_data` json DEFAULT NULL,
   `announcement` tinyint(1) NOT NULL DEFAULT '0',
-  `announcement_message` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `store_business_model` enum('none','commission','subscription','unsubscribed') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'commission',
+  `announcement_message` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `store_business_model` enum('none','commission','subscription','unsubscribed') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'commission',
   `package_id` bigint UNSIGNED DEFAULT NULL,
   `pickup_zone_id` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
-  `comment` text COLLATE utf8mb4_unicode_ci,
-  `tin` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `comment` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `tin` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `tin_expire_date` date DEFAULT NULL,
-  `tin_certificate_image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
-) ;
+  `tin_certificate_image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `stores`
 --
 
-INSERT INTO `stores` (`id`, `name`, `phone`, `email`, `logo`, `latitude`, `longitude`, `address`, `footer_text`, `minimum_order`, `comission`, `schedule_order`, `status`, `vendor_id`, `created_at`, `updated_at`, `free_delivery`, `rating`, `cover_photo`, `delivery`, `take_away`, `item_section`, `tax`, `zone_id`, `reviews_section`, `active`, `off_day`, `gst`, `self_delivery_system`, `pos_system`, `minimum_shipping_charge`, `delivery_time`, `veg`, `non_veg`, `order_count`, `total_order`, `module_id`, `order_place_to_schedule_interval`, `featured`, `per_km_shipping_charge`, `prescription_order`, `slug`, `maximum_shipping_charge`, `cutlery`, `meta_title`, `meta_description`, `meta_image`, `announcement`, `announcement_message`, `store_business_model`, `package_id`, `pickup_zone_id`, `comment`, `tin`, `tin_expire_date`, `tin_certificate_image`) VALUES
-(1, 'Demo Store', '+101511111111', 'demo.store@gmail.com', '2024-11-19-673c404ae469c.png', '23.81695886557418', '90.36934144046135', 'House, road', NULL, 0.00, NULL, 0, 1, 1, '2023-08-15 23:45:01', '2025-02-18 17:36:18', 0, NULL, '2024-11-19-673c404ae633e.png', 1, 1, 1, 5.00, 1, 1, 1, ' ', NULL, 0, 0, 0.00, '30-40 min', 1, 1, 0, 0, 1, 0, 1, 0.000, 0, 'demo-store', NULL, 0, NULL, NULL, NULL, 0, NULL, 'commission', NULL, NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `stores` (`id`, `name`, `phone`, `email`, `logo`, `latitude`, `longitude`, `address`, `footer_text`, `minimum_order`, `comission`, `schedule_order`, `status`, `vendor_id`, `created_at`, `updated_at`, `free_delivery`, `rating`, `cover_photo`, `delivery`, `take_away`, `item_section`, `tax`, `zone_id`, `reviews_section`, `active`, `off_day`, `gst`, `self_delivery_system`, `pos_system`, `minimum_shipping_charge`, `delivery_time`, `veg`, `non_veg`, `order_count`, `total_order`, `module_id`, `order_place_to_schedule_interval`, `featured`, `per_km_shipping_charge`, `prescription_order`, `slug`, `maximum_shipping_charge`, `cutlery`, `meta_title`, `meta_description`, `meta_image`, `meta_data`, `announcement`, `announcement_message`, `store_business_model`, `package_id`, `pickup_zone_id`, `comment`, `tin`, `tin_expire_date`, `tin_certificate_image`) VALUES
+(1, 'Demo Store', '+101511111111', 'demo.store@gmail.com', '2024-11-19-673c404ae469c.png', '23.81695886557418', '90.36934144046135', 'House, road', NULL, 0.00, NULL, 0, 1, 1, '2023-08-15 23:45:01', '2025-02-18 17:36:18', 0, NULL, '2024-11-19-673c404ae633e.png', 1, 1, 1, 5.00, 1, 1, 1, ' ', NULL, 0, 0, 0.00, '30-40 min', 1, 1, 0, 0, 1, 0, 1, 0.000, 0, 'demo-store', NULL, 0, NULL, NULL, NULL, NULL, 0, NULL, 'commission', NULL, NULL, NULL, NULL, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `store_categories`
+--
+
+CREATE TABLE `store_categories` (
+  `id` bigint UNSIGNED NOT NULL,
+  `store_id` bigint UNSIGNED DEFAULT NULL,
+  `module_id` bigint UNSIGNED DEFAULT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `priority` tinyint NOT NULL DEFAULT '0',
+  `status` tinyint NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -3173,7 +4077,23 @@ CREATE TABLE `store_configs` (
   `halal_tag_status` tinyint(1) NOT NULL DEFAULT '0',
   `extra_packaging_status` tinyint(1) NOT NULL DEFAULT '0',
   `extra_packaging_amount` double(23,3) NOT NULL DEFAULT '0.000',
-  `minimum_stock_for_warning` int NOT NULL DEFAULT '0'
+  `minimum_stock_for_warning` int NOT NULL DEFAULT '0',
+  `show_low_stock_count` tinyint(1) NOT NULL DEFAULT '1',
+  `section_wise_ai_use_count` int NOT NULL DEFAULT '0',
+  `image_wise_ai_use_count` int NOT NULL DEFAULT '0',
+  `verified_seller` tinyint(1) NOT NULL DEFAULT '0',
+  `has_seen_verified_badge_popup` tinyint(1) NOT NULL DEFAULT '0',
+  `website_builder_status` int NOT NULL DEFAULT '0',
+  `can_edit_order` tinyint(1) NOT NULL DEFAULT '0',
+  `can_edit_booking` tinyint(1) NOT NULL DEFAULT '0',
+  `instant_booking` tinyint(1) NOT NULL DEFAULT '1',
+  `repeat_booking` tinyint(1) NOT NULL DEFAULT '0',
+  `schedule_booking` tinyint(1) NOT NULL DEFAULT '1',
+  `manage_service_setup` tinyint(1) NOT NULL DEFAULT '1',
+  `show_reviews_provider_panel` tinyint(1) NOT NULL DEFAULT '1',
+  `minimum_booking` decimal(24,2) NOT NULL DEFAULT '0.00',
+  `choose_service_location` json DEFAULT NULL,
+  `serviceman_can_cancel_booking` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -3184,17 +4104,43 @@ CREATE TABLE `store_configs` (
 
 CREATE TABLE `store_notification_settings` (
   `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `sub_title` text COLLATE utf8mb4_unicode_ci,
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sub_title` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `store_id` bigint UNSIGNED NOT NULL,
-  `mail_status` enum('active','inactive','disable') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'disable',
-  `sms_status` enum('active','inactive','disable') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'disable',
-  `push_notification_status` enum('active','inactive','disable') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'disable',
+  `mail_status` enum('active','inactive','disable') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'disable',
+  `sms_status` enum('active','inactive','disable') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'disable',
+  `push_notification_status` enum('active','inactive','disable') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'disable',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `module_type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'all'
+  `module_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'all'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `store_notification_settings`
+--
+
+INSERT INTO `store_notification_settings` (`id`, `title`, `sub_title`, `key`, `store_id`, `mail_status`, `sms_status`, `push_notification_status`, `created_at`, `updated_at`, `module_type`) VALUES
+(1, 'account_block', 'Get_notification_on_account_block', 'store_account_block', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(2, 'account_unblock', 'Get_notification_on_account_unblock', 'store_account_unblock', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(3, 'withdraw_approve', 'Get_notification_on_withdraw_approve', 'store_withdraw_approve', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(4, 'withdraw_rejaction', 'Get_notification_on_withdraw_rejaction', 'store_withdraw_rejaction', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(5, 'campaign_join_request', 'Get_notification_on_campaign_join_request', 'store_campaign_join_request', 1, 'active', 'disable', 'disable', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(6, 'campaign_join_rejaction', 'Get_notification_on_campaign_join_rejaction', 'store_campaign_join_rejaction', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(7, 'campaign_join_approval', 'Get_notification_on_campaign_join_approval', 'store_campaign_join_approval', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(8, 'order_notification', 'Get_notification_on_order_notification', 'store_order_notification', 1, 'disable', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(9, 'advertisement_create_by_admin', 'Get_notification_on_advertisement_create_by_admin', 'store_advertisement_create_by_admin', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(10, 'advertisement_approval', 'Get_notification_on_advertisement_approval', 'store_advertisement_approval', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(11, 'advertisement_deny', 'Get_notification_on_advertisement_deny', 'store_advertisement_deny', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(12, 'advertisement_resume', 'Get_notification_on_advertisement_resume', 'store_advertisement_resume', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(13, 'advertisement_pause', 'Get_notification_on_advertisement_pause', 'store_advertisement_pause', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(14, 'product_approve', 'Get_notification_on_product_approve', 'store_product_approve', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(15, 'product_reject', 'Get_notification_on_product_reject', 'store_product_reject', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(16, 'subscription_success', 'Get_notification_on_subscription_success', 'store_subscription_success', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(17, 'subscription_renew', 'Get_notification_on_subscription_renew', 'store_subscription_renew', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(18, 'subscription_shift', 'Get_notification_on_subscription_shift', 'store_subscription_shift', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(19, 'subscription_cancel', 'Get_notification_on_subscription_cancel', 'store_subscription_cancel', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all'),
+(20, 'subscription_plan_update', 'Get_notification_on_subscription_plan_update', 'store_subscription_plan_update', 1, 'active', 'disable', 'active', '2026-06-28 17:56:17', '2026-06-28 17:56:17', 'all');
 
 -- --------------------------------------------------------
 
@@ -3224,8 +4170,8 @@ CREATE TABLE `store_subscriptions` (
   `store_id` bigint UNSIGNED NOT NULL,
   `expiry_date` date NOT NULL,
   `validity` int NOT NULL DEFAULT '0',
-  `max_order` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `max_product` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `max_order` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `max_product` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `pos` tinyint(1) NOT NULL DEFAULT '0',
   `mobile_app` tinyint(1) NOT NULL DEFAULT '0',
   `chat` tinyint(1) NOT NULL DEFAULT '0',
@@ -3236,7 +4182,7 @@ CREATE TABLE `store_subscriptions` (
   `total_package_renewed` tinyint NOT NULL DEFAULT '0',
   `renewed_at` datetime DEFAULT NULL,
   `is_canceled` tinyint(1) NOT NULL DEFAULT '0',
-  `canceled_by` enum('none','admin','store') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'none',
+  `canceled_by` enum('none','admin','store') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'none',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -3276,10 +4222,10 @@ CREATE TABLE `subscription_billing_and_refund_histories` (
   `store_id` bigint UNSIGNED NOT NULL,
   `subscription_id` bigint UNSIGNED NOT NULL,
   `package_id` bigint UNSIGNED DEFAULT NULL,
-  `transaction_type` enum('pending_bill','refund') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending_bill',
+  `transaction_type` enum('pending_bill','refund') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending_bill',
   `amount` double(24,3) NOT NULL,
   `is_success` tinyint(1) NOT NULL DEFAULT '0',
-  `reference` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reference` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -3292,11 +4238,11 @@ CREATE TABLE `subscription_billing_and_refund_histories` (
 
 CREATE TABLE `subscription_packages` (
   `id` bigint UNSIGNED NOT NULL,
-  `package_name` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `package_name` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `price` double(24,3) NOT NULL,
   `validity` int NOT NULL,
-  `max_order` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'unlimited',
-  `max_product` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'unlimited',
+  `max_order` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'unlimited',
+  `max_product` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'unlimited',
   `pos` tinyint(1) NOT NULL DEFAULT '0',
   `mobile_app` tinyint(1) NOT NULL DEFAULT '0',
   `chat` tinyint(1) NOT NULL DEFAULT '0',
@@ -3304,11 +4250,11 @@ CREATE TABLE `subscription_packages` (
   `self_delivery` tinyint(1) NOT NULL DEFAULT '0',
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `default` tinyint(1) NOT NULL DEFAULT '0',
-  `colour` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `text` text COLLATE utf8mb4_unicode_ci,
+  `colour` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `text` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `module_type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'all'
+  `module_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'all'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -3325,16 +4271,16 @@ CREATE TABLE `subscription_transactions` (
   `price` double(24,3) NOT NULL DEFAULT '0.000',
   `previous_due` double(24,3) NOT NULL DEFAULT '0.000',
   `validity` int NOT NULL DEFAULT '0',
-  `payment_method` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payment_status` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `reference` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `payment_method` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payment_status` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `reference` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `paid_amount` double(24,2) NOT NULL,
   `discount` int NOT NULL DEFAULT '0',
   `package_details` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,
-  `created_by` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_by` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `is_trial` tinyint(1) NOT NULL DEFAULT '0',
   `transaction_status` tinyint(1) NOT NULL DEFAULT '1',
-  `plan_type` enum('renew','new_plan','first_purchased','free_trial') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'first_purchased',
+  `plan_type` enum('renew','new_plan','first_purchased','free_trial') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'first_purchased',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -3347,16 +4293,16 @@ CREATE TABLE `subscription_transactions` (
 
 CREATE TABLE `surge_prices` (
   `id` bigint UNSIGNED NOT NULL,
-  `surge_price_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `customer_note` text COLLATE utf8mb4_unicode_ci,
+  `surge_price_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `customer_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `customer_note_status` tinyint(1) NOT NULL DEFAULT '1',
   `module_ids` json DEFAULT NULL,
   `zone_id` bigint UNSIGNED NOT NULL,
   `price` decimal(10,2) NOT NULL DEFAULT '0.00',
-  `price_type` enum('amount','percent') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'amount',
+  `price_type` enum('amount','percent') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'amount',
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `is_permanent` tinyint(1) NOT NULL DEFAULT '0',
-  `duration_type` enum('daily','weekly','custom') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'daily',
+  `duration_type` enum('daily','weekly','custom') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'daily',
   `weekly_days` json DEFAULT NULL,
   `custom_days` json DEFAULT NULL,
   `custom_times` json DEFAULT NULL,
@@ -3395,10 +4341,10 @@ CREATE TABLE `surge_price_dates` (
 
 CREATE TABLE `system_tax_setups` (
   `id` bigint UNSIGNED NOT NULL,
-  `tax_type` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'order_wise',
-  `country_code` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `tax_payer` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT 'vendor',
-  `tax_ids` tinytext COLLATE utf8mb4_unicode_ci,
+  `tax_type` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'order_wise',
+  `country_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tax_payer` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'vendor',
+  `tax_ids` tinytext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `is_default` tinyint(1) NOT NULL DEFAULT '0',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `is_included` tinyint(1) NOT NULL DEFAULT '0',
@@ -3414,7 +4360,7 @@ CREATE TABLE `system_tax_setups` (
 
 CREATE TABLE `tags` (
   `id` bigint UNSIGNED NOT NULL,
-  `tag` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tag` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -3427,7 +4373,7 @@ CREATE TABLE `tags` (
 
 CREATE TABLE `taxables` (
   `id` bigint UNSIGNED NOT NULL,
-  `taxable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `taxable_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `taxable_id` bigint UNSIGNED NOT NULL,
   `tax_id` bigint UNSIGNED NOT NULL,
   `system_tax_setup_id` bigint UNSIGNED NOT NULL,
@@ -3443,9 +4389,9 @@ CREATE TABLE `taxables` (
 
 CREATE TABLE `taxes` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `tax_rate` double(23,8) NOT NULL DEFAULT '0.00000000',
-  `country_code` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `country_code` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_default` tinyint(1) NOT NULL DEFAULT '0',
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -3460,9 +4406,9 @@ CREATE TABLE `taxes` (
 
 CREATE TABLE `tax_additional_setups` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `system_tax_setup_id` bigint UNSIGNED DEFAULT NULL,
-  `tax_ids` tinytext COLLATE utf8mb4_unicode_ci,
+  `tax_ids` tinytext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `is_active` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -3476,28 +4422,31 @@ CREATE TABLE `tax_additional_setups` (
 
 CREATE TABLE `temp_products` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `image` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `images` longtext COLLATE utf8mb4_unicode_ci,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `image` varchar(30) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `video` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `video_link` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `images` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `store_id` bigint UNSIGNED NOT NULL,
+  `store_category_id` bigint UNSIGNED DEFAULT NULL,
   `module_id` bigint UNSIGNED NOT NULL,
   `unit_id` bigint UNSIGNED DEFAULT NULL,
   `item_id` bigint UNSIGNED DEFAULT NULL,
   `category_id` bigint UNSIGNED DEFAULT NULL,
-  `category_ids` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `tag_ids` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `variations` text COLLATE utf8mb4_unicode_ci,
-  `food_variations` text COLLATE utf8mb4_unicode_ci,
-  `add_ons` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `attributes` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `choice_options` text COLLATE utf8mb4_unicode_ci,
+  `category_ids` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tag_ids` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `slug` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `variations` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `food_variations` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `add_ons` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `attributes` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `choice_options` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `price` decimal(24,2) NOT NULL DEFAULT '0.00',
   `tax` decimal(24,2) NOT NULL DEFAULT '0.00',
-  `tax_type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percent',
+  `tax_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percent',
   `discount` decimal(8,2) NOT NULL DEFAULT '0.00',
-  `discount_type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percent',
+  `discount_type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'percent',
   `veg` tinyint(1) NOT NULL DEFAULT '0',
   `recommended` tinyint(1) NOT NULL DEFAULT '0',
   `organic` tinyint(1) NOT NULL DEFAULT '0',
@@ -3506,7 +4455,7 @@ CREATE TABLE `temp_products` (
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `stock` int DEFAULT '0',
   `maximum_cart_quantity` int DEFAULT NULL,
-  `note` text COLLATE utf8mb4_unicode_ci,
+  `note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `is_rejected` tinyint(1) NOT NULL DEFAULT '0',
   `available_time_ends` time DEFAULT NULL,
   `available_time_starts` time DEFAULT NULL,
@@ -3515,9 +4464,9 @@ CREATE TABLE `temp_products` (
   `is_halal` tinyint(1) NOT NULL DEFAULT '0',
   `brand_id` tinyint(1) NOT NULL DEFAULT '0',
   `is_prescription_required` tinyint(1) NOT NULL DEFAULT '0',
-  `nutrition_ids` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `allergy_ids` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `generic_ids` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `nutrition_ids` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `allergy_ids` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `generic_ids` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -3530,8 +4479,8 @@ CREATE TABLE `track_deliverymen` (
   `id` bigint UNSIGNED NOT NULL,
   `order_id` bigint UNSIGNED DEFAULT NULL,
   `delivery_man_id` bigint UNSIGNED DEFAULT NULL,
-  `longitude` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `latitude` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `longitude` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `latitude` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -3544,11 +4493,11 @@ CREATE TABLE `track_deliverymen` (
 
 CREATE TABLE `translations` (
   `id` bigint UNSIGNED NOT NULL,
-  `translationable_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `translationable_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `translationable_id` bigint UNSIGNED NOT NULL,
-  `locale` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `value` text COLLATE utf8mb4_unicode_ci,
+  `locale` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `value` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -3601,7 +4550,54 @@ INSERT INTO `translations` (`id`, `translationable_type`, `translationable_id`, 
 (41, 'App\\Models\\FlutterSpecialCriteria', 2, 'en', 'title', 'Excellent Shopping Experience', NULL, NULL),
 (42, 'App\\Models\\FlutterSpecialCriteria', 3, 'en', 'title', 'Thousands of stores', NULL, NULL),
 (43, 'App\\Models\\AdminSpecialCriteria', 7, 'en', 'title', 'Easy to Get Help & Support', NULL, NULL),
-(44, 'App\\Models\\Banner', 1, 'en', 'title', 'Demo Banner', NULL, NULL);
+(44, 'App\\Models\\Banner', 1, 'en', 'title', 'Demo Banner', NULL, NULL),
+(45, 'App\\Models\\DataSetting', 86, 'en', 'pick_location_title', 'Enter location to search store', NULL, NULL),
+(46, 'App\\Models\\DataSetting', 89, 'en', 'trust_title_card_1', '10,000+', NULL, NULL),
+(47, 'App\\Models\\DataSetting', 90, 'en', 'trust_sub_title_card_1', 'Orders Delivered', NULL, NULL),
+(48, 'App\\Models\\DataSetting', 93, 'en', 'trust_title_card_2', '10,000+', NULL, NULL),
+(49, 'App\\Models\\DataSetting', 94, 'en', 'trust_sub_title_card_2', 'Happy Customers', NULL, NULL),
+(50, 'App\\Models\\DataSetting', 97, 'en', 'trust_title_card_3', '10,000+', NULL, NULL),
+(51, 'App\\Models\\DataSetting', 98, 'en', 'trust_sub_title_card_3', 'Active Vendors', NULL, NULL),
+(52, 'App\\Models\\DataSetting', 101, 'en', 'trust_title_card_4', '10,000+', NULL, NULL),
+(53, 'App\\Models\\DataSetting', 102, 'en', 'trust_sub_title_card_4', 'Registered Deliverymen', NULL, NULL),
+(54, 'App\\Models\\DataSetting', 105, 'en', 'available_zone_title', 'Available Delivery Areas / Zone', NULL, NULL),
+(55, 'App\\Models\\DataSetting', 106, 'en', 'available_zone_short_description', '<p>We offer delivery services across a wide range of regions. To see if we deliver to your area, check our list of available delivery zones or use our delivery<br />\r\n✅ 25+ Active Zones<br />\r\n🚚 Fast Coverage Expanding<br />\r\n⏱ Avg Delivery 30 Min<br />\r\n📦 Parcel, Grocery, Food &amp; More</p>', NULL, NULL),
+(56, 'App\\Models\\DataSetting', 109, 'en', 'faq_title', 'Frequently Asked Questions', NULL, NULL),
+(57, 'App\\Models\\FAQ', 1, 'en', 'question', 'How do I place an order?', NULL, NULL),
+(58, 'App\\Models\\FAQ', 1, 'en', 'answer', 'Browse your favorite items, add them to your cart, and confirm checkout — it’s that simple!', NULL, NULL),
+(59, 'App\\Models\\FAQ', 2, 'en', 'question', 'How do I cancel or change my order?', NULL, NULL),
+(60, 'App\\Models\\FAQ', 2, 'en', 'answer', 'You can cancel or modify your order before it’s confirmed by the store.', NULL, NULL),
+(61, 'App\\Models\\DataSetting', 44, 'en', 'download_user_app_title', 'Complete Multipurpose eBusiness Solution', NULL, NULL),
+(62, 'App\\Models\\DataSetting', 45, 'en', 'download_user_app_sub_title', '6amMart is a Laravel and Flutter Framework-based multi-vendor food, grocery, eCommerce, parcel, and pharmacy delivery system. It has six modules to cover all your business function', NULL, NULL),
+(63, 'App\\Models\\FAQ', 3, 'en', 'question', 'How can my store join the platform?', NULL, NULL),
+(64, 'App\\Models\\FAQ', 3, 'en', 'answer', 'Fill out our partner registration form — our team will contact you for setup.', NULL, NULL),
+(65, 'App\\Models\\DataSetting', 111, 'en', 'download_user_app_button_title', 'Download the Customer App', NULL, NULL),
+(66, 'App\\Models\\DataSetting', 112, 'en', 'download_user_app_button_sub_title', 'Smart shopping starts here.', NULL, NULL),
+(67, 'App\\Models\\FAQ', 4, 'en', 'question', 'Can I update my menu or prices anytime?', NULL, NULL),
+(68, 'App\\Models\\FAQ', 4, 'en', 'answer', 'Yes, you can easily update items, prices, and availability through your dashboard.', NULL, NULL),
+(69, 'App\\Models\\FAQ', 5, 'en', 'question', 'How do I become a delivery partner?', NULL, NULL),
+(70, 'App\\Models\\FAQ', 5, 'en', 'answer', 'Apply through our website or app — submit your details and required documents.', NULL, NULL),
+(71, 'App\\Models\\DataSetting', 114, 'en', 'popular_client_title', 'Our Popular $Clients$', NULL, NULL),
+(72, 'App\\Models\\DataSetting', 115, 'en', 'popular_client_sub_title', 'Trusted by leading brands for fast and reliable delivery services.', NULL, NULL),
+(73, 'App\\Models\\FAQ', 6, 'en', 'question', 'How do I get delivery requests?', NULL, NULL),
+(74, 'App\\Models\\FAQ', 6, 'en', 'answer', 'Once online, nearby orders will automatically appear on your driver app.', NULL, NULL),
+(75, 'App\\Models\\DataSetting', 125, 'en', 'download_seller_app_title', 'Start Selling with $6amMart$', NULL, NULL),
+(76, 'App\\Models\\DataSetting', 126, 'en', 'download_seller_app_sub_title', 'Turn your local shop into an online business and grow your sales with our powerful platform', NULL, NULL),
+(77, 'App\\Models\\DataSetting', 127, 'en', 'download_seller_app_button_title', 'Start Selling', NULL, NULL),
+(78, 'App\\Models\\DataSetting', 129, 'en', 'download_seller_app_main_button_title', 'Download the Seller App', NULL, NULL),
+(79, 'App\\Models\\DataSetting', 130, 'en', 'download_seller_app_main_button_sub_title', 'Stay in control, wherever you are.', NULL, NULL),
+(80, 'App\\Models\\DataSetting', 133, 'en', 'highlight_title', 'Ride Anytime, Anywhere', NULL, NULL),
+(81, 'App\\Models\\DataSetting', 134, 'en', 'highlight_sub_title', '6amMart makes it easy to rent vehicles quickly and affordably.', NULL, NULL),
+(82, 'App\\Models\\DataSetting', 136, 'en', 'download_dm_app_title', 'Deliver More. $Earn$ More.', NULL, NULL),
+(83, 'App\\Models\\DataSetting', 137, 'en', 'download_dm_app_sub_title', '<p>Join 6amMart as a delivery partner and turn every ride into income. Work on your own schedule and get paid faster, every day.</p>\r\n\r\n<p>&bull; Choose your ride &ndash; car, bike, or bicycle &nbsp;<br />\r\n&bull; Flexible hours that fit your lifestyle &nbsp;<br />\r\n&bull; Instant payouts &amp; bonus opportunities</p>', NULL, NULL),
+(84, 'App\\Models\\DataSetting', 138, 'en', 'download_dm_app_button_title', 'Start Earning', NULL, NULL),
+(85, 'App\\Models\\DataSetting', 141, 'en', 'download_dm_app_main_button_title', 'Download the Driver App', NULL, NULL),
+(86, 'App\\Models\\DataSetting', 142, 'en', 'download_dm_app_main_button_sub_title', 'Take control of your rides anywhere.', NULL, NULL),
+(87, 'App\\Models\\DataSetting', 145, 'en', 'gallery_content_title', 'See $6amMart$ in Action', NULL, NULL),
+(88, 'App\\Models\\DataSetting', 146, 'en', 'gallery_content_sub_title', 'Explore how customers use our services, vendors grow their business', NULL, NULL),
+(89, 'App\\Models\\DataSetting', 63, 'en', 'testimonial_title', 'We $satisfied$ some Customer & Restaurant Owners', NULL, NULL),
+(90, 'App\\Models\\DataSetting', 156, 'en', 'testimonial_sub_title', 'Hear from customers and partners who enjoy seamless shopping and fast delivery.', NULL, NULL),
+(91, 'App\\Models\\DataSetting', 157, 'en', 'testimonial_button_title', 'Get Started', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -3611,7 +4607,7 @@ INSERT INTO `translations` (`id`, `translationable_type`, `translationable_id`, 
 
 CREATE TABLE `units` (
   `id` bigint UNSIGNED NOT NULL,
-  `unit` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `unit` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -3624,33 +4620,54 @@ CREATE TABLE `units` (
 
 CREATE TABLE `users` (
   `id` bigint UNSIGNED NOT NULL,
-  `f_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `l_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `tenant_id` bigint UNSIGNED NOT NULL DEFAULT '0',
+  `sub_tenant_id` bigint UNSIGNED NOT NULL DEFAULT '0',
+  `f_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `l_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_phone_verified` tinyint(1) NOT NULL DEFAULT '0',
   `email_verified_at` timestamp NULL DEFAULT NULL,
-  `password` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `remember_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `interest` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `cm_firebase_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `interest` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `user_context` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `cm_firebase_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
+  `pro_status` tinyint(1) NOT NULL DEFAULT '0',
   `order_count` int NOT NULL DEFAULT '0',
-  `login_medium` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `social_id` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `login_medium` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `social_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `zone_id` bigint UNSIGNED DEFAULT NULL,
   `wallet_balance` decimal(24,3) NOT NULL DEFAULT '0.000',
   `loyalty_point` decimal(24,3) NOT NULL DEFAULT '0.000',
-  `ref_code` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `current_language_key` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'en',
+  `ref_code` varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `current_language_key` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'en',
   `ref_by` bigint UNSIGNED DEFAULT NULL,
-  `temp_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `module_ids` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `temp_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `module_ids` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `is_email_verified` tinyint(1) NOT NULL DEFAULT '0',
   `is_from_pos` tinyint(1) NOT NULL DEFAULT '0'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `user_files`
+--
+
+CREATE TABLE `user_files` (
+  `id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `file_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `storage` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'public',
+  `mime_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -3661,11 +4678,11 @@ CREATE TABLE `users` (
 
 CREATE TABLE `user_infos` (
   `id` bigint UNSIGNED NOT NULL,
-  `f_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `l_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `f_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `l_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `admin_id` bigint UNSIGNED DEFAULT NULL,
   `user_id` bigint UNSIGNED DEFAULT NULL,
   `vendor_id` bigint UNSIGNED DEFAULT NULL,
@@ -3682,13 +4699,15 @@ CREATE TABLE `user_infos` (
 
 CREATE TABLE `user_notifications` (
   `id` bigint UNSIGNED NOT NULL,
-  `data` text COLLATE utf8mb4_unicode_ci,
+  `data` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `user_id` bigint UNSIGNED DEFAULT NULL,
   `vendor_id` bigint UNSIGNED DEFAULT NULL,
   `delivery_man_id` bigint UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `order_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `serviceman_id` bigint UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -3699,32 +4718,32 @@ CREATE TABLE `user_notifications` (
 
 CREATE TABLE `vendors` (
   `id` bigint UNSIGNED NOT NULL,
-  `f_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `l_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `f_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `l_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `email_verified_at` timestamp NULL DEFAULT NULL,
-  `password` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `remember_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `bank_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `branch` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `holder_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `account_no` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rejection_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `branch` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `holder_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `account_no` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `image` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `status` tinyint(1) DEFAULT '1',
-  `firebase_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `auth_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `login_remember_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `firebase_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `auth_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `login_remember_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `vendors`
 --
 
-INSERT INTO `vendors` (`id`, `f_name`, `l_name`, `phone`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `bank_name`, `branch`, `holder_name`, `account_no`, `image`, `status`, `firebase_token`, `auth_token`, `login_remember_token`) VALUES
-(1, 'Demo', 'Store', '+101511111111', 'demo.store@gmail.com', NULL, '$2y$10$Rtm/6/dNJwwRZcfUAjCNdezs3xCwTN1oTW/2mqrRBZkGqHHZAqcuW', NULL, '2023-08-15 23:45:01', '2023-08-15 23:45:01', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, NULL);
+INSERT INTO `vendors` (`id`, `f_name`, `l_name`, `phone`, `email`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `rejection_note`, `branch`, `holder_name`, `account_no`, `image`, `status`, `firebase_token`, `auth_token`, `login_remember_token`) VALUES
+(1, 'Demo', 'Store', '+101511111111', 'demo.store@gmail.com', NULL, '$2y$10$Rtm/6/dNJwwRZcfUAjCNdezs3xCwTN1oTW/2mqrRBZkGqHHZAqcuW', NULL, '2023-08-15 23:45:01', '2026-06-28 17:51:26', NULL, NULL, NULL, NULL, NULL, 1, NULL, NULL, 'OOad3rCVntR9tLL2Xc8MaDR6uxIAmSE28guX8j8D6MROtbAhHN2r3b1Jn3lT');
 
 -- --------------------------------------------------------
 
@@ -3734,23 +4753,40 @@ INSERT INTO `vendors` (`id`, `f_name`, `l_name`, `phone`, `email`, `email_verifi
 
 CREATE TABLE `vendor_employees` (
   `id` bigint UNSIGNED NOT NULL,
-  `f_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `l_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `phone` varchar(20) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `image` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `f_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `l_name` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `phone` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `image` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `employee_role_id` bigint UNSIGNED NOT NULL,
   `vendor_id` bigint UNSIGNED NOT NULL,
   `store_id` bigint UNSIGNED NOT NULL,
-  `password` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
-  `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `firebase_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `auth_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `remember_token` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `firebase_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `auth_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `is_logged_in` tinyint(1) NOT NULL DEFAULT '1',
-  `login_remember_token` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `login_remember_token` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `visitor_logs`
+--
+
+CREATE TABLE `visitor_logs` (
+  `id` bigint UNSIGNED NOT NULL,
+  `visitor_log_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `visitor_log_id` bigint UNSIGNED NOT NULL,
+  `user_id` bigint UNSIGNED DEFAULT NULL,
+  `visit_count` int NOT NULL DEFAULT '0',
+  `order_count` int NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -3761,9 +4797,9 @@ CREATE TABLE `vendor_employees` (
 
 CREATE TABLE `wallet_bonuses` (
   `id` bigint UNSIGNED NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `bonus_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `bonus_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `bonus_amount` double(23,3) NOT NULL DEFAULT '0.000',
   `minimum_add_amount` double(23,3) NOT NULL DEFAULT '0.000',
   `maximum_bonus_amount` double(23,3) NOT NULL DEFAULT '0.000',
@@ -3783,10 +4819,10 @@ CREATE TABLE `wallet_bonuses` (
 CREATE TABLE `wallet_payments` (
   `id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED NOT NULL,
-  `transaction_ref` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `transaction_ref` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `amount` decimal(8,2) NOT NULL DEFAULT '0.00',
-  `payment_status` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `payment_method` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payment_status` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `payment_method` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -3800,13 +4836,13 @@ CREATE TABLE `wallet_payments` (
 CREATE TABLE `wallet_transactions` (
   `id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED DEFAULT NULL,
-  `transaction_id` char(36) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `transaction_id` char(36) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `credit` decimal(24,3) NOT NULL DEFAULT '0.000',
   `debit` decimal(24,3) NOT NULL DEFAULT '0.000',
   `admin_bonus` decimal(24,3) NOT NULL DEFAULT '0.000',
   `balance` decimal(24,3) NOT NULL DEFAULT '0.000',
-  `transaction_type` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `reference` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `transaction_type` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `reference` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -3819,7 +4855,7 @@ CREATE TABLE `wallet_transactions` (
 
 CREATE TABLE `websockets_statistics_entries` (
   `id` int UNSIGNED NOT NULL,
-  `app_id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `app_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `peak_connection_count` int NOT NULL,
   `websocket_message_count` int NOT NULL,
   `api_message_count` int NOT NULL,
@@ -3839,7 +4875,8 @@ CREATE TABLE `wishlists` (
   `item_id` bigint UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `store_id` bigint UNSIGNED DEFAULT NULL
+  `store_id` bigint UNSIGNED DEFAULT NULL,
+  `service_id` bigint UNSIGNED DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -3850,8 +4887,8 @@ CREATE TABLE `wishlists` (
 
 CREATE TABLE `withdrawal_methods` (
   `id` bigint UNSIGNED NOT NULL,
-  `method_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `method_fields` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `method_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `method_fields` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `is_default` tinyint NOT NULL DEFAULT '0',
   `is_active` tinyint NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -3868,7 +4905,7 @@ CREATE TABLE `withdraw_requests` (
   `id` bigint UNSIGNED NOT NULL,
   `vendor_id` bigint UNSIGNED DEFAULT NULL,
   `admin_id` bigint UNSIGNED DEFAULT NULL,
-  `transaction_note` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `transaction_note` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `amount` decimal(23,3) NOT NULL DEFAULT '0.000',
   `approved` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
@@ -3876,7 +4913,9 @@ CREATE TABLE `withdraw_requests` (
   `delivery_man_id` bigint UNSIGNED DEFAULT NULL,
   `withdrawal_method_id` bigint UNSIGNED DEFAULT NULL,
   `withdrawal_method_fields` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin,
-  `type` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'manual'
+  `type` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'manual',
+  `sender_note` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
+  `user_note` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -3887,29 +4926,31 @@ CREATE TABLE `withdraw_requests` (
 
 CREATE TABLE `zones` (
   `id` bigint UNSIGNED NOT NULL,
-  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `coordinates` polygon NOT NULL,
   `status` tinyint(1) NOT NULL DEFAULT '1',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `store_wise_topic` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `customer_wise_topic` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `deliveryman_wise_topic` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `store_wise_topic` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `customer_wise_topic` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `deliveryman_wise_topic` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `rider_wise_topic` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `cash_on_delivery` tinyint(1) NOT NULL DEFAULT '0',
   `digital_payment` tinyint(1) NOT NULL DEFAULT '0',
   `increased_delivery_fee` double(8,2) NOT NULL DEFAULT '0.00',
   `increased_delivery_fee_status` tinyint(1) NOT NULL DEFAULT '0',
-  `increase_delivery_charge_message` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `increase_delivery_charge_message` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `offline_payment` tinyint(1) NOT NULL DEFAULT '0',
-  `display_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `display_name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_default` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `zones`
 --
 
-INSERT INTO `zones` (`id`, `name`, `coordinates`, `status`, `created_at`, `updated_at`, `store_wise_topic`, `customer_wise_topic`, `deliveryman_wise_topic`, `cash_on_delivery`, `digital_payment`, `increased_delivery_fee`, `increased_delivery_fee_status`, `increase_delivery_charge_message`, `offline_payment`, `display_name`) VALUES
-(1, 'Demo Zone', 0x0000000001030000000100000006000000d8b95578f0965640804b97f820d6374014ba5508809556403a236f336ed2374017ba55d83696564031240701bacd3740d5b95598ce985640f47608c3f7cd374015ba55f87c995640ce86cbe863d23740d8b95578f0965640804b97f820d63740, 1, '2023-08-15 23:35:04', '2023-08-15 23:35:44', 'zone_1_store', 'zone_1_customer', 'zone_1_delivery_man', 1, 1, 0.00, 0, NULL, 0, NULL);
+INSERT INTO `zones` (`id`, `name`, `coordinates`, `status`, `created_at`, `updated_at`, `store_wise_topic`, `customer_wise_topic`, `deliveryman_wise_topic`, `rider_wise_topic`, `cash_on_delivery`, `digital_payment`, `increased_delivery_fee`, `increased_delivery_fee_status`, `increase_delivery_charge_message`, `offline_payment`, `display_name`, `is_default`) VALUES
+(1, 'Demo Zone', 0x0000000001030000000100000006000000d8b95578f0965640804b97f820d6374014ba5508809556403a236f336ed2374017ba55d83696564031240701bacd3740d5b95598ce985640f47608c3f7cd374015ba55f87c995640ce86cbe863d23740d8b95578f0965640804b97f820d63740, 1, '2023-08-15 23:35:04', '2023-08-15 23:35:44', 'zone_1_store', 'zone_1_customer', 'zone_1_delivery_man', NULL, 1, 1, 0.00, 0, NULL, 0, NULL, 0);
 
 --
 -- Indexes for dumped tables
@@ -3990,6 +5031,23 @@ ALTER TABLE `advertisements`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `ai_conversations`
+--
+ALTER TABLE `ai_conversations`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ai_conversations_user_id_index` (`user_id`),
+  ADD KEY `ai_conversations_guest_id_index` (`guest_id`),
+  ADD KEY `ai_conv_user_resume_idx` (`user_id`,`status`,`module_id`,`zone_id`,`updated_at`),
+  ADD KEY `ai_conv_guest_resume_idx` (`guest_id`,`status`,`module_id`,`zone_id`,`updated_at`);
+
+--
+-- Indexes for table `ai_messages`
+--
+ALTER TABLE `ai_messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `ai_messages_conversation_id_index` (`conversation_id`);
+
+--
 -- Indexes for table `allergies`
 --
 ALTER TABLE `allergies`
@@ -4005,6 +5063,12 @@ ALTER TABLE `allergy_item`
 -- Indexes for table `allergy_item_campaign`
 --
 ALTER TABLE `allergy_item_campaign`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `analytic_scripts`
+--
+ALTER TABLE `analytic_scripts`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -4061,7 +5125,9 @@ ALTER TABLE `campaigns`
 -- Indexes for table `carts`
 --
 ALTER TABLE `carts`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `carts_store_id_foreign` (`store_id`),
+  ADD KEY `carts_reel_id_index` (`reel_id`);
 
 --
 -- Indexes for table `cash_backs`
@@ -4073,7 +5139,8 @@ ALTER TABLE `cash_backs`
 -- Indexes for table `cash_back_histories`
 --
 ALTER TABLE `cash_back_histories`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `cash_back_histories_service_booking_id_index` (`service_booking_id`);
 
 --
 -- Indexes for table `categories`
@@ -4123,29 +5190,65 @@ ALTER TABLE `customer_addresses`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `customer_preferences`
+--
+ALTER TABLE `customer_preferences`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `cp_user_type_ref_module_unique` (`user_id`,`preference_type`,`reference_id`,`module_id`),
+  ADD KEY `cp_user_type_module_score_index` (`user_id`,`preference_type`,`module_id`,`score`);
+
+--
+-- Indexes for table `customer_preference_summaries`
+--
+ALTER TABLE `customer_preference_summaries`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `cps_user_module_unique` (`user_id`,`module_id`),
+  ADD KEY `cps_update_count_index` (`update_count`);
+
+--
 -- Indexes for table `data_settings`
 --
 ALTER TABLE `data_settings`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `deliveryman_loyalty_point_histories`
+--
+ALTER TABLE `deliveryman_loyalty_point_histories`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `deliveryman_loyalty_point_histories_delivery_man_id_index` (`delivery_man_id`);
+
+--
+-- Indexes for table `deliveryman_referral_histories`
+--
+ALTER TABLE `deliveryman_referral_histories`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `deliveryman_referral_histories_transaction_id_unique` (`transaction_id`),
+  ADD KEY `deliveryman_referral_histories_delivery_man_id_index` (`delivery_man_id`),
+  ADD KEY `deliveryman_referral_histories_referrer_id_index` (`referrer_id`);
+
+--
 -- Indexes for table `delivery_histories`
 --
 ALTER TABLE `delivery_histories`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `delivery_histories_delivery_man_id_index` (`delivery_man_id`);
 
 --
 -- Indexes for table `delivery_man_wallets`
 --
 ALTER TABLE `delivery_man_wallets`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `delivery_man_wallets_delivery_man_id_index` (`delivery_man_id`);
 
 --
 -- Indexes for table `delivery_men`
 --
 ALTER TABLE `delivery_men`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `delivery_men_phone_unique` (`phone`);
+  ADD UNIQUE KEY `delivery_men_phone_unique` (`phone`),
+  ADD KEY `delivery_men_zone_id_index` (`zone_id`),
+  ADD KEY `delivery_men_vehicle_id_index` (`vehicle_id`);
 
 --
 -- Indexes for table `disbursements`
@@ -4199,7 +5302,8 @@ ALTER TABLE `email_templates`
 -- Indexes for table `email_verifications`
 --
 ALTER TABLE `email_verifications`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `email_verifications_scope_index` (`tenant_id`,`sub_tenant_id`);
 
 --
 -- Indexes for table `employee_roles`
@@ -4211,7 +5315,8 @@ ALTER TABLE `employee_roles`
 -- Indexes for table `expenses`
 --
 ALTER TABLE `expenses`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `expenses_service_booking_id_index` (`service_booking_id`);
 
 --
 -- Indexes for table `external_configurations`
@@ -4245,6 +5350,13 @@ ALTER TABLE `flutter_special_criterias`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `f_a_q_s`
+--
+ALTER TABLE `f_a_q_s`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `f_a_q_s_faqable_type_faqable_id_index` (`faqable_type`,`faqable_id`);
+
+--
 -- Indexes for table `generic_names`
 --
 ALTER TABLE `generic_names`
@@ -4269,7 +5381,8 @@ ALTER TABLE `items`
   ADD KEY `items_price_index` (`price`),
   ADD KEY `items_created_at_index` (`created_at`),
   ADD KEY `items_order_count_index` (`order_count`),
-  ADD KEY `items_avg_rating_index` (`avg_rating`);
+  ADD KEY `items_avg_rating_index` (`avg_rating`),
+  ADD KEY `items_store_category_id_foreign` (`store_category_id`);
 
 --
 -- Indexes for table `item_campaigns`
@@ -4301,6 +5414,14 @@ ALTER TABLE `item_generic_names`
 --
 ALTER TABLE `item_nutrition`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `item_seo_data`
+--
+ALTER TABLE `item_seo_data`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `item_seo_data_item_id_index` (`item_id`),
+  ADD KEY `item_seo_data_temp_item_id_index` (`temp_item_id`);
 
 --
 -- Indexes for table `item_tag`
@@ -4362,6 +5483,22 @@ ALTER TABLE `module_wise_why_chooses`
 --
 ALTER TABLE `module_zone`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `module_zone_delivery_options`
+--
+ALTER TABLE `module_zone_delivery_options`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `mzdo_module_zone_type_unique` (`module_id`,`zone_id`,`delivery_type`),
+  ADD KEY `mzdo_module_zone_idx` (`module_id`,`zone_id`);
+
+--
+-- Indexes for table `monthly_order_reminders`
+--
+ALTER TABLE `monthly_order_reminders`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `monthly_order_reminders_remind_at_status_index` (`remind_at`,`status`),
+  ADD KEY `monthly_order_reminders_user_id_order_id_index` (`user_id`,`order_id`);
 
 --
 -- Indexes for table `newsletters`
@@ -4446,7 +5583,12 @@ ALTER TABLE `offline_payment_methods`
 ALTER TABLE `orders`
   ADD PRIMARY KEY (`id`),
   ADD KEY `zone_id` (`zone_id`),
-  ADD KEY `orders_module_id_foreign` (`module_id`);
+  ADD KEY `orders_module_id_foreign` (`module_id`),
+  ADD KEY `orders_delivery_type_idx` (`delivery_type`),
+  ADD KEY `orders_order_status_index` (`order_status`),
+  ADD KEY `orders_user_id_index` (`user_id`),
+  ADD KEY `orders_store_id_index` (`store_id`),
+  ADD KEY `orders_delivery_man_id_index` (`delivery_man_id`);
 
 --
 -- Indexes for table `order_cancel_reasons`
@@ -4464,13 +5606,38 @@ ALTER TABLE `order_delivery_histories`
 -- Indexes for table `order_details`
 --
 ALTER TABLE `order_details`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `order_details_item_id_index` (`item_id`),
+  ADD KEY `order_details_order_id_index` (`order_id`);
+
+--
+-- Indexes for table `order_edit_logs`
+--
+ALTER TABLE `order_edit_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `order_edit_logs_order_id_index` (`order_id`);
 
 --
 -- Indexes for table `order_payments`
 --
 ALTER TABLE `order_payments`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `order_payments_order_id_index` (`order_id`);
+
+--
+-- Indexes for table `order_pro_discounts`
+--
+ALTER TABLE `order_pro_discounts`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `order_pro_discounts_order_id_index` (`order_id`),
+  ADD KEY `order_pro_discounts_user_id_index` (`user_id`),
+  ADD KEY `order_pro_discounts_subscription_id_index` (`subscription_id`),
+  ADD KEY `order_pro_discounts_transaction_id_index` (`transaction_id`),
+  ADD KEY `order_pro_discounts_plan_id_index` (`plan_id`),
+  ADD KEY `order_pro_discounts_benefit_type_index` (`benefit_type`),
+  ADD KEY `order_pro_discounts_trip_id_index` (`trip_id`),
+  ADD KEY `order_pro_discounts_ride_request_id_index` (`ride_request_id`),
+  ADD KEY `order_pro_discounts_service_booking_id_index` (`service_booking_id`);
 
 --
 -- Indexes for table `order_references`
@@ -4491,7 +5658,28 @@ ALTER TABLE `order_taxes`
 ALTER TABLE `order_transactions`
   ADD PRIMARY KEY (`id`),
   ADD KEY `order_transactions_zone_id_index` (`zone_id`),
-  ADD KEY `order_transactions_module_id_foreign` (`module_id`);
+  ADD KEY `order_transactions_module_id_foreign` (`module_id`),
+  ADD KEY `order_transactions_order_id_index` (`order_id`);
+
+--
+-- Indexes for table `page_seo_data`
+--
+ALTER TABLE `page_seo_data`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `page_seo_data_page_name_unique` (`page_name`);
+
+--
+-- Indexes for table `parcel_cancellations`
+--
+ALTER TABLE `parcel_cancellations`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `parcel_cancellations_order_id_index` (`order_id`);
+
+--
+-- Indexes for table `parcel_cancellation_reasons`
+--
+ALTER TABLE `parcel_cancellation_reasons`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `parcel_categories`
@@ -4508,10 +5696,30 @@ ALTER TABLE `parcel_delivery_instructions`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `parcel_penalty_fees`
+--
+ALTER TABLE `parcel_penalty_fees`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `parcel_penalty_fees_transaction_id_index` (`transaction_id`),
+  ADD KEY `parcel_penalty_fees_delivery_man_id_index` (`delivery_man_id`),
+  ADD KEY `parcel_penalty_fees_order_id_index` (`order_id`);
+
+--
+-- Indexes for table `parcel_return_fees`
+--
+ALTER TABLE `parcel_return_fees`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `parcel_return_fees_transaction_id_index` (`transaction_id`),
+  ADD KEY `parcel_return_fees_delivery_man_id_index` (`delivery_man_id`),
+  ADD KEY `parcel_return_fees_user_id_index` (`user_id`),
+  ADD KEY `parcel_return_fees_order_id_index` (`order_id`);
+
+--
 -- Indexes for table `password_resets`
 --
 ALTER TABLE `password_resets`
-  ADD KEY `password_resets_email_index` (`email`);
+  ADD KEY `password_resets_email_index` (`email`),
+  ADD KEY `password_resets_scope_index` (`tenant_id`,`sub_tenant_id`);
 
 --
 -- Indexes for table `pharmacy_item_details`
@@ -4524,7 +5732,8 @@ ALTER TABLE `pharmacy_item_details`
 --
 ALTER TABLE `phone_verifications`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `phone_verifications_phone_unique` (`phone`);
+  ADD UNIQUE KEY `phone_verifications_phone_scope_unique` (`phone`,`tenant_id`,`sub_tenant_id`),
+  ADD KEY `phone_verifications_scope_index` (`tenant_id`,`sub_tenant_id`);
 
 --
 -- Indexes for table `priority_lists`
@@ -4539,6 +5748,53 @@ ALTER TABLE `provide_d_m_earnings`
   ADD PRIMARY KEY (`id`);
 
 --
+-- Indexes for table `pro_customer_benefit_settings`
+--
+ALTER TABLE `pro_customer_benefit_settings`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `pro_customer_benefit_settings_benefit_type_module_type_unique` (`benefit_type`,`module_type`);
+
+--
+-- Indexes for table `pro_customer_faqs`
+--
+ALTER TABLE `pro_customer_faqs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `pro_customer_subscriptions`
+--
+ALTER TABLE `pro_customer_subscriptions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `pro_customer_subscriptions_user_id_status_index` (`user_id`,`status`),
+  ADD KEY `pro_customer_subscriptions_plan_id_index` (`plan_id`),
+  ADD KEY `pro_customer_subscriptions_end_at_index` (`end_at`);
+
+--
+-- Indexes for table `pro_customer_subscription_plans`
+--
+ALTER TABLE `pro_customer_subscription_plans`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `pro_customer_transactions`
+--
+ALTER TABLE `pro_customer_transactions`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `pro_customer_transactions_user_id_index` (`user_id`),
+  ADD KEY `pro_customer_transactions_subscription_id_index` (`subscription_id`),
+  ADD KEY `pro_customer_transactions_plan_id_index` (`plan_id`),
+  ADD KEY `pro_customer_transactions_transaction_reference_index` (`transaction_reference`),
+  ADD KEY `pro_customer_transactions_payment_method_index` (`payment_method`),
+  ADD KEY `pro_customer_transactions_payment_status_index` (`payment_status`),
+  ADD KEY `pro_customer_transactions_paid_at_index` (`paid_at`);
+
+--
+-- Indexes for table `react_promotional_banners`
+--
+ALTER TABLE `react_promotional_banners`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `react_testimonials`
 --
 ALTER TABLE `react_testimonials`
@@ -4549,6 +5805,25 @@ ALTER TABLE `react_testimonials`
 --
 ALTER TABLE `recent_searches`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `reels`
+--
+ALTER TABLE `reels`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `reels_store_id_foreign` (`store_id`),
+  ADD KEY `reels_module_id_index` (`module_id`),
+  ADD KEY `reels_module_type_index` (`module_type`),
+  ADD KEY `reels_productable_type_productable_id_index` (`productable_type`,`productable_id`);
+
+--
+-- Indexes for table `reel_engagements`
+--
+ALTER TABLE `reel_engagements`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `reel_user_type_unique` (`reel_id`,`user_id`,`type`),
+  ADD UNIQUE KEY `reel_guest_type_unique` (`reel_id`,`guest_id`,`type`),
+  ADD KEY `reel_engagement_lookup_index` (`reel_id`,`user_id`,`guest_id`,`type`);
 
 --
 -- Indexes for table `refunds`
@@ -4576,6 +5851,23 @@ ALTER TABLE `reviews`
   ADD KEY `reviews_review_id_index` (`review_id`);
 
 --
+-- Indexes for table `search_logs`
+--
+ALTER TABLE `search_logs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `search_logs_module_id_zone_id_created_at_index` (`module_id`,`zone_id`,`created_at`),
+  ADD KEY `search_logs_keyword_module_id_zone_id_index` (`keyword`,`module_id`,`zone_id`);
+
+--
+-- Indexes for table `smart_banners`
+--
+ALTER TABLE `smart_banners`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `smart_banners_zone_id_status_index` (`zone_id`,`status`),
+  ADD KEY `smart_banners_zone_id_position_start_date_end_date_index` (`zone_id`,`position`,`start_date`,`end_date`),
+  ADD KEY `smart_banners_redirect_type_redirect_target_id_index` (`redirect_type`,`redirect_target_id`);
+
+--
 -- Indexes for table `social_media`
 --
 ALTER TABLE `social_media`
@@ -4601,19 +5893,35 @@ ALTER TABLE `storages`
 ALTER TABLE `stores`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `restaurants_phone_unique` (`phone`),
-  ADD KEY `stores_module_id_foreign` (`module_id`);
+  ADD KEY `stores_module_id_foreign` (`module_id`),
+  ADD KEY `stores_vendor_id_index` (`vendor_id`),
+  ADD KEY `stores_zone_id_index` (`zone_id`),
+  ADD KEY `stores_slug_index` (`slug`),
+  ADD KEY `stores_store_business_model_index` (`store_business_model`);
+
+--
+-- Indexes for table `store_categories`
+--
+ALTER TABLE `store_categories`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `store_categories_slug_unique` (`slug`),
+  ADD KEY `store_categories_store_id_foreign` (`store_id`),
+  ADD KEY `store_categories_module_id_foreign` (`module_id`);
 
 --
 -- Indexes for table `store_configs`
 --
 ALTER TABLE `store_configs`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `store_configs_store_id_index` (`store_id`);
 
 --
 -- Indexes for table `store_notification_settings`
 --
 ALTER TABLE `store_notification_settings`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `store_notification_settings_store_id_index` (`store_id`),
+  ADD KEY `store_notification_settings_module_type_index` (`module_type`);
 
 --
 -- Indexes for table `store_schedule`
@@ -4631,7 +5939,8 @@ ALTER TABLE `store_subscriptions`
 -- Indexes for table `store_wallets`
 --
 ALTER TABLE `store_wallets`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `store_wallets_vendor_id_index` (`vendor_id`);
 
 --
 -- Indexes for table `subscription_billing_and_refund_histories`
@@ -4700,7 +6009,8 @@ ALTER TABLE `tax_additional_setups`
 -- Indexes for table `temp_products`
 --
 ALTER TABLE `temp_products`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `temp_products_store_category_id_foreign` (`store_category_id`);
 
 --
 -- Indexes for table `track_deliverymen`
@@ -4727,9 +6037,18 @@ ALTER TABLE `units`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `users_phone_unique` (`phone`),
-  ADD UNIQUE KEY `users_ref_code_unique` (`ref_code`),
-  ADD KEY `users_zone_id_index` (`zone_id`);
+  ADD UNIQUE KEY `users_email_scope_unique` (`email`,`tenant_id`,`sub_tenant_id`),
+  ADD UNIQUE KEY `users_phone_scope_unique` (`phone`,`tenant_id`,`sub_tenant_id`),
+  ADD UNIQUE KEY `users_ref_code_scope_unique` (`ref_code`,`tenant_id`,`sub_tenant_id`),
+  ADD KEY `users_zone_id_index` (`zone_id`),
+  ADD KEY `users_scope_index` (`tenant_id`,`sub_tenant_id`);
+
+--
+-- Indexes for table `user_files`
+--
+ALTER TABLE `user_files`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_files_user_id_index` (`user_id`);
 
 --
 -- Indexes for table `user_infos`
@@ -4741,7 +6060,8 @@ ALTER TABLE `user_infos`
 -- Indexes for table `user_notifications`
 --
 ALTER TABLE `user_notifications`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `user_notifications_serviceman_id_index` (`serviceman_id`);
 
 --
 -- Indexes for table `vendors`
@@ -4757,6 +6077,12 @@ ALTER TABLE `vendors`
 ALTER TABLE `vendor_employees`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `vendor_employees_email_unique` (`email`);
+
+--
+-- Indexes for table `visitor_logs`
+--
+ALTER TABLE `visitor_logs`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `wallet_bonuses`
@@ -4789,7 +6115,8 @@ ALTER TABLE `wishlists`
   ADD PRIMARY KEY (`id`),
   ADD KEY `wishlists_user_id_index` (`user_id`),
   ADD KEY `wishlists_item_id_index` (`item_id`),
-  ADD KEY `wishlists_store_id_index` (`store_id`);
+  ADD KEY `wishlists_store_id_index` (`store_id`),
+  ADD KEY `wishlists_service_id_index` (`service_id`);
 
 --
 -- Indexes for table `withdrawal_methods`
@@ -4881,6 +6208,18 @@ ALTER TABLE `advertisements`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1000000;
 
 --
+-- AUTO_INCREMENT for table `ai_conversations`
+--
+ALTER TABLE `ai_conversations`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `ai_messages`
+--
+ALTER TABLE `ai_messages`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `allergies`
 --
 ALTER TABLE `allergies`
@@ -4896,6 +6235,12 @@ ALTER TABLE `allergy_item`
 -- AUTO_INCREMENT for table `allergy_item_campaign`
 --
 ALTER TABLE `allergy_item_campaign`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `analytic_scripts`
+--
+ALTER TABLE `analytic_scripts`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -4926,7 +6271,7 @@ ALTER TABLE `brands`
 -- AUTO_INCREMENT for table `business_settings`
 --
 ALTER TABLE `business_settings`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=151;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=154;
 
 --
 -- AUTO_INCREMENT for table `campaigns`
@@ -4995,10 +6340,34 @@ ALTER TABLE `customer_addresses`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `customer_preferences`
+--
+ALTER TABLE `customer_preferences`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `customer_preference_summaries`
+--
+ALTER TABLE `customer_preference_summaries`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `data_settings`
 --
 ALTER TABLE `data_settings`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=162;
+
+--
+-- AUTO_INCREMENT for table `deliveryman_loyalty_point_histories`
+--
+ALTER TABLE `deliveryman_loyalty_point_histories`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `deliveryman_referral_histories`
+--
+ALTER TABLE `deliveryman_referral_histories`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `delivery_histories`
@@ -5115,6 +6484,12 @@ ALTER TABLE `flutter_special_criterias`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
+-- AUTO_INCREMENT for table `f_a_q_s`
+--
+ALTER TABLE `f_a_q_s`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT for table `generic_names`
 --
 ALTER TABLE `generic_names`
@@ -5124,7 +6499,7 @@ ALTER TABLE `generic_names`
 -- AUTO_INCREMENT for table `guests`
 --
 ALTER TABLE `guests`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `items`
@@ -5163,6 +6538,12 @@ ALTER TABLE `item_nutrition`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `item_seo_data`
+--
+ALTER TABLE `item_seo_data`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `item_tag`
 --
 ALTER TABLE `item_tag`
@@ -5190,7 +6571,7 @@ ALTER TABLE `messages`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=211;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=303;
 
 --
 -- AUTO_INCREMENT for table `modules`
@@ -5223,6 +6604,18 @@ ALTER TABLE `module_zone`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
+-- AUTO_INCREMENT for table `module_zone_delivery_options`
+--
+ALTER TABLE `module_zone_delivery_options`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `monthly_order_reminders`
+--
+ALTER TABLE `monthly_order_reminders`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `newsletters`
 --
 ALTER TABLE `newsletters`
@@ -5244,7 +6637,7 @@ ALTER TABLE `notification_messages`
 -- AUTO_INCREMENT for table `notification_settings`
 --
 ALTER TABLE `notification_settings`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=67;
 
 --
 -- AUTO_INCREMENT for table `nutritions`
@@ -5301,9 +6694,21 @@ ALTER TABLE `order_details`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `order_edit_logs`
+--
+ALTER TABLE `order_edit_logs`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `order_payments`
 --
 ALTER TABLE `order_payments`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `order_pro_discounts`
+--
+ALTER TABLE `order_pro_discounts`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -5325,6 +6730,24 @@ ALTER TABLE `order_transactions`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `page_seo_data`
+--
+ALTER TABLE `page_seo_data`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `parcel_cancellations`
+--
+ALTER TABLE `parcel_cancellations`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `parcel_cancellation_reasons`
+--
+ALTER TABLE `parcel_cancellation_reasons`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `parcel_categories`
 --
 ALTER TABLE `parcel_categories`
@@ -5334,6 +6757,18 @@ ALTER TABLE `parcel_categories`
 -- AUTO_INCREMENT for table `parcel_delivery_instructions`
 --
 ALTER TABLE `parcel_delivery_instructions`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `parcel_penalty_fees`
+--
+ALTER TABLE `parcel_penalty_fees`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `parcel_return_fees`
+--
+ALTER TABLE `parcel_return_fees`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -5361,6 +6796,42 @@ ALTER TABLE `provide_d_m_earnings`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `pro_customer_benefit_settings`
+--
+ALTER TABLE `pro_customer_benefit_settings`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pro_customer_faqs`
+--
+ALTER TABLE `pro_customer_faqs`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pro_customer_subscriptions`
+--
+ALTER TABLE `pro_customer_subscriptions`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pro_customer_subscription_plans`
+--
+ALTER TABLE `pro_customer_subscription_plans`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `pro_customer_transactions`
+--
+ALTER TABLE `pro_customer_transactions`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10000;
+
+--
+-- AUTO_INCREMENT for table `react_promotional_banners`
+--
+ALTER TABLE `react_promotional_banners`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT for table `react_testimonials`
 --
 ALTER TABLE `react_testimonials`
@@ -5370,6 +6841,18 @@ ALTER TABLE `react_testimonials`
 -- AUTO_INCREMENT for table `recent_searches`
 --
 ALTER TABLE `recent_searches`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `reels`
+--
+ALTER TABLE `reels`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `reel_engagements`
+--
+ALTER TABLE `reel_engagements`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -5391,6 +6874,18 @@ ALTER TABLE `reviews`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `search_logs`
+--
+ALTER TABLE `search_logs`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `smart_banners`
+--
+ALTER TABLE `smart_banners`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `social_media`
 --
 ALTER TABLE `social_media`
@@ -5406,12 +6901,18 @@ ALTER TABLE `soft_credentials`
 -- AUTO_INCREMENT for table `storages`
 --
 ALTER TABLE `storages`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=174;
 
 --
 -- AUTO_INCREMENT for table `stores`
 --
 ALTER TABLE `stores`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `store_categories`
+--
+ALTER TABLE `store_categories`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -5424,7 +6925,7 @@ ALTER TABLE `store_configs`
 -- AUTO_INCREMENT for table `store_notification_settings`
 --
 ALTER TABLE `store_notification_settings`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `store_schedule`
@@ -5520,7 +7021,7 @@ ALTER TABLE `track_deliverymen`
 -- AUTO_INCREMENT for table `translations`
 --
 ALTER TABLE `translations`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=92;
 
 --
 -- AUTO_INCREMENT for table `units`
@@ -5532,6 +7033,12 @@ ALTER TABLE `units`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `user_files`
+--
+ALTER TABLE `user_files`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -5556,6 +7063,12 @@ ALTER TABLE `vendors`
 -- AUTO_INCREMENT for table `vendor_employees`
 --
 ALTER TABLE `vendor_employees`
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `visitor_logs`
+--
+ALTER TABLE `visitor_logs`
   MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -5611,6 +7124,12 @@ ALTER TABLE `zones`
 --
 
 --
+-- Constraints for table `ai_messages`
+--
+ALTER TABLE `ai_messages`
+  ADD CONSTRAINT `ai_messages_conversation_id_foreign` FOREIGN KEY (`conversation_id`) REFERENCES `ai_conversations` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `banners`
 --
 ALTER TABLE `banners`
@@ -5621,6 +7140,12 @@ ALTER TABLE `banners`
 --
 ALTER TABLE `campaigns`
   ADD CONSTRAINT `campaigns_module_id_foreign` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`);
+
+--
+-- Constraints for table `carts`
+--
+ALTER TABLE `carts`
+  ADD CONSTRAINT `carts_store_id_foreign` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `categories`
@@ -5635,10 +7160,23 @@ ALTER TABLE `coupons`
   ADD CONSTRAINT `coupons_module_id_foreign` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`);
 
 --
+-- Constraints for table `customer_preferences`
+--
+ALTER TABLE `customer_preferences`
+  ADD CONSTRAINT `customer_preferences_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `customer_preference_summaries`
+--
+ALTER TABLE `customer_preference_summaries`
+  ADD CONSTRAINT `customer_preference_summaries_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `items`
 --
 ALTER TABLE `items`
-  ADD CONSTRAINT `items_module_id_foreign` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`);
+  ADD CONSTRAINT `items_module_id_foreign` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`),
+  ADD CONSTRAINT `items_store_category_id_foreign` FOREIGN KEY (`store_category_id`) REFERENCES `store_categories` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `item_campaigns`
@@ -5653,6 +7191,12 @@ ALTER TABLE `orders`
   ADD CONSTRAINT `orders_module_id_foreign` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`);
 
 --
+-- Constraints for table `order_edit_logs`
+--
+ALTER TABLE `order_edit_logs`
+  ADD CONSTRAINT `order_edit_logs_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `order_transactions`
 --
 ALTER TABLE `order_transactions`
@@ -5665,6 +7209,18 @@ ALTER TABLE `parcel_categories`
   ADD CONSTRAINT `parcel_categories_module_id_foreign` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`);
 
 --
+-- Constraints for table `reels`
+--
+ALTER TABLE `reels`
+  ADD CONSTRAINT `reels_store_id_foreign` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `reel_engagements`
+--
+ALTER TABLE `reel_engagements`
+  ADD CONSTRAINT `reel_engagements_reel_id_foreign` FOREIGN KEY (`reel_id`) REFERENCES `reels` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `reviews`
 --
 ALTER TABLE `reviews`
@@ -5675,6 +7231,19 @@ ALTER TABLE `reviews`
 --
 ALTER TABLE `stores`
   ADD CONSTRAINT `stores_module_id_foreign` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`);
+
+--
+-- Constraints for table `store_categories`
+--
+ALTER TABLE `store_categories`
+  ADD CONSTRAINT `store_categories_module_id_foreign` FOREIGN KEY (`module_id`) REFERENCES `modules` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `store_categories_store_id_foreign` FOREIGN KEY (`store_id`) REFERENCES `stores` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `temp_products`
+--
+ALTER TABLE `temp_products`
+  ADD CONSTRAINT `temp_products_store_category_id_foreign` FOREIGN KEY (`store_category_id`) REFERENCES `store_categories` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

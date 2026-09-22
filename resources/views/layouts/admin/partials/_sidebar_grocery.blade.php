@@ -266,17 +266,8 @@
                         <!-- Order refund End-->
 
                         <!-- Attributes -->
-                        {{-- @if (\App\CentralLogics\Helpers::module_permission_check('attribute')) --}}
-                        <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/flash-sale*') ? 'active' : '' }}">
-                            <a class="js-navbar-vertical-aside-menu-link nav-link"
-                               href="{{ route('admin.flash-sale.add-new') }}"
-                               title="{{ translate('messages.flash_sales') }}">
-                                <i class="tio-apps nav-icon"></i>
-                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
-                                {{ translate('messages.flash_sales') }}
-                            </span>
-                            </a>
-                        </li>
+                        {{-- @if (\App\CentralLogics\Helpers::module_permission_check('category')) --}}
+
                         {{-- @endif --}}
                         <!-- End Attributes -->
                     @endif
@@ -287,13 +278,23 @@
                         \App\CentralLogics\Helpers::module_permission_check('banner') ||
                         \App\CentralLogics\Helpers::module_permission_check('coupon')||
                         \App\CentralLogics\Helpers::module_permission_check('notification')||
-                        \App\CentralLogics\Helpers::module_permission_check('advertisement')
+                        \App\CentralLogics\Helpers::module_permission_check('coupon')
                         )
 
                         <li class="nav-item">
                             <small class="nav-subtitle"
                                    title="{{ translate('Promotion Management') }}">{{ translate('Promotion Management') }}</small>
                             <small class="tio-more-horizontal nav-subtitle-replacer"></small>
+                        </li>
+                        <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/flash-sale*') ? 'active' : '' }}">
+                            <a class="js-navbar-vertical-aside-menu-link nav-link"
+                               href="{{ route('admin.flash-sale.add-new') }}"
+                               title="{{ translate('messages.flash_sales') }}">
+                                <i class="tio-apps nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">
+                                {{ translate('messages.flash_sales') }}
+                            </span>
+                            </a>
                         </li>
                         <!-- Campaign -->
                         <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/campaign') ? 'active' : '' }}">
@@ -375,7 +376,7 @@
 
                     <!-- advertisement -->
 
-                    @if (\App\CentralLogics\Helpers::module_permission_check('advertisement'))
+                    @if (\App\CentralLogics\Helpers::module_permission_check('coupon'))
                         <li
                             class="navbar-vertical-aside-has-menu  @yield('advertisement')">
                             <a class="js-navbar-vertical-aside-menu-link nav-link nav-link-toggle" href="javascript:"
@@ -412,10 +413,36 @@
                         </li>
                     @endif
                     <!-- End advertisement -->
+                        @if (
+                            addon_published_status('ReelsModule')
+                            && \App\CentralLogics\Helpers::module_permission_check('reels')
+                            && \Modules\ReelsModule\Support\ReelModuleConfig::isAllowedType(config('module.current_module_type'))
+                        )
+
+                        <li class="nav-item">
+                            <small class="nav-subtitle">{{ translate('messages.Reels_Management') }}</small>
+                            <small class="tio-more-horizontal nav-subtitle-replacer"></small>
+                        </li>
+                        <li class="navbar-vertical-aside-has-menu @yield('reels_create')">
+                            <a class="js-navbar-vertical-aside-menu-link nav-link" href="{{ route('admin.reels.create') }}"
+                               title="{{ translate('messages.Create_Reels') }}">
+                                <i class="tio-video-camera-outlined nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">{{ translate('messages.Create_Reels') }}</span>
+                            </a>
+                        </li>
+                        <li class="navbar-vertical-aside-has-menu @yield('reels_list')">
+                            <a class="js-navbar-vertical-aside-menu-link nav-link" href="{{ route('admin.reels.index') }}"
+                               title="{{ translate('messages.Reels_List') }}">
+                                <i class="tio-format-bullets nav-icon"></i>
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">{{ translate('messages.Reels_List') }}</span>
+                            </a>
+                        </li>
+                    @endif
                     <!-- End marketing section -->
                     @if (\App\CentralLogics\Helpers::module_permission_check('category') ||
-    \App\CentralLogics\Helpers::module_permission_check('attribute') ||
-    \App\CentralLogics\Helpers::module_permission_check('unit') ||
+    \App\CentralLogics\Helpers::module_permission_check('category') ||
+    \App\CentralLogics\Helpers::module_permission_check('category') ||
+    \App\CentralLogics\Helpers::module_permission_check('category') ||
     \App\CentralLogics\Helpers::module_permission_check('item'))
 
                         <li class="nav-item">
@@ -437,17 +464,17 @@
                                     style="display:{{ Request::is('admin/category*') ? 'block' : 'none' }}">
                                     <li class="nav-item @yield('main_category')  {{ request()->input('position') == 0 && Request::is('admin/category/add') ? 'active' : '' }}">
                                         <a class="nav-link " href="{{ route('admin.category.add',['position'=>0]) }}"
-                                           title="{{ translate('messages.category') }}">
+                                           title="{{ translate('messages.Main_Category') }}">
                                             <span class="tio-circle nav-indicator-icon"></span>
-                                            <span class="text-truncate">{{ translate('messages.category') }}</span>
+                                            <span class="text-truncate">{{ translate('messages.Main_Category') }}</span>
                                         </a>
                                     </li>
 
                                     <li class="nav-item  @yield('sub_category') {{ request()->input('position') == 1 && Request::is('admin/category/add') ? 'active' : '' }}">
                                         <a class="nav-link " href="{{ route('admin.category.add',['position'=>1]) }}"
-                                           title="{{ translate('messages.sub_category') }}">
+                                           title="{{ translate('messages.Main_Sub_Category') }}">
                                             <span class="tio-circle nav-indicator-icon"></span>
-                                            <span class="text-truncate">{{ translate('messages.sub_category') }}</span>
+                                            <span class="text-truncate">{{ translate('messages.Main_Sub_Category') }}</span>
                                         </a>
                                     </li>
 
@@ -472,8 +499,20 @@
                         @endif
                         <!-- End Category -->
 
+                        <!-- Store Category -->
+                        @if (\App\CentralLogics\Helpers::storeCategoryStatus() && \App\CentralLogics\Helpers::module_permission_check('category'))
+                            <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/store-category*') ? 'active' : '' }}">
+                                <a class="js-navbar-vertical-aside-menu-link nav-link"
+                                   href="{{ route('admin.store-category.list') }}" title="{{ translate('messages.Store_Categories') }}">
+                                    <i class="tio-folder-bookmarked nav-icon"></i>
+                                    <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate">{{ translate('messages.Store_Categories') }}</span>
+                                </a>
+                            </li>
+                        @endif
+                        <!-- End Store Category -->
+
                         <!-- Attributes -->
-                        @if (\App\CentralLogics\Helpers::module_permission_check('attribute'))
+                        @if (\App\CentralLogics\Helpers::module_permission_check('category'))
                             <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/attribute*') ? 'active' : '' }}">
                                 <a class="js-navbar-vertical-aside-menu-link nav-link"
                                    href="{{ route('admin.attribute.add-new') }}"
@@ -488,7 +527,7 @@
                         <!-- End Attributes -->
 
                         <!-- Unit -->
-                        @if (\App\CentralLogics\Helpers::module_permission_check('unit'))
+                        @if (\App\CentralLogics\Helpers::module_permission_check('category'))
                             <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/unit*') ? 'active' : '' }}">
                                 <a class="js-navbar-vertical-aside-menu-link nav-link"
                                    href="{{ route('admin.unit.index') }}" title="{{ translate('messages.units') }}">
@@ -500,6 +539,21 @@
                                 </a>
                             </li>
                         @endif
+                        <!-- End Unit -->
+
+                        <!-- Brand -->
+                        @if(\App\CentralLogics\Helpers::module_permission_check('category'))
+                            <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/brand*') ? 'active' : '' }}">
+                                <a class="js-navbar-vertical-aside-menu-link nav-link" href="{{ route('admin.brand.add') }}"
+                                   title="{{ translate('messages.Brands') }}">
+                                    <i class="tio-medal nav-icon"></i>
+                                    <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate text-capitalize">
+                                        {{ translate('messages.Brands') }}
+                                    </span>
+                                </a>
+                            </li>
+                        @endif
+                        <!-- End Brand -->
 
                         <!-- Food -->
                         @if (\App\CentralLogics\Helpers::module_permission_check('item'))
@@ -550,8 +604,12 @@
                                             <a class="nav-link " href="{{ route('admin.item.approval_list') }}"
                                                title="{{ translate('messages.New_Item_Request') }}">
                                                 <span class="tio-circle nav-indicator-icon"></span>
-                                                <span
-                                                    class="text-truncate">{{ translate('messages.New_Item_Request') }}</span>
+                                                <span class="text-truncate sidebar--badge-container">
+                                                    {{ translate('messages.New_Item_Request') }}
+                                                    <span class="badge badge-soft-success bg-light badge-pill ml-1">
+                                                        {{ \App\Models\TempProduct::withoutGlobalScope(StoreScope::class)->module(Config::get('module.current_module_id'))->count() }}
+                                                    </span>
+                                                </span>
                                             </a>
                                         </li>
                                     @endif
@@ -594,12 +652,12 @@
                     </li>
 
 
-                        <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/store/pending-requests') ? 'active' : '' }}">
+                        <li class="navbar-vertical-aside-has-menu @yield('new_store_request') {{ Request::is('admin/store/pending-requests') ? 'active' : '' }}">
                             <a class="js-navbar-vertical-aside-menu-link nav-link"
                                href="{{ route('admin.store.pending-requests') }}"
                                title="{{ translate('messages.pending_requests') }}">
                                 <span class="tio-calendar-note nav-icon"></span>
-                                <span class="text-truncate position-relative overflow-visible">
+                                <span class="navbar-vertical-aside-mini-mode-hidden-elements text-truncate text-capitalize">
                             {{ translate('messages.new_stores') }}
                                     @php($new_str = \App\Models\Store::whereHas('vendor', function($query){
                                         return $query->where('status', null);
@@ -620,7 +678,7 @@
                         </span>
                             </a>
                         </li>
-                        <li class="navbar-vertical-aside-has-menu {{ Request::is('admin/store/list')  ||  Request::is('admin/store/view/*')  ? 'active' : '' }}">
+                        <li class="navbar-vertical-aside-has-menu @yield('store_update') {{ Request::is('admin/store/list')  ||  Request::is('admin/store/view/*')  ? 'active' : '' }}">
                             <a class="js-navbar-vertical-aside-menu-link nav-link"
                                href="{{ route('admin.store.list') }}" title="{{ translate('messages.stores_list') }}">
                                 <span class="tio-layout nav-icon"></span>
@@ -678,89 +736,5 @@
 
 
 @push('script_2')
-<script>
-    $(window).on('load' , function() {
-        if($(".navbar-vertical-content li.active").length) {
-            $('.navbar-vertical-content').animate({
-                scrollTop: $(".navbar-vertical-content li.active").offset().top - 150
-            }, 10);
-        }
-    });
-
-    var $rows = $('#navbar-vertical-content li');
-    $('#search-sidebar-menu').keyup(function() {
-        var val = $.trim($(this).val()).replace(/ +/g, ' ').toLowerCase();
-
-        $rows.show().filter(function() {
-            var text = $(this).text().replace(/\s+/g, ' ').toLowerCase();
-            return !~text.indexOf(val);
-        }).hide();
-    });
-
-    $(document).ready(function() {
-            const $searchInput = $('#search');
-            const $suggestionsList = $('#search-suggestions');
-            const $rows = $('#navbar-vertical-content li');
-            const $subrows = $('#navbar-vertical-content li ul li');
-            {{--const suggestions = ['{{strtolower(translate('messages.order'))  }}', '{{ strtolower(translate('messages.campaign'))  }}', '{{ strtolower(translate('messages.category')) }}', '{{ strtolower(translate('messages.product')) }}','{{ strtolower(translate('messages.store')) }}' ];--}}
-            const focusInput = () => updateSuggestions($searchInput.val());
-            const hideSuggestions = () => $suggestionsList.slideUp(700);
-            const showSuggestions = () => $suggestionsList.slideDown(700);
-            let clickSuggestion = function() {
-                let suggestionText = $(this).text();
-                $searchInput.val(suggestionText);
-                hideSuggestions();
-                filterItems(suggestionText.toLowerCase());
-                updateSuggestions(suggestionText);
-            };
-            let filterItems = (val) => {
-                let unmatchedItems = $rows.show().filter((index, element) => !~$(element).text().replace(
-                    /\s+/g, ' ').toLowerCase().indexOf(val));
-                let matchedItems = $rows.show().filter((index, element) => ~$(element).text().replace(/\s+/g,
-                    ' ').toLowerCase().indexOf(val));
-                unmatchedItems.hide();
-                matchedItems.each(function() {
-                    let $submenu = $(this).find($subrows);
-                    let keywordCountInRows = 0;
-                    $rows.each(function() {
-                        let rowText = $(this).text().toLowerCase();
-                        let valLower = val.toLowerCase();
-                        let keywordCountRow = rowText.split(valLower).length - 1;
-                        keywordCountInRows += keywordCountRow;
-                    });
-                    if ($submenu.length > 0) {
-                        $subrows.show();
-                        $submenu.each(function() {
-                            let $submenu2 = !~$(this).text().replace(/\s+/g, ' ')
-                                .toLowerCase().indexOf(val);
-                            if ($submenu2 && keywordCountInRows <= 2) {
-                                $(this).hide();
-                            }
-                        });
-                    }
-                });
-            };
-            let updateSuggestions = (val) => {
-                $suggestionsList.empty();
-                suggestions.forEach(suggestion => {
-                    if (suggestion.toLowerCase().includes(val.toLowerCase())) {
-                        $suggestionsList.append(
-                            `<span class="search-suggestion badge badge-soft-light m-1 fs-14">${suggestion}</span>`
-                        );
-                    }
-                });
-                // showSuggestions();
-            };
-            $searchInput.focus(focusInput);
-            $searchInput.on('input', function() {
-                updateSuggestions($(this).val());
-            });
-            $suggestionsList.on('click', '.search-suggestion', clickSuggestion);
-            $searchInput.keyup(function() {
-                filterItems($(this).val().toLowerCase());
-            });
-            $searchInput.on('focusout', hideSuggestions);
-            $searchInput.on('focus', showSuggestions);
-        });
-</script>
+   <script src="{{ asset('public/assets/admin/js/view-pages/sidebar.js') }}"></script>
 @endpush

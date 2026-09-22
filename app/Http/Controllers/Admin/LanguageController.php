@@ -267,8 +267,6 @@ class LanguageController extends Controller
 
     public function auto_translate(Request $request, $lang): \Illuminate\Http\JsonResponse
     {
-        $lang_code = Helpers::getLanguageCode($lang);
-
         $full_data = include(base_path('resources/lang/' . $lang . '/messages.php'));
         $data_filtered = [];
         foreach ($full_data as $key => $data) {
@@ -288,7 +286,6 @@ class LanguageController extends Controller
     {
         try {
             $translating_count= $request?->translating_count <= 0 ? 1: $request->translating_count ;
-            $lang_code = Helpers::getLanguageCode($lang);
 
             if($lang === 'en'){
                 return response()->json([
@@ -380,6 +377,15 @@ class LanguageController extends Controller
     public function delete($lang)
     {
         $language = BusinessSetting::where('key', 'system_language')->first();
+
+        // The default language cannot be deleted.
+        foreach (json_decode($language?->value, true) ?? [] as $data) {
+            if (($data['code'] ?? null) == $lang && !empty($data['default'])) {
+                Toastr::error(translate('messages.default_language_cannot_be_deleted'));
+
+                return back();
+            }
+        }
 
         $del_default = false;
         foreach (json_decode($language?->value, true) as $key => $data) {

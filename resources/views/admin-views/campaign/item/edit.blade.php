@@ -22,12 +22,11 @@
         </div>
         <!-- End Page Header -->
         <form
-        id="campaign_form"
-                enctype="multipart/form-data" class="custom-validation" data-ajax="true">
+        id="campaign_form"  enctype="multipart/form-data" class="custom-validation" data-ajax="true">
                 <div class="row g-2">
                 @php($language=\App\Models\BusinessSetting::where('key','language')->first())
                 @php($language = $language->value ?? null)
-                @php($defaultLang = str_replace('_', '-', app()->getLocale()))
+
                 @if($language)
                 <div class="col-12">
                     <ul class="nav nav-tabs mb-3 border-0">
@@ -53,7 +52,7 @@
                                 <span class="card-header-icon">
                                     <i class="tio-fastfood"></i>
                                 </span>
-                                <span>{{ translate('messages.Item Info') }}</span>
+                                <span>{{ config('module.current_module_type') === 'service' ? translate('messages.Service Info') : translate('messages.Item Info') }}</span>
                             </h5>
                         </div>
                         <div class="card-body">
@@ -119,13 +118,13 @@
                                 <span class="card-header-icon">
                                     <i class="tio-comment-image-outlined"></i>
                                 </span>
-                                <span>{{ translate('messages.Item Image') }}</span>
+                                <span>{{ config('module.current_module_type') === 'service' ? translate('messages.Service Image') : translate('messages.Item Image') }}</span>
                             </h5>
                         </div>
                         <div class="error-wrapper">
                             <div class="card-body d-flex flex-column">
                                 <label>
-                                    {{translate('messages.item_image')}}
+                                    {{ config('module.current_module_type') === 'service' ? translate('messages.service_image') : translate('messages.item_image') }}
                                     <small class="text-danger">* ( {{translate('messages.ratio')}} 1:1 )</small>
                                 </label>
 
@@ -150,20 +149,20 @@
                                 <span class="card-header-icon">
                                     <i class="tio-dashboard-outlined"></i>
                                 </span>
-                                <span>{{ translate('messages.Item Details') }}</span>
+                                <span>{{ config('module.current_module_type') === 'service' ? translate('messages.Service Details') : translate('messages.Item Details') }}</span>
                             </h5>
                         </div>
                         <div class="card-body">
                             <div class="row g-2">
                                 <div class="col-md-3 col-sm-6">
                                     <div class="form-group mb-0 error-wrapper">
-                                        <label class="input-label" for="exampleFormControlSelect1">{{translate('messages.store')}}<span
+                                        <label class="input-label" for="exampleFormControlSelect1">{{ config('module.current_module_type') === 'service' ? translate('messages.provider') : translate('messages.store') }}<span
                                                 class="input-label-secondary"></span></label>
-                                        <select name="store_id" class="js-data-example-ajax form-control" id="store_id"  data-toggle="tooltip" data-placement="right" data-original-title="{{translate('messages.select_store')}}" disabled>
+                                        <select name="store_id" class="js-data-example-ajax form-control" id="store_id"  data-toggle="tooltip" data-placement="right" data-original-title="{{(config('module.current_module_type') === 'service' ? translate('messages.select_provider') : translate('messages.select_store'))}}" disabled>
                                             @if($campaign->store)
                                             <option value="{{$campaign->store->id}}" selected>{{$campaign->store->name}}</option>
                                             @else
-                                            <option selected disabled>{{translate('messages.select_store')}}</option>
+                                            <option selected disabled>{{(config('module.current_module_type') === 'service' ? translate('messages.select_provider') : translate('messages.select_store'))}}</option>
                                             @endif
                                         </select>
                                     </div>
@@ -172,7 +171,7 @@
                                 <div class="col-md-3 col-sm-6" id="stock_input">
                                     <div class="form-group mb-0 error-wrapper">
                                         <label class="input-label" for="total_stock">{{translate('messages.total_stock')}}</label>
-                                        <input type="number" class="form-control" name="current_stock" value="{{$campaign->stock}}" id="quantity">
+                                        <input type="number" class="form-control" name="current_stock" value="{{ max((int) $campaign->stock, 0) }}" id="quantity">
                                     </div>
                                 </div>
                                 <div class="col-sm-6 col-lg-3" id="maximum_cart_quantity">
@@ -185,7 +184,7 @@
                                 <div class="col-md-3 col-sm-6" id="addon_input">
                                     <div class="form-group mb-0 error-wrapper">
                                         <label class="input-label" for="exampleFormControlSelect1">{{translate('messages.addon')}}<span
-                                                class="input-label-secondary" data-toggle="tooltip" data-placement="right" data-original-title="{{translate('messages.store_required_warning')}}"><img src="{{asset('/public/assets/admin/img/info-circle.svg')}}" alt="{{translate('messages.store_required_warning')}}"></span></label>
+                                                class="input-label-secondary" data-toggle="tooltip" data-placement="right" data-original-title="{{(config('module.current_module_type') === 'service' ? translate('messages.provider_required_warning') : translate('messages.store_required_warning'))}}"><img src="{{asset('/public/assets/admin/img/info-circle.svg')}}" alt="{{(config('module.current_module_type') === 'service' ? translate('messages.provider_required_warning') : translate('messages.store_required_warning'))}}"></span></label>
                                         <select name="addon_ids[]" id="add_on" class="form-control js-select2-custom" multiple="multiple">
                                             @foreach(\App\Models\AddOn::orderBy('name')->get() as $addon)
                                                 <option value="{{$addon['id']}}" {{in_array($addon->id,json_decode($campaign['add_ons'],true))?'selected':''}}>{{$addon['name']}}</option>
@@ -312,7 +311,7 @@
                                     <div class="form-group mb-0 error-wrapper">
                                         <label class="input-label" for="exampleFormControlInput1">{{translate('messages.discount')}}<span class="input-label-secondary text--title" data-toggle="tooltip"
                                             data-placement="right"
-                                            data-original-title="{{ translate('Currently you need to manage discount with store.') }}">
+                                            data-original-title="{{ config('module.current_module_type') === 'service' ? translate('Currently you need to manage discount with provider.') : translate('Currently you need to manage discount with store.') }}">
                                             <i class="tio-info-outined"></i>
                                         </span></label>
                                         <input type="number" min="0" max="999999999" value="{{$campaign->discount}}" name="discount" class="form-control"
@@ -497,6 +496,18 @@
     <script src="{{asset('public/assets/admin')}}/js/tags-input.min.js"></script>
     <script>
         "use strict";
+        $(document).ready(function(){
+            $('#date_from').attr('min',(new Date()).toISOString().split('T')[0]);
+            $('#date_to').attr('min',(new Date()).toISOString().split('T')[0]);
+        });
+
+        $("#date_from").on("change", function () {
+            $('#date_to').attr('min',$(this).val());
+        });
+
+        $("#date_to").on("change", function () {
+            $('#date_from').attr('max',$(this).val());
+        });
         let element = "";
         function getStoreData(route, id) {
             $.get({
@@ -545,9 +556,19 @@
 
 
 
-        $('#choice_attributes').on('change', function () {
+        $('#choice_attributes').on('change', function() {
+
             $('#customer_choice_options').html(null);
-            $.each($("#choice_attributes option:selected"), function () {
+            $('#variant_combination').html(null);
+            $.each($("#choice_attributes option:selected"), function() {
+                if ($(this).val().length > 50) {
+                    toastr.error(
+                        '{{ translate('validation.max.string', ['attribute' => translate('messages.variation'), 'max' => '50']) }}', {
+                            CloseButton: true,
+                            ProgressBar: true
+                        });
+                    return false;
+                }
                 add_more_customer_choice_option($(this).val(), $(this).text());
             });
         });
@@ -664,7 +685,7 @@
         });
         $('#store_id').select2({
             ajax: {
-                url: '{{url('/')}}/admin/store/get-stores',
+                url: '{{ route('admin.store.get-stores') }}',
                 data: function (params) {
                     return {
                         q: params.term, // search term

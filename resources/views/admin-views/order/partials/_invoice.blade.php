@@ -113,7 +113,7 @@
                         <thead class="border-0">
                             <tr class="border-0">
                                 <th>{{ translate('messages.desc') }}</th>
-                                <th class="w-10p"></th>
+                                <th class="w-10p">{{ translate('qty') }}</th>
                                 <th>{{ translate('messages.price') }}</th>
                             </tr>
                         </thead>
@@ -123,13 +123,14 @@
                                 <tr>
                                     <td>{{ translate('messages.delivery_charge') }}</td>
                                     <td class="text-center">1</td>
-                                    <td>{{ \App\CentralLogics\Helpers::format_currency($order->delivery_charge) }}</td>
+                                    <td>{{ \App\CentralLogics\Helpers::format_currency(\App\CentralLogics\DeliveryFeeLogic::proDeliveryBreakdown($order)['original_fee']) }}</td>
                                 </tr>
+                                @include('partials.pro-delivery-discount-row', ['order' => $order, 'layout' => 'tr_parcel'])
                             @else
                                 @php($sub_total = 0)
                                 <?php
                                 if ($order->prescription_order == 1) {
-                                    $sub_total = $order['order_amount'] - $order['delivery_charge'] - $order['total_tax_amount'] - $order['dm_tips'] + $order['store_discount_amount'];
+                                    $sub_total = $order['order_amount'] - $order['delivery_charge'] - $order['total_tax_amount'] - $order['dm_tips'] - $order['additional_charge'] + $order['store_discount_amount'];
                                 }
                                 ?>
                                 @php($total_tax = 0)
@@ -249,11 +250,27 @@
                                     -
                                     {{ \App\CentralLogics\Helpers::format_currency($order['coupon_discount_amount']) }}
                                 </dd>
+
+                                @if ($order->extra_discount_amount > 0)
+                                <dt class="col-6">{{ translate('messages.extra_discount') }}:</dt>
+                                <dd class="col-6">
+                                    -
+                                    {{ \App\CentralLogics\Helpers::format_currency($order['extra_discount_amount']) }}
+                                </dd>
+
+                                @endif
                                 @if ($order['ref_bonus_amount'] > 0)
                                     <dt class="col-6">{{ translate('messages.Referral_Discount') }}:</dt>
                                     <dd class="col-6">
                                         -
                                         {{ \App\CentralLogics\Helpers::format_currency($order['ref_bonus_amount']) }}
+                                    </dd>
+                                @endif
+                                @if (($order->orderProDiscount?->amount_saved ?? 0) > 0)
+                                    <dt class="col-6">{{ translate('messages.Pro_Discount') }}:</dt>
+                                    <dd class="col-6">
+                                        -
+                                        {{ \App\CentralLogics\Helpers::format_currency($order->orderProDiscount->amount_saved) }}
                                     </dd>
                                 @endif
                             @endif
@@ -272,9 +289,11 @@
                                 @if ($order->order_type != 'parcel')
                                     <dt class="col-6">{{ translate('messages.delivery_charge') }}:</dt>
                                     <dd class="col-6">
-                                        @php($del_c = $order['delivery_charge'])
+                                        @php($del_c = \App\CentralLogics\DeliveryFeeLogic::proDeliveryBreakdown($order)['original_fee'])
                                         {{ \App\CentralLogics\Helpers::format_currency($del_c) }}
                                     </dd>
+                                    @include('partials.pro-delivery-discount-row', ['order' => $order, 'layout' => 'dl'])
+                                    @include('partials.delivery-type-row', ['order' => $order, 'layout' => 'dl'])
                                 @endif
 
                                 <dt class="col-6">{{ translate('messages.delivery_man_tips') }}:</dt>

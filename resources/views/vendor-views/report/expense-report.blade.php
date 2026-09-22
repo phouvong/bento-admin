@@ -9,9 +9,9 @@
     @php
         $vendorData = \App\CentralLogics\Helpers::get_store_data();
         $vendor = $vendorData?->module_type;
-        $title = $vendor == 'rental' ? 'Provider' : 'Store';
-        $orderOrTrip = $vendor == 'rental' ? 'trip' : 'order';
-        $type = $vendor == 'rental' ? 'vehicle' : 'item';
+        $title = in_array($vendor, ['rental', 'service']) ? 'Provider' : 'Store';
+        $orderOrTrip = $vendor == 'rental' ? 'trip' : ($vendor == 'service' ? 'booking' : 'order');
+        $type = $vendor == 'rental' ? 'vehicle' : ($vendor == 'service' ? 'service' : 'item');
     @endphp
     <div class="content container-fluid">
         <!-- Page Header -->
@@ -88,7 +88,7 @@
                     <form  class="search-form">
                         <!-- Search -->
                         <div class="input--group input-group input-group-merge input-group-flush">
-                            <input name="search" value="{{ request()->search ?? null }}"   type="search" class="form-control" placeholder="{{ translate('Search by Order ID') }}">
+                            <input name="search" value="{{ request()->search ?? null }}"   type="search" class="form-control" placeholder="{{ translate('Search by order id ,Phone number ,Customer name') }}">
                             <button type="submit" class="btn btn--secondary"><i class="tio-search"></i></button>
                         </div>
                         <!-- End Search -->
@@ -119,7 +119,7 @@
                                 <img class="avatar avatar-xss avatar-4by3 mr-2"
                                     src="{{ asset('public/assets/admin') }}/svg/components/placeholder-csv-format.svg"
                                     alt="Image Description">
-                                .{{ translate('messages.csv') }}
+                                {{ translate('messages.csv') }}
                             </a>
                         </div>
                     </div>
@@ -137,12 +137,14 @@
                                 <th >{{translate('sl')}}</th>
                                 @if($module_type == 'rental')
                                 <th class="text-center" >{{translate('trip_id')}}</th>
+                                @elseif($module_type == 'service' && service_addon_active())
+                                <th class="text-center" >{{translate('messages.booking_id')}}</th>
                                 @else
                                 <th class="text-center" >{{translate('messages.order_id')}}</th>
                                 @endif
                                 <th class="text-center" >{{translate('Date & Time')}}</th>
                                 <th class="text-center" >{{ translate('Expense Type') }}</th>
-                                <th class="text-center" >{{ translate('Customer Name') }}</th>
+                                <th class="text-center" >{{ translate('Customer Info') }}</th>
                                 <th class="border-0 text-right pr-xl-5">
                                     <div class="pr-xl-5">
                                         {{translate('expense amount')}}
@@ -160,6 +162,14 @@
                                             <a href="{{route('vendor.trip.details',['id'=>$exp['trip_id']])}}">{{$exp['trip_id']}}</a>
                                         @else
                                             <label class="badge badge-danger">{{translate('messages.invalid_trip_data')}}</label>
+                                        @endif
+                                    </td>
+                                @elseif($module_type == 'service' && service_addon_active())
+                                    <td class="text-center" >
+                                        @if (isset($exp['service_booking_id']))
+                                            <a href="{{route('vendor.service.booking.details',['booking'=>$exp['service_booking_id']])}}">{{$exp['service_booking_id']}}</a>
+                                        @else
+                                            <label class="badge badge-danger">{{translate('messages.invalid_booking_data')}}</label>
                                         @endif
                                     </td>
                                 @else
@@ -208,6 +218,15 @@
                                                 {{ translate('messages.Guest_user') }}
                                             @endif
 
+
+                                        @elseif ($exp->serviceBooking)
+                                        @if($exp->serviceBooking?->is_guest)
+                                            <strong>{{ $exp->serviceBooking['user_info']['contact_person_name'] ?? translate('messages.Guest_user') }}</strong>
+                                        @elseif($exp->serviceBooking?->customer)
+                                            {{ $exp->serviceBooking?->customer['f_name'].' '.$exp->serviceBooking?->customer['l_name'] }}
+                                        @else
+                                            <label class="badge badge-danger">{{translate('messages.invalid_customer_data')}}</label>
+                                        @endif
 
                                         @elseif ($exp['type'] == 'add_fund_bonus')
                                         {{ $exp->user->f_name.' '.$exp->user->l_name }}

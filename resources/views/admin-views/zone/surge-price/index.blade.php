@@ -92,7 +92,7 @@
                                     whereHas('zones', function ($query) use ($zone) {
                                 $query->where('zone_id', $zone->id);
                             })
-                            ->whereNotIn('module_type',['rental','parcel'])->get())
+                            ->whereNotIn('module_type',['rental','parcel','ride-share','service'])->get())
                             <select name="module_ids[]" id="module_selected" class="form-control h--45px js-select2-custom" multiple="multiple" placeholder="Module Select" data-placeholder="Module">
                                 <option></option>
                                 @foreach($modules as $module)
@@ -255,7 +255,7 @@
 
 <!-- Weekly Schedule Select Days Modal -->
 <div class="modal shedule-modal fade" id="weeklySelectDays_btn" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
+  <div class="modal-dialog modal-dialog-scrollable">
     <div class="modal-content pb-1">
       <div class="modal-header">
         <div>
@@ -267,7 +267,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="modal-body-inner">
+        <div class="modal-body-inner max-h-100vh-500px">
             <div class="resturant-type-group bg-light rounded p-3 mb-3 gap-4">
                 <label class="form-check form--check mr-2 mr-md-4">
                     <input autocomplete="off" class="form-check-input rounded" type="checkbox" value="1" name="days">

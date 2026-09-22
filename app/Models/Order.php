@@ -26,6 +26,7 @@ class Order extends Model
         'delivery_address_id' => 'integer',
         'delivery_man_id' => 'integer',
         'delivery_charge' => 'float',
+        'delivery_type_charge' => 'float',
         'additional_charge' => 'float',
         'original_delivery_charge' => 'float',
         'user_id' => 'integer',
@@ -48,13 +49,17 @@ class Order extends Model
         'is_guest' => 'boolean',
         'ref_bonus_amount' => 'float',
         'bring_change_amount'=>'integer',
+        'edited' => 'boolean',
+        'adjusment' => 'float',
+        'is_hidden' => 'boolean',
+        'is_pos' => 'boolean',
     ];
 
     protected $appends = ['module_type','order_attachment_full_url','order_proof_full_url'];
 
     public function getOrderAttachmentFullUrlAttribute(){
         $images = [];
-        $attachment[] = $this->order_attachment;
+        $attachment = $this->order_attachment;
 
         $value = is_array($attachment)
             ? $attachment
@@ -67,7 +72,7 @@ class Order extends Model
         if ($value) {
             foreach ($value as $item) {
                 $item = is_array($item) ? $item : (is_object($item) && get_class($item) == 'stdClass' ? json_decode(json_encode($item), true) : ['img' => $item, 'storage' => 'public']);
-                $images[] = Helpers::get_full_url('order', $item['img'], $item['storage']);
+                $images[] = Helpers::get_full_url('order', $item['img'], $item['storage'] ?? 'public');
             }
         }
 
@@ -84,7 +89,7 @@ class Order extends Model
         if ($value){
             foreach ($value as $item){
                 $item = is_array($item)?$item:(is_object($item) && get_class($item) == 'stdClass' ? json_decode(json_encode($item), true):['img' => $item, 'storage' => 'public']);
-                $images[] = Helpers::get_full_url('order',$item['img'],$item['storage']);
+                $images[] = Helpers::get_full_url('order',$item['img'],$item['storage'] ?? 'public');
             }
         }
 
@@ -145,6 +150,10 @@ class Order extends Model
     public function cashback_history()
     {
         return $this->hasOne(CashBackHistory::class, 'order_id');
+    }
+    public function orderProDiscount()
+    {
+        return $this->hasOne(OrderProDiscount::class, 'order_id');
     }
     public function parcelCancellation()
     {
@@ -239,6 +248,32 @@ class Order extends Model
     public function getModuleTypeAttribute()
     {
         return $this->module ? $this->module->module_type : null;
+    }
+
+    public function getIsEditableAttribute(): bool
+    {
+        $campaignOrder = !empty(optional($this->details->first())->item_campaign_id);
+
+        return in_array($this->order_status, ['pending'])
+            && $this->order_type != 'pos'
+            && isset($this->store)
+            && !$campaignOrder
+            && $this->prescription_order == 0
+            && $this->payments->count() == 0
+            && $this->ref_bonus_amount == 0
+            && $this->flash_admin_discount_amount == 0
+            && $this->payment_method == 'cash_on_delivery';
+    }
+
+    public function getCanReorderAttribute(): bool
+    {
+        $campaignOrder = collect($this->details)->contains(fn ($detail) => !empty($detail->item_campaign_id));
+
+        return $this->order_type != 'parcel'
+            && $this->prescription_order == 0
+            && $this->flash_admin_discount_amount == 0
+            && $this->flash_store_discount_amount == 0
+            && !$campaignOrder;
     }
 
     public function scopeAccepteByDeliveryman($query)
@@ -361,6 +396,11 @@ class Order extends Model
         return $query->where('order_type', '<>', 'pos');
     }
 
+    public function scopeNotHiddenForCustomer($query)
+    {
+        return $query->where($this->getTable() . '.is_hidden', 0);
+    }
+
     public function scopeNotDigitalOrder($query)
     {
         return $query->where(function ($q){
@@ -391,5 +431,10 @@ class Order extends Model
     public function orderTaxes()
     {
         return $this->morphMany(OrderTax::class, 'order');
+    }
+
+    public function orderEditLogs()
+    {
+        return $this->hasMany(OrderEditLog::class, 'order_id')->latest();
     }
 }

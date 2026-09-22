@@ -11,15 +11,23 @@ use App\CentralLogics\Helpers;
 use App\Models\OrderTransaction;
 use Illuminate\Support\Facades\DB;
 use Modules\Rental\Entities\Trips;
+use Modules\Service\Entities\ServiceBooking;
 use App\Http\Controllers\Controller;
 
 class DashboardController extends Controller
 {
     public function dashboard(Request $request)
     {
+        $employee_landing = Helpers::employee_landing_url();
+        if ($employee_landing) {
+            return redirect($employee_landing);
+        }
         if(Helpers::get_store_data()->module_type == 'rental'){
             return to_route('vendor.providerDashboard');
 
+        }
+        if(Helpers::get_store_data()->module_type == 'service' && service_addon_active()){
+            return to_route('vendor.service.dashboard');
         }
         $params = [
             'statistics_type' => $request['statistics_type'] ?? 'overall'
@@ -57,10 +65,10 @@ class DashboardController extends Controller
         $data['top_sell'] = $top_sell;
         $data['most_rated_items'] = $most_rated_items;
 
-        if( Helpers::get_store_data()?->storeConfig?->minimum_stock_for_warning > 0){
+        if( Helpers::get_store_data()?->storeConfig?->show_low_stock_count && Helpers::get_store_data()?->storeConfig?->minimum_stock_for_warning > 0){
             $items=  Item::where('stock' ,'<=' , Helpers::get_store_data()->storeConfig->minimum_stock_for_warning );
         } else{
-            $items=  Item::where('stock',0 );
+            $items=  Item::whereRaw('1 = 0');
         }
 
         $out_of_stock_count=  Helpers::get_store_data()->module->module_type != 'food' ?  $items->orderby('stock')->latest()->count() : null;
@@ -80,6 +88,10 @@ class DashboardController extends Controller
         if($store->module_type == 'rental'){
             $type='trip';
             $new_pending_order=Trips::where(['checked' => 0])->where('provider_id', $store->id)->count();
+
+        } elseif($store->module_type == 'service' && service_addon_active()){
+            $type='service_booking';
+            $new_pending_order=ServiceBooking::where(['notification_checked' => 0])->where('provider_id', $store->id)->count();
 
         } else{
             $new_pending_order = DB::table('orders')->where(['checked' => 0])->where('store_id', $store->id)->where('order_status','pending');
@@ -209,5 +221,13 @@ class DashboardController extends Controller
         $vendor->save();
 
         return response()->json(['Token successfully stored.']);
+    }
+
+    public function verifiedBadgePopupSeen(Request $request)
+    {
+        $store = Helpers::get_store_data();
+        Helpers::mark_verified_badge_popup_seen($store);
+
+        return response()->json(['success' => 1]);
     }
 }

@@ -13,10 +13,34 @@
                     <th></th>
                     <th>
                         {{ translate('Store') }}: {{ $data['store'] ?? translate('All') }}
+
+                        @isset($data['zone'])
+                        <br>
+                        {{ translate('Zone') }}: {{ $data['zone'] ?? translate('All') }}
+                        @endisset
+
+
                         <br>
                         {{ translate('Module') }}: {{ $data['module_name'] ?? translate('N/A') }}
                         <br>
                         {{ translate('category') }}: {{ $data['category'] ?? translate('N/A') }}
+
+
+                        @isset($data['filter'])
+
+                        <br>
+                        {{ translate('filter') }}:
+                            @if ($data['filter'] == 'custom' && isset($data['from'] , $data['to']))
+                            {{ translate('custom_date') }} : {{ $data['from'] }} to {{ $data['to'] }}
+
+                        @else
+                            {{ translate($data['filter']) ?? translate('N/A') }}
+                            @endif
+
+                        @endisset
+
+
+
                         <br>
                         {{ translate('Search_Bar_Content') }}: {{ $data['search'] ?? translate('N/A') }}
                     </th>
@@ -79,7 +103,7 @@
                         @if (Config::get('module.current_module_type') == 'food')
                             <td> {{ $item->veg == 1 ? translate('Veg') : translate('Non_Veg') }}</td>
                         @else
-                            <td>{{ $item->stock }}</td>
+                            <td>{{ max((int) $item->stock, 0) }}</td>
                         @endif
                         <td>
                             {{ \App\CentralLogics\Helpers::format_currency($item->price) }}

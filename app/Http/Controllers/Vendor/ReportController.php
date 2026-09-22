@@ -32,32 +32,57 @@ class ReportController extends Controller
             $from = $request->from ?? null;
             $to = $request->to ?? null;
         }
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
         $expense = Expense::with('order')->where('created_by','vendor')->where('store_id',Helpers::get_store_id())->where('amount', '>' ,0)
-        ->when(isset($from) && isset($to) && $from != null && $to != null && $filter == 'custom', function ($query) use ($from, $to) {
-            return $query->whereBetween('created_at', [$from . " 00:00:00", $to . " 23:59:59"]);
+
+        ->when(isset($filter) , function ($query) use ($filter,$from, $to) {
+                return $query->applyDateFilter($filter, $from, $to);
         })
-        ->when(isset($filter) && $filter == 'this_year', function ($query) {
-            return $query->whereYear('created_at', now()->format('Y'));
-        })
-        ->when(isset($filter) && $filter == 'this_month', function ($query) {
-            return $query->whereMonth('created_at', now()->format('m'))->whereYear('created_at', now()->format('Y'));
-        })
-        ->when(isset($filter) && $filter == 'this_month', function ($query) {
-            return $query->whereMonth('created_at', now()->format('m'))->whereYear('created_at', now()->format('Y'));
-        })
-        ->when(isset($filter) && $filter == 'previous_year', function ($query) {
-            return $query->whereYear('created_at', date('Y') - 1);
-        })
-        ->when(isset($filter) && $filter == 'this_week', function ($query) {
-            return $query->whereBetween('created_at', [now()->startOfWeek()->format('Y-m-d H:i:s'), now()->endOfWeek()->format('Y-m-d H:i:s')]);
-        })
-        ->when( isset($key), function($query) use($key){
+
+        ->when($request['search'] && is_array($key), function ($query) use ($key) {
+
             $query->where(function ($q) use ($key) {
+
                 foreach ($key as $value) {
-                    $q->orWhere('type', 'like', "%{$value}%")->orWhere('order_id', 'like', "%{$value}%");
+
+                    $q->orWhere(function ($sub) use ($value) {
+
+                        $sub->where('type', 'like', "%{$value}%")
+                            ->orWhere('order_id', 'like', "%{$value}%")
+
+                            ->orWhereHas('order.customer', function ($customer) use ($value) {
+                                $customer->where('f_name', 'like', "%{$value}%")
+                                        ->orWhere('l_name', 'like', "%{$value}%")
+                                        ->orWhere('phone', 'like', "%{$value}%");
+                            })
+
+                            ->orWhereHas('order', function ($order) use ($value) {
+                                $order->where('delivery_address->contact_person_name', 'like', "%{$value}%")
+                                    ->orWhere('delivery_address->contact_person_phone', 'like', "%{$value}%");
+                            })
+
+                            ->orWhereHas('user', function ($user) use ($value) {
+                                $user->where('f_name', 'like', "%{$value}%")
+                                    ->orWhere('l_name', 'like', "%{$value}%")
+                                    ->orWhere('phone', 'like', "%{$value}%");
+                            });
+
+                        if (addon_published_status('Rental')) {
+                            $sub->orWhereHas('trip.customer', function ($customer) use ($value) {
+                                $customer->where('f_name', 'like', "%{$value}%")
+                                        ->orWhere('l_name', 'like', "%{$value}%")
+                                        ->orWhere('phone', 'like', "%{$value}%");
+                            })
+                            ->orWhereHas('trip', function ($trip) use ($value) {
+                                $trip->where('user_info->contact_person_name', 'like', "%{$value}%")
+                                    ->orWhere('user_info->contact_person_phone', 'like', "%{$value}%");
+                            });
+                        }
+
+                    });
                 }
             });
+
         })
         ->orderBy('created_at', 'desc')
         ->paginate(config('default_pagination'))->withQueryString();
@@ -77,32 +102,56 @@ class ReportController extends Controller
             $from = $request->from ?? null;
             $to = $request->to ?? null;
         }
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
         $expense = Expense::with('order')->where('created_by','vendor')->where('store_id',Helpers::get_store_id())->where('amount', '>' ,0)
-        ->when(isset($from) && isset($to) && $from != null && $to != null && $filter == 'custom', function ($query) use ($from, $to) {
-            return $query->whereBetween('created_at', [$from . " 00:00:00", $to . " 23:59:59"]);
+        ->when(isset($filter) , function ($query) use ($filter,$from, $to) {
+                return $query->applyDateFilter($filter, $from, $to);
         })
-        ->when(isset($filter) && $filter == 'this_year', function ($query) {
-            return $query->whereYear('created_at', now()->format('Y'));
-        })
-        ->when(isset($filter) && $filter == 'this_month', function ($query) {
-            return $query->whereMonth('created_at', now()->format('m'))->whereYear('created_at', now()->format('Y'));
-        })
-        ->when(isset($filter) && $filter == 'this_month', function ($query) {
-            return $query->whereMonth('created_at', now()->format('m'))->whereYear('created_at', now()->format('Y'));
-        })
-        ->when(isset($filter) && $filter == 'previous_year', function ($query) {
-            return $query->whereYear('created_at', date('Y') - 1);
-        })
-        ->when(isset($filter) && $filter == 'this_week', function ($query) {
-            return $query->whereBetween('created_at', [now()->startOfWeek()->format('Y-m-d H:i:s'), now()->endOfWeek()->format('Y-m-d H:i:s')]);
-        })
-        ->when( isset($key), function($query) use($key){
+
+        ->when($request['search'] && is_array($key), function ($query) use ($key) {
+
             $query->where(function ($q) use ($key) {
+
                 foreach ($key as $value) {
-                    $q->orWhere('type', 'like', "%{$value}%")->orWhere('order_id', 'like', "%{$value}%");
+
+                    $q->orWhere(function ($sub) use ($value) {
+
+                        $sub->where('type', 'like', "%{$value}%")
+                            ->orWhere('order_id', 'like', "%{$value}%")
+
+                            ->orWhereHas('order.customer', function ($customer) use ($value) {
+                                $customer->where('f_name', 'like', "%{$value}%")
+                                        ->orWhere('l_name', 'like', "%{$value}%")
+                                        ->orWhere('phone', 'like', "%{$value}%");
+                            })
+
+                            ->orWhereHas('order', function ($order) use ($value) {
+                                $order->where('delivery_address->contact_person_name', 'like', "%{$value}%")
+                                    ->orWhere('delivery_address->contact_person_phone', 'like', "%{$value}%");
+                            })
+
+                            ->orWhereHas('user', function ($user) use ($value) {
+                                $user->where('f_name', 'like', "%{$value}%")
+                                    ->orWhere('l_name', 'like', "%{$value}%")
+                                    ->orWhere('phone', 'like', "%{$value}%");
+                            });
+
+                        if (addon_published_status('Rental')) {
+                            $sub->orWhereHas('trip.customer', function ($customer) use ($value) {
+                                $customer->where('f_name', 'like', "%{$value}%")
+                                        ->orWhere('l_name', 'like', "%{$value}%")
+                                        ->orWhere('phone', 'like', "%{$value}%");
+                            })
+                            ->orWhereHas('trip', function ($trip) use ($value) {
+                                $trip->where('user_info->contact_person_name', 'like', "%{$value}%")
+                                    ->orWhere('user_info->contact_person_phone', 'like', "%{$value}%");
+                            });
+                        }
+
+                    });
                 }
             });
+
         })
         ->orderBy('created_at', 'desc')
         ->get();
@@ -139,7 +188,7 @@ class ReportController extends Controller
             $from = $request->from ?? null;
             $to = $request->to ?? null;
         }
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
         $store_id = Helpers::get_store_id();
         $withdrawal_methods = WithdrawalMethod::ofStatus(1)->get();
         $status = $request->query('status', 'all');
@@ -157,7 +206,7 @@ class ReportController extends Controller
             ->when(isset($filter) , function ($query) use ($filter,$from, $to) {
                 return $query->applyDateFilter($filter, $from, $to);
             })
-            ->when(isset($key), function ($q) use ($key){
+            ->when($request['search'], function ($q) use ($key){
                 $q->where(function ($q) use ($key) {
                     foreach ($key as $value) {
                         $q->orWhere('disbursement_id', 'like', "%{$value}%")
@@ -188,7 +237,7 @@ class ReportController extends Controller
             $from = $request->from ?? null;
             $to = $request->to ?? null;
         }
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
         $store_id = Helpers::get_store_id();
         $withdrawal_methods = WithdrawalMethod::ofStatus(1)->get();
         $status = $request->query('status', 'all');
@@ -206,7 +255,7 @@ class ReportController extends Controller
             ->when(isset($filter) , function ($query) use ($filter,$from, $to) {
                 return $query->applyDateFilter($filter, $from, $to);
             })
-            ->when(isset($key), function ($q) use ($key){
+            ->when($request['search'], function ($q) use ($key){
                 $q->where(function ($q) use ($key) {
                     foreach ($key as $value) {
                         $q->orWhere('disbursement_id', 'like', "%{$value}%")

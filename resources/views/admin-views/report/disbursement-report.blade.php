@@ -7,20 +7,33 @@
 
 @section('content')
     <div class="content container-fluid">
-        <div class="page-header">
+        @php
+            // Rental/Service providers are Stores too; when either addon is published the
+            // "store" tab covers stores + providers, so use inclusive "Vendor" / "Store/Provider" wording.
+            $isProviderContext = addon_published_status('Rental') || addon_published_status('Service');
+            $storeSlashProvider = $isProviderContext ? translate('messages.store') . '/' . translate('messages.provider') : translate('messages.store');
+        @endphp
+        <div class="page-header pb-0">
             <h1 class="page-header-title">
             <span class="page-header-icon">
                 <img src="{{asset('/public/assets/admin/img/report/new/disburstment.png')}}" class="w--22" alt="">
             </span>
                 <span>{{ translate('Disbursement_Report') }}</span>
             </h1>
-            <ul class="nav nav-tabs mb-4 border-0 pt-2">
+        </div>
+        <div class="js-nav-scroller hs-nav-scroller-horizontal mb-20">
+            <ul class="nav mb-0 nav-tabs border-0 nav--tabs nav--pills">
                 <li class="nav-item">
-                    <a class="nav-link {{ $tab=='store'?'active':'' }}" href="{{ route('admin.transactions.report.disbursement_report',  ['tab' => 'store']) }}" >{{ translate('Store_Disbursements') }}</a>
+                    <a class="nav-link {{ $tab=='store'?'active':'' }}" href="{{ route('admin.transactions.report.disbursement_report',  ['tab' => 'store']) }}" >{{ $isProviderContext ? translate('Vendor_Disbursements') : translate('Store_Disbursements') }}</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link {{ $tab=='delivery_man'?'active':'' }}" href="{{ route('admin.transactions.report.disbursement_report',  ['tab' => 'delivery_man']) }}">{{ translate('Delivery_Man_Disbursements') }}</a>
                 </li>
+                @if(addon_published_status('RideShare'))
+                <li class="nav-item">
+                    <a class="nav-link {{ $tab=='rider'?'active':'' }}" href="{{ route('admin.transactions.report.disbursement_report',  ['tab' => 'rider']) }}">{{ translate('Rider_Disbursements') }}</a>
+                </li>
+                @endif
             </ul>
         </div>
         <!-- Reports -->
@@ -78,7 +91,17 @@
                                     title="{{ translate('messages.select_modules') }}">
                                 <option value="" {{ !request('module_id') ? 'selected' : '' }}>
                                     {{ translate('messages.all_modules') }}</option>
-                                @foreach (\App\Models\Module::notParcel()->get() as $module)
+                                @php
+                                    // ride-share always hidden here; rental/service only shown when their addon is published
+                                    $excludedModuleTypes = ['ride-share'];
+                                    if (! addon_published_status('Rental')) {
+                                        $excludedModuleTypes[] = 'rental';
+                                    }
+                                    if (! addon_published_status('Service')) {
+                                        $excludedModuleTypes[] = 'service';
+                                    }
+                                @endphp
+                                @foreach (\App\Models\Module::notParcel()->whereNotIn('module_type', $excludedModuleTypes)->get(['id', 'module_name']) as $module)
                                     <option value="{{ $module->id }}"
                                         {{ request('module_id') == $module->id ? 'selected' : '' }}>
                                         {{ $module['module_name'] }}
@@ -88,16 +111,16 @@
                         </div>
                         <div class="col-sm-6 col-md-3">
                             <select name="store_id" data-url="{{ url()->full() }}" data-filter="store_id"
-                                    data-placeholder="{{ translate('messages.select_store') }}"
+                                    data-placeholder="{{ $isProviderContext ? translate('Select_Store') . '/' . translate('provider') : translate('messages.select_store') }}"
                                     class="js-data-example-ajax form-control set-filter">
                                 @if (isset($store))
-                                    <option value="{{ $store->id }}" selected>{{ $store->name }}</option>
+                                    <option value="{{ $store->id }}" data-verified="{{ (int) $store->verified_seller }}" selected>{{ $store->name }}</option>
                                 @else
-                                    <option value="all" selected>{{ translate('messages.all_stores') }}</option>
+                                    <option value="all" selected>{{ $isProviderContext ? translate('All_Stores') . '/' . translate('provider') : translate('messages.all_stores') }}</option>
                                 @endif
                             </select>
                         </div>
-                        @else
+                        @elseif($tab=='delivery_man')
                         <div class="col-sm-6 col-md-3">
                             <select name="deliveryman_id" id="deliveryman" data-url="{{ url()->full() }}" data-filter="deliveryman_id"
                                     data-placeholder="{{ translate('messages.select_delivery_man') }}"
@@ -106,6 +129,18 @@
                                     <option value="{{ $delivery_man->id }}" selected>{{ $delivery_man->name }}</option>
                                 @else
                                     <option value="all" selected>{{ translate('messages.all_delivery_mans') }}</option>
+                                @endif
+                            </select>
+                        </div>
+                        @else
+                        <div class="col-sm-6 col-md-3">
+                            <select name="rider_id" id="rider" data-url="{{ url()->full() }}" data-filter="rider_id"
+                                    data-placeholder="{{ translate('messages.select_rider') }}"
+                                    class="js-data-example-ajax form-control set-filter">
+                                @if (isset($rider))
+                                    <option value="{{ $rider->id }}" selected>{{ $rider->name }}</option>
+                                @else
+                                    <option value="all" selected>{{ translate('messages.all_riders') }}</option>
                                 @endif
                             </select>
                         </div>
@@ -169,6 +204,7 @@
             </div>
         </div>
 
+        <div class="card">
         <div class="card-header border-0 py-2">
             <div class="search--button-wrapper">
                 <h2 class="card-title">
@@ -215,7 +251,7 @@
                         <th>{{ translate('sl') }}</th>
                         <th>{{ translate('id') }}</th>
                         @if($tab=='store')
-                        <th>{{ translate('Store_Info') }}</th>
+                        <th>{{ $storeSlashProvider }} {{ translate('info') }}</th>
                         @else
                         <th>{{ translate('Delivery_Man_Info') }}</th>
                         @endif
@@ -241,22 +277,37 @@
                             </td>
                             @if($tab=='store')
                             <td>
-                                <a href="{{route('admin.store.view', [$disbursement->store->id, 'module_id'=>$disbursement->store->module_id])}}" alt="view store"
-                                   class="table-rest-info">
-                                    <div class="info">
-                                            <span class="d-block text-body">
-                                                {{ Str::limit($disbursement->store->name, 20, '...') }}<br>
-                                            </span>
-                                    </div>
-                                </a>
+                                @if($disbursement?->store)
+                                    <a href="{{ route('admin.store.view', [$disbursement->store->id, 'module_id' => $disbursement->store->module_id]) }}" alt="view store"
+                                       class="table-rest-info">
+                                        <div class="info">
+                                                <span class="d-block text-body">
+                                                    {{ Str::limit($disbursement->store->name, 20, '...') }}<br>
+                                                </span>
+                                        </div>
+                                    </a>
+                                @else
+                                    <span class="text-muted">{{ translate('messages.N/A') }}</span>
+                                @endif
                             </td>
-                            @else
+                            @elseif($tab=='delivery_man')
                                 <td>
                                     <a href="{{route('admin.users.delivery-man.preview', $disbursement->delivery_man_id)}}"
                                        class="table-rest-info">
                                         <div class="info">
                                             <span class="d-block text-body">
-                                                {{$disbursement->delivery_man->f_name.' '.$disbursement->delivery_man->l_name}}
+                                                {{$disbursement->delivery_man?->f_name.' '.$disbursement->delivery_man?->l_name}}
+                                            </span>
+                                        </div>
+                                    </a>
+                                </td>
+                            @else
+                                <td>
+                                    <a href="{{route('admin.users.rider.preview', $disbursement->delivery_man_id)}}"
+                                       class="table-rest-info">
+                                        <div class="info">
+                                            <span class="d-block text-body">
+                                                {{$disbursement->rider?->f_name.' '.$disbursement->rider?->l_name}}
                                             </span>
                                         </div>
                                     </a>
@@ -320,7 +371,7 @@
                                                 <div class="card-body">
                                                     <div class="d-flex flex-wrap payment-info-modal-info p-xl-4">
                                                         <div class="item">
-                                                            <h5>{{ translate('Store_Information') }}</h5>
+                                                            <h5>{{ $storeSlashProvider }} {{ translate('information') }}</h5>
                                                             <ul class="item-list">
                                                                 <li class="d-flex flex-wrap">
                                                                     <span class="name">{{ translate('name') }}</span>
@@ -340,12 +391,12 @@
                                                                 <li class="d-flex flex-wrap">
                                                                     <span class="name">{{ translate('name') }}</span>
                                                                     <span>:</span>
-                                                                    <strong>{{$disbursement->store->vendor->f_name}} {{$disbursement->store->vendor->l_name}}</strong>
+                                                                    <strong>{{ trim(($disbursement?->store?->vendor?->f_name ?? '') . ' ' . ($disbursement?->store?->vendor?->l_name ?? '')) ?: translate('messages.N/A') }}</strong>
                                                                 </li>
                                                                 <li class="d-flex flex-wrap">
                                                                     <span class="name">{{ translate('email') }}</span>
                                                                     <span>:</span>
-                                                                    <strong>{{$disbursement->store->vendor->email}}</strong>
+                                                                    <strong>{{ $disbursement?->store?->vendor?->email ?? translate('messages.N/A') }}</strong>
                                                                 </li>
                                                             </ul>
                                                         </div>
@@ -353,13 +404,13 @@
                                                             <h5>{{ translate('Account_Information') }}</h5>
                                                             <ul class="item-list">
                                                                 <li class="d-flex flex-wrap">
-                                                                    <span class="name">{{ translate('payment_method') }}</span><strong>{{$disbursement->withdraw_method->method_name}}</strong>
+                                                                    <span class="name">{{ translate('payment_method') }}</span><strong>{{ $disbursement?->withdraw_method?->method_name ?? translate('messages.N/A') }}</strong>
                                                                 </li>
                                                                 <li class="d-flex flex-wrap">
                                                                     <span class="name">{{ translate('amount') }}</span>
                                                                     <strong>{{\App\CentralLogics\Helpers::format_currency($disbursement['disbursement_amount'])}}</strong>
                                                                 </li>
-                                                                @forelse(json_decode($disbursement->withdraw_method->method_fields, true) as $key=> $item)
+                                                                @forelse(json_decode($disbursement?->withdraw_method?->method_fields, true) ?? [] as $key=> $item)
                                                                     <li class="d-flex flex-wrap">
                                                                         <span class="name">{{  translate($key) }}</span>
                                                                         <strong>{{$item}}</strong>
@@ -377,7 +428,7 @@
                                     </div>
                                 </div>
                             </div>
-                            @else
+                            @elseif($tab=='delivery_man')
                                 <div class="modal fade" id="payment-info-{{$disbursement->id}}">
                                     <div class="modal-dialog modal-xl">
                                         <div class="modal-content">
@@ -413,12 +464,88 @@
                                                                     <li class="d-flex flex-wrap">
                                                                         <span class="name">{{ translate('name') }}</span>
                                                                         <span>:</span>
-                                                                        <strong>{{$disbursement->delivery_man->f_name.' '.$disbursement->delivery_man->l_name}}</strong>
+                                                                        <strong>{{$disbursement->delivery_man?->f_name.' '.$disbursement->delivery_man?->l_name}}</strong>
                                                                     </li>
                                                                     <li class="d-flex flex-wrap">
                                                                         <span class="name">{{ translate('contact') }}</span>
                                                                         <span>:</span>
                                                                         <strong>{{$disbursement?->delivery_man?->phone}}</strong>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                            <div class="item">
+
+                                                            </div>
+                                                            <div class="item w-100">
+                                                                <h5>{{ translate('Account_Information') }}</h5>
+                                                                <ul class="item-list">
+                                                                    <li class="d-flex flex-wrap">
+                                                                        <span class="name">{{ translate('payment_method') }}</span><strong>{{$disbursement->withdraw_method?->method_name ?? translate('messages.N/A')}}</strong>
+                                                                    </li>
+                                                                    <li class="d-flex flex-wrap">
+                                                                        <span class="name">{{ translate('amount') }}</span>
+                                                                        <strong>{{\App\CentralLogics\Helpers::format_currency($disbursement['disbursement_amount'])}}</strong>
+                                                                    </li>
+                                                                    @forelse(json_decode($disbursement->withdraw_method?->method_fields, true) ?? [] as $key=> $item)
+                                                                        <li class="d-flex flex-wrap">
+                                                                            <span class="name">{{  translate($key) }}</span>
+                                                                            <strong>{{$item}}</strong>
+                                                                        </li>
+                                                                    @empty
+
+                                                                    @endforelse
+
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            @else
+                                <div class="modal fade" id="payment-info-{{$disbursement->id}}">
+                                    <div class="modal-dialog modal-xl">
+                                        <div class="modal-content">
+                                            <div class="modal-header pb-4">
+                                                <button type="button" class="payment-modal-close btn-close border-0 outline-0 bg-transparent" data-dismiss="modal">
+                                                    <i class="tio-clear"></i>
+                                                </button>
+                                                <div class="w-100 text-center">
+                                                    <h2 class="mb-2">{{ translate('Payment_Information') }}</h2>
+                                                    <div>
+                                                        <span class="mr-2">{{ translate('Disbursement_ID') }}</span>
+                                                        <strong>#{{$disbursement->disbursement_id}}</strong>
+                                                    </div>
+                                                    <div class="mt-2">
+                                                        <span class="mr-2">{{ translate('status') }}</span>
+                                                        @if($disbursement->status=='pending')
+                                                            <label class="badge badge-soft-primary">{{ translate('pending') }}</label>
+                                                        @elseif($disbursement->status=='completed')
+                                                            <label class="badge badge-soft-success">{{ translate('Completed') }}</label>
+                                                        @else
+                                                            <label class="badge badge-soft-danger">{{ translate('canceled') }}</label>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="card shadow--card-2">
+                                                    <div class="card-body">
+                                                        <div class="d-flex flex-wrap payment-info-modal-info p-xl-4">
+                                                            <div class="item">
+                                                                <h5>{{ translate('Rider_Information') }}</h5>
+                                                                <ul class="item-list">
+                                                                    <li class="d-flex flex-wrap">
+                                                                        <span class="name">{{ translate('name') }}</span>
+                                                                        <span>:</span>
+                                                                        <strong>{{$disbursement->rider?->f_name.' '.$disbursement->rider?->l_name}}</strong>
+                                                                    </li>
+                                                                    <li class="d-flex flex-wrap">
+                                                                        <span class="name">{{ translate('contact') }}</span>
+                                                                        <span>:</span>
+                                                                        <strong>{{$disbursement?->rider?->phone}}</strong>
                                                                     </li>
                                                                 </ul>
                                                             </div>
@@ -476,6 +603,7 @@
                 </div>
             </div>
         </div>
+        </div>
 
     </div>
 @endsection
@@ -487,14 +615,15 @@
     <script src="{{ asset('public/assets/admin') }}/js/view-pages/admin-reports.js"></script>
     <script>
         "use strict";
-        $(document).on('ready', function() {
+        $(document).ready(function() {
             $('.js-data-example-ajax').select2({
                 ajax: {
-                    url: '{{ url('/') }}/admin/store/get-stores',
+                    url: '{{ route('admin.store.get-stores') }}',
                     data: function(params) {
                         return {
                             q: params.term, // search term
                             all:true,
+                            include_addon_providers: 1, // rental/service providers are disbursed too
                             @if (isset($zone))
                                 zone_ids: [{{ $zone->id }}],
                             @endif
@@ -545,7 +674,30 @@
                     }
                 }
             });
+            $('#rider').select2({
+                ajax: {
+                    url: '{{url('/')}}/admin/users/rider/get-deliverymen',
+                    data: function (params) {
+                        return {
+                            q: params.term, // search term
+                            page: params.page
+                        };
+                    },
+                    processResults: function (data) {
+                        return {
+                            results: data
+                        };
+                    },
+                    __port: function (params, success, failure) {
+                        let $request = $.ajax(params);
+
+                        $request.then(success);
+                        $request.fail(failure);
+
+                        return $request;
+                    }
+                }
+            });
         });
     </script>
 @endpush
-

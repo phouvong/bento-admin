@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
 use App\Models\Order;
+use App\Models\Store;
 use App\Models\Newsletter;
 use Illuminate\Http\Request;
 use App\CentralLogics\Helpers;
@@ -18,6 +19,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\SubscriberListExport;
+use Modules\Builder\Entities\TenantDomainConfig;
 use Modules\Rental\Entities\Trips;
 use Modules\Rental\Exports\TripExport;
 
@@ -29,13 +31,31 @@ class CustomerController extends Controller
     }
     public function customer_list(Request $request)
     {
+        $builder_published = (bool) addon_published_status('Builder');
+        $tab = $request->tab === 'storefront' && $builder_published ? 'storefront' : 'main';
+
+        // Stores whose Builder storefront is currently published — used for
+        // both the filter dropdown and to guard a hand-crafted storefront_id.
+        $publishedStoreIds = $builder_published
+            ? TenantDomainConfig::where('website_visibility', true)->pluck('sub_tenant_id')->unique()->values()
+            : collect();
+        $storefronts = $builder_published
+            ? Store::whereIn('id', $publishedStoreIds)->select('id', 'name')->orderBy('name')->get()
+            : collect();
+        $publishedStoreLookup = $storefronts->pluck('name', 'id')->all();
+
+        $storefront_id = $request->storefront_id;
+        if ($storefront_id !== null && !$publishedStoreIds->contains((int) $storefront_id)) {
+            $storefront_id = null;
+        }
+
         $zone_id=  $request->zone_id ?? null;
         $filter=  $request->filter ?? null;
         $order_wise=  $request->order_wise ?? null;
         $show_limit=  $request->show_limit ?? null;
         $key = [];
         if ($request->search) {
-            $key = explode(' ', $request['search']);
+            $key = explode(' ', $request['search'] ?? '');
         }
 
         $order_date_start = null;
@@ -66,6 +86,19 @@ class CustomerController extends Controller
                     ->orWhere('phone', 'like', "%{$value}%");
             };
         })->withcount('orders')
+
+        // Admin bypasses HostScope, so without these clauses both tabs would
+        // bleed into each other. Main tab = host-context users only; storefront
+        // tab = any user with a sub_tenant_id (i.e. registered via Builder).
+        ->when($tab === 'main', function ($query) {
+            $query->where('tenant_id', 0)->where('sub_tenant_id', 0);
+        })
+        ->when($tab === 'storefront', function ($query) {
+            $query->where('sub_tenant_id', '>', 0);
+        })
+        ->when($tab === 'storefront' && $storefront_id, function ($query) use ($storefront_id) {
+            $query->where('sub_tenant_id', (int) $storefront_id);
+        })
 
         ->when(isset($request->join_date) , function ($query) use($join_date_start, $join_date_end) {
             $query->WhereBetween('created_at', [$join_date_start, $join_date_end]);
@@ -130,7 +163,14 @@ class CustomerController extends Controller
         }
 
 
-        return view('admin-views.customer.list', compact('customers'));
+        return view('admin-views.customer.list', compact(
+            'customers',
+            'tab',
+            'builder_published',
+            'storefronts',
+            'publishedStoreLookup',
+            'storefront_id',
+        ));
     }
 
     public function status(User $customer, Request $request)
@@ -202,7 +242,22 @@ class CustomerController extends Controller
 
     public function search(Request $request)
     {
-        $key = explode(' ', $request['search']);
+        $builder_published = (bool) addon_published_status('Builder');
+        $tab = $request->tab === 'storefront' && $builder_published ? 'storefront' : 'main';
+
+        $publishedStoreIds = $builder_published
+            ? TenantDomainConfig::where('website_visibility', true)->pluck('sub_tenant_id')->unique()->values()
+            : collect();
+        $publishedStoreLookup = $builder_published
+            ? Store::whereIn('id', $publishedStoreIds)->pluck('name', 'id')->all()
+            : [];
+
+        $storefront_id = $request->storefront_id;
+        if ($storefront_id !== null && !$publishedStoreIds->contains((int) $storefront_id)) {
+            $storefront_id = null;
+        }
+
+        $key = explode(' ', $request['search'] ?? '');
         $customers = User::where(function ($q) use ($key) {
             foreach ($key as $value) {
                 $q->orWhere('f_name', 'like', "%{$value}%")
@@ -210,10 +265,20 @@ class CustomerController extends Controller
                     ->orWhere('email', 'like', "%{$value}%")
                     ->orWhere('phone', 'like', "%{$value}%");
             }
-        })->orderBy('order_count', 'desc')->limit(50)->get();
+        })
+            ->when($tab === 'main', function ($query) {
+                $query->where('tenant_id', 0)->where('sub_tenant_id', 0);
+            })
+            ->when($tab === 'storefront', function ($query) {
+                $query->where('sub_tenant_id', '>', 0);
+            })
+            ->when($tab === 'storefront' && $storefront_id, function ($query) use ($storefront_id) {
+                $query->where('sub_tenant_id', (int) $storefront_id);
+            })
+            ->orderBy('order_count', 'desc')->limit(50)->get();
         return response()->json([
             'count' => count($customers),
-            'view' => view('admin-views.customer.partials._table', compact('customers'))->render()
+            'view' => view('admin-views.customer.partials._table', compact('customers', 'tab', 'publishedStoreLookup'))->render()
         ]);
     }
 
@@ -223,16 +288,17 @@ class CustomerController extends Controller
         $customer = User::find($id);
         if (isset($customer)) {
             $total_order_amount = Order::selectRaw('sum(order_amount) as total_order_amount')->latest()->where(['user_id' => $id])
-                ->when(isset($key), function($query) use($key){
+                ->when(isset($request['search']), function($query) use($key){
                     $query->Where('id', 'like', "%{$key}%");
                 } )
                 ->Notpos()->get();
             $orders = Order::withcount('details')->latest()->where(['user_id' => $id])
-            ->when(isset($key), function($query) use($key){
+            ->when(isset($request['search']), function($query) use($key){
                 $query->Where('id', 'like', "%{$key}%");
             } )
             ->Notpos()->paginate(config('default_pagination'));
-            return view('admin-views.customer.customer-view', compact('customer', 'orders','total_order_amount'));
+            $moduleType = 'normal';
+            return view('admin-views.customer.customer-view', compact('customer', 'orders','total_order_amount','moduleType'));
         }
         Toastr::error(translate('messages.customer_not_found'));
         return back();
@@ -244,14 +310,15 @@ class CustomerController extends Controller
         $customer = User::find($id);
         if (isset($customer)) {
             $total_trips_amount = Trips::selectRaw('sum(trip_amount) as total_trip_amount')->latest()->where(['user_id' => $id])
-                ->when(isset($key), function($query) use($key){
+                ->when(isset($request['search']), function($query) use($key){
                     $query->Where('id', 'like', "%{$key}%");
                 })->get();
             $trips = Trips::withcount('trip_details')->latest()->where(['user_id' => $id])
-            ->when(isset($key), function($query) use($key){
+            ->when(isset($request['search']), function($query) use($key){
                 $query->Where('id', 'like', "%{$key}%");
             })->paginate(config('default_pagination'));
-            return view('admin-views.customer.customer-rental-view', compact('customer', 'trips','total_trips_amount'));
+            $moduleType = 'rental';
+            return view('admin-views.customer.customer-rental-view', compact('customer', 'trips','total_trips_amount','moduleType'));
         }
         Toastr::error(translate('messages.customer_not_found'));
         return back();
@@ -261,7 +328,7 @@ class CustomerController extends Controller
     {
         $customer = User::find($request->id);
 
-        $orders = Order::latest()->where(['user_id' => $request->id])->Notpos()->get();
+        $orders = Order::with(['orderProDiscount'])->latest()->where(['user_id' => $request->id])->Notpos()->get();
 
         $data = [
             'orders'=>$orders,
@@ -280,10 +347,10 @@ class CustomerController extends Controller
 
     public function customer_trip_export(Request $request)
     {
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
 
         $trips = Trips::latest()->where(['user_id' => $request->id])
-            ->when(isset($key), function ($query) use ($key) {
+            ->when($request['search'], function ($query) use ($key) {
                 return $query->where(function ($q) use ($key) {
                     foreach ($key as $value) {
                         $q->orWhere('id', 'like', "%{$value}%");
@@ -316,10 +383,10 @@ class CustomerController extends Controller
             $join_date_end = Carbon::createFromFormat('m/d/Y', $join_date_end)->endOfDay();
         }
 
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
 
 
-        $customers = Newsletter::when(isset($key), function($query) use($key) {
+        $customers = Newsletter::when($request['search'], function($query) use($key) {
             $query->where(function ($q) use ($key) {
                 foreach ($key as $value) {
                     $q->orWhere('email', 'like', "%". $value."%");
@@ -365,7 +432,7 @@ class CustomerController extends Controller
     }
 
     public function subscribed_customer_export(Request $request){
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
 
         $filter=  $request->filter ?? null;
         $show_limit=  $request->show_limit ?? null;
@@ -379,7 +446,7 @@ class CustomerController extends Controller
 
 
 
-        $customers = Newsletter::when(isset($key), function($query) use($key) {
+        $customers = Newsletter::when($request['search'], function($query) use($key) {
             $query->where(function ($q) use ($key) {
                 foreach ($key as $value) {
                     $q->orWhere('email', 'like', "%". $value."%");
@@ -460,6 +527,8 @@ class CustomerController extends Controller
             $keys=['guest_checkout_status','toggle_veg_non_veg','wallet_status','wallet_add_refund','add_fund_status','loyalty_point_status','loyalty_point_exchange_rate','loyalty_point_item_purchase_point',
                     'loyalty_point_minimum_point','ref_earning_status','ref_earning_exchange_rate','new_customer_discount_status',
                     'new_customer_discount_amount_type','new_customer_discount_validity_type','new_customer_discount_amount','new_customer_discount_amount_validity',
+                    'pro_member_status',
+                    'customer_personalization_status',
                 // 'country_picker_status',
                 ];
 
@@ -473,13 +542,25 @@ class CustomerController extends Controller
     }
 
     public function export(Request $request){
+        $builder_published = (bool) addon_published_status('Builder');
+        $tab = $request->tab === 'storefront' && $builder_published ? 'storefront' : 'main';
+
+        $publishedStoreIds = $builder_published
+            ? TenantDomainConfig::where('website_visibility', true)->pluck('sub_tenant_id')->unique()->values()
+            : collect();
+
+        $storefront_id = $request->storefront_id;
+        if ($storefront_id !== null && !$publishedStoreIds->contains((int) $storefront_id)) {
+            $storefront_id = null;
+        }
+
         $zone_id=  $request->zone_id ?? null;
         $filter=  $request->filter ?? null;
         $order_wise=  $request->order_wise ?? null;
         $show_limit=  $request->show_limit ?? null;
         $key = [];
         if ($request->search) {
-            $key = explode(' ', $request['search']);
+            $key = explode(' ', $request['search'] ?? '');
         }
 
         $order_date_start = null;
@@ -509,6 +590,16 @@ class CustomerController extends Controller
                     ->orWhere('phone', 'like', "%{$value}%");
             };
         })->withcount('orders')
+
+        ->when($tab === 'main', function ($query) {
+            $query->where('tenant_id', 0)->where('sub_tenant_id', 0);
+        })
+        ->when($tab === 'storefront', function ($query) {
+            $query->where('sub_tenant_id', '>', 0);
+        })
+        ->when($tab === 'storefront' && $storefront_id, function ($query) use ($storefront_id) {
+            $query->where('sub_tenant_id', (int) $storefront_id);
+        })
 
         ->when(isset($request->join_date) , function ($query) use($join_date_start, $join_date_end) {
             $query->WhereBetween('created_at', [$join_date_start, $join_date_end]);

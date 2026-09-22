@@ -52,10 +52,9 @@
                                     alt="">
                                 <div
                                     class="d-flex align-items-center gap-2 justify-content-between flex-grow-1">
-                                    PHP Version 8.2 +
+                                    PHP Version 8.3 +
 
-                                    @php($phpVersion = number_format((float)phpversion(), 2, '.', ''))
-                                    @if ($phpVersion >= 8.2)
+                                    @if ($phpVersion >= 8.3)
                                         <img width="20"
                                              src="{{asset('public/assets/installation')}}/assets/img/svg-icons/check.png"
                                              alt="">
@@ -63,7 +62,7 @@
                                         <span class="cursor-pointer" data-bs-toggle="tooltip"
                                               data-bs-placement="top" data-bs-custom-class="custom-tooltip"
                                               data-bs-html="true" data-bs-delay='{"hide":1000}'
-                                              data-bs-title="Your php version in server is lower than 8.2 version
+                                              data-bs-title="Your php version in server is lower than 8.3 version
                                                    <a href='https://support.cpanel.net/hc/en-us/articles/360052624713-How-to-change-the-PHP-version-for-a-domain-in-cPanel-or-WHM'
                                                    class='d-block' target='_blank'>See how to update</a> ">
                                                 <img
@@ -116,7 +115,7 @@
                                         <span class="cursor-pointer" data-bs-toggle="tooltip"
                                               data-bs-placement="top" data-bs-custom-class="custom-tooltip"
                                               data-bs-html="true" data-bs-delay='{"hide":1000}'
-                                              data-bs-title="...">
+                                              data-bs-title="Write permission is required for: <br> {{ $fileChecks['db_file_write_perm']['path'] }}">
                                                 <img
                                                     src="{{asset('public/assets/installation')}}/assets/img/svg-icons/info.svg"
                                                     class="svg text-danger" alt="">
@@ -142,7 +141,7 @@
                                         <span class="cursor-pointer" data-bs-toggle="tooltip"
                                               data-bs-placement="top" data-bs-custom-class="custom-tooltip"
                                               data-bs-html="true" data-bs-delay='{"hide":1000}'
-                                              data-bs-title="...">
+                                              data-bs-title="Write permission is required for: <br> {{ $fileChecks['config_file_write_perm']['path'] }}">
                                                 <img
                                                     src="{{asset('public/assets/installation')}}/assets/img/svg-icons/info.svg"
                                                     class="svg text-danger" alt="">
@@ -169,7 +168,7 @@
                                         <span class="cursor-pointer" data-bs-toggle="tooltip"
                                               data-bs-placement="top" data-bs-custom-class="custom-tooltip"
                                               data-bs-html="true" data-bs-delay='{"hide":1000}'
-                                              data-bs-title="...">
+                                              data-bs-title="Write permission is required for: <br> {{ $fileChecks['routes_file_write_perm']['path'] }}">
                                                 <img
                                                     src="{{asset('public/assets/installation')}}/assets/img/svg-icons/info.svg"
                                                     class="svg text-danger" alt="">
@@ -185,7 +184,7 @@
             <div class="text-center">
                 <p>All the permissions are provided successfully ? </p>
 
-                @if ($permission['curl_enabled'] == 1 && $permission['db_file_write_perm'] == 1 &&  $permission['config_file_write_perm'] == 1 && $permission['routes_file_write_perm'] == 1 && $phpVersion >= 8.2)
+                @if ($permission['curl_enabled'] == 1 && $permission['db_file_write_perm'] == 1 &&  $permission['config_file_write_perm'] == 1 && $permission['routes_file_write_perm'] == 1 && $phpVersion >= 8.3)
                     <a href="{{ route('step2',['token'=>bcrypt('step_2')]) }}" class="btn btn-dark px-sm-5">Proceed
                         Next</a>
                 @endif

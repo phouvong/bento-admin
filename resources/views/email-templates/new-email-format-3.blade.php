@@ -335,10 +335,11 @@ $site_direction = \App\CentralLogics\Helpers::system_default_direction();
                                                                 </td>
                                                                 <td class="text-right p-2 px-3">
                                                                     <h4>
-                                                                        {{ \App\CentralLogics\Helpers::format_currency($order->delivery_charge) }}
+                                                                        {{ \App\CentralLogics\Helpers::format_currency(\App\CentralLogics\DeliveryFeeLogic::proDeliveryBreakdown($order)['original_fee']) }}
                                                                     </h4>
                                                                 </td>
                                                             </tr>
+                                                            @include('partials.pro-delivery-discount-row', ['order' => $order, 'layout' => 'tr'])
                                                         @else
                                                             @foreach ($order->details as $key => $details)
                                                                 <?php
@@ -468,6 +469,18 @@ $site_direction = \App\CentralLogics\Helpers::system_default_direction();
                                                                                 {{ \App\CentralLogics\Helpers::format_currency($order->coupon_discount_amount) }}
                                                                             </td>
                                                                         </tr>
+
+                                                                        @if ($order->extra_discount_amount > 0)
+                                                                          <tr>
+                                                                            <td style="width: 40%"></td>
+                                                                            <td class="p-1 px-3">
+                                                                                {{ translate('messages.extra_discount') }}
+                                                                            </td>
+                                                                            <td class="text-right p-1 px-3">
+                                                                                {{ \App\CentralLogics\Helpers::format_currency($order->extra_discount_amount) }}
+                                                                            </td>
+                                                                        </tr>
+                                                                        @endif
                                                                         @if ($order?->ref_bonus_amount > 0)
                                                                             <tr>
                                                                                 <td style="width: 40%"></td>
@@ -476,6 +489,17 @@ $site_direction = \App\CentralLogics\Helpers::system_default_direction();
                                                                                 </td>
                                                                                 <td class="text-right p-1 px-3">
                                                                                     {{ \App\CentralLogics\Helpers::format_currency($order->ref_bonus_amount) }}
+                                                                                </td>
+                                                                            </tr>
+                                                                        @endif
+                                                                        @if (($order->orderProDiscount?->amount_saved ?? 0) > 0)
+                                                                            <tr>
+                                                                                <td style="width: 40%"></td>
+                                                                                <td class="p-1 px-3">
+                                                                                    {{ translate('messages.Pro_Discount') }}
+                                                                                </td>
+                                                                                <td class="text-right p-1 px-3">
+                                                                                    {{ \App\CentralLogics\Helpers::format_currency($order->orderProDiscount->amount_saved) }}
                                                                                 </td>
                                                                             </tr>
                                                                         @endif
@@ -520,9 +544,10 @@ $site_direction = \App\CentralLogics\Helpers::system_default_direction();
                                                                                 {{ translate('messages.delivery_charge') }}
                                                                             </td>
                                                                             <td class="text-right p-1 px-3">
-                                                                                {{ \App\CentralLogics\Helpers::format_currency($order->delivery_charge) }}
+                                                                                {{ \App\CentralLogics\Helpers::format_currency(\App\CentralLogics\DeliveryFeeLogic::proDeliveryBreakdown($order)['original_fee']) }}
                                                                             </td>
                                                                         </tr>
+                                                                        @include('partials.pro-delivery-discount-row', ['order' => $order, 'layout' => 'tr3'])
                                                                         @endif
 
 

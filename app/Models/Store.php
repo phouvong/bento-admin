@@ -5,7 +5,9 @@ namespace App\Models;
 use App\CentralLogics\Helpers;
 use App\Mail\SubscriptionDeadLineWarning;
 use App\Scopes\ZoneScope;
+use App\Traits\ItemFilter;
 use App\Traits\ReportFilter;
+use Illuminate\Contracts\Database\Query\Expression as ExpressionContract;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -24,8 +26,12 @@ use Modules\Rental\Entities\Vehicle;
 use Modules\Rental\Entities\VehicleDriver;
 use Modules\Rental\Entities\VehicleIdentity;
 use Modules\Rental\Entities\VehicleReview;
+use Modules\Service\Entities\Service;
+use Modules\Service\Entities\ServiceBooking;
+use Modules\Service\Entities\ServiceReview;
 use Modules\TaxModule\Entities\OrderTax;
-use Illuminate\Support\Str;
+use App\Traits\GeneratesSlug;
+use App\Traits\HandlesMissingAddonRelations;
 
 /**
  * Class Store
@@ -84,7 +90,7 @@ use Illuminate\Support\Str;
  */
 class Store extends Model
 {
-    use ReportFilter, DemoMaskable;
+    use ReportFilter, DemoMaskable, GeneratesSlug, ItemFilter, HandlesMissingAddonRelations;
     /**
      * The attributes that are mass assignable.
      *
@@ -190,7 +196,7 @@ class Store extends Model
     /**
      * @var string[]
      */
-    protected $appends = ['gst_status', 'gst_code', 'logo_full_url', 'cover_photo_full_url', 'meta_image_full_url', 'tin_certificate_image_full_url'];
+    protected $appends = ['gst_status', 'gst_code', 'logo_full_url', 'cover_photo_full_url', 'meta_image_full_url', 'tin_certificate_image_full_url', 'ad'];
 
     /**
      * The attributes that should be hidden for arrays.
@@ -263,6 +269,15 @@ class Store extends Model
         }
 
         return $this->reviews_section;
+    }
+
+    public function canAccessServiceReviews(): bool
+    {
+        if ($this->store_business_model == 'subscription' && isset($this->store_sub)) {
+            return (bool) $this->store_sub->review;
+        }
+
+        return (bool) ($this->storeConfig?->show_reviews_provider_panel ?? true);
     }
 
     public function getIsValidSubscriptionAttribute(): mixed
@@ -355,6 +370,13 @@ class Store extends Model
         return Helpers::get_full_url('store', $value, 'public');
     }
 
+
+    public function wallet()
+    {
+        return $this->hasOne(StoreWallet::class,'vendor_id','vendor_id');
+    }
+
+
     public function package(): BelongsTo
     {
         return $this->belongsTo(SubscriptionPackage::class, 'package_id');
@@ -395,9 +417,67 @@ class Store extends Model
         return $this->belongsTo(Module::class);
     }
 
+    public function advertisements(): HasMany
+    {
+        return $this->hasMany(Advertisement::class)->valid();
+    }
+
+    public function getAdAttribute(): int
+    {
+        if (array_key_exists('ad', $this->attributes)) {
+            return (int) $this->attributes['ad'];
+        }
+
+        if ($this->relationLoaded('advertisements')) {
+            return $this->advertisements->isNotEmpty() ? 1 : 0;
+        }
+
+        return $this->advertisements()->exists() ? 1 : 0;
+    }
+
     public function items(): HasMany
     {
         return $this->hasMany(Item::class);
+    }
+
+    public function visibleItems(): HasMany
+    {
+        return $this->items()->where('status', 1)->where('is_approved', 1);
+    }
+
+    public static function topItemsByIds(array $storeIds, int $limit = 5): \Illuminate\Support\Collection
+    {
+        $storeIds = array_values(array_unique(array_filter(array_map('intval', $storeIds))));
+        if (empty($storeIds)) {
+            return collect();
+        }
+
+        return Item::active()
+            ->whereIn('store_id', $storeIds)
+            ->orderBy('store_id')
+            ->orderByDesc('order_count')
+            ->get(['id', 'name', 'image', 'store_id', 'price', 'discount', 'discount_type', 'order_count', 'avg_rating'])
+            ->groupBy('store_id')
+            ->map(fn ($g) => $g->take(max(1, $limit))->values());
+    }
+
+    public static function activeItemCountsByIds(array $storeIds): \Illuminate\Support\Collection
+    {
+        $storeIds = array_values(array_unique(array_filter(array_map('intval', $storeIds))));
+        if (empty($storeIds)) {
+            return collect();
+        }
+
+        return Item::active()
+            ->whereIn('store_id', $storeIds)
+            ->selectRaw('store_id, COUNT(*) as items_count')
+            ->groupBy('store_id')
+            ->pluck('items_count', 'store_id');
+    }
+
+    public function storeCategories(): HasMany
+    {
+        return $this->hasMany(StoreCategory::class);
     }
 
     public function itemsForReorder(): HasMany
@@ -433,6 +513,15 @@ class Store extends Model
     public function trips(): HasMany
     {
         return $this->hasMany(Trips::class, 'provider_id');
+    }
+
+    public function serviceBookings(): HasMany
+    {
+        if (! service_addon_active()) {
+            return $this->missingAddonHasMany();
+        }
+
+        return $this->hasMany(ServiceBooking::class, 'provider_id');
     }
 
     public function todays_trip_earning()
@@ -485,6 +574,46 @@ class Store extends Model
         return $this->hasMany(VehicleReview::class, 'provider_id');
     }
 
+    public function service_reviews(): HasMany
+    {
+        if (! service_addon_active()) {
+            return $this->missingAddonHasMany();
+        }
+
+        return $this->hasMany(ServiceReview::class, 'store_id');
+    }
+
+    /**
+     * Service-module catalog: a service store's offerings live in the `services` table
+     * (Modules\Service\Entities\Service), the service equivalent of items().
+     */
+    public function services(): HasMany
+    {
+        if (! service_addon_active()) {
+            return $this->missingAddonHasMany();
+        }
+
+        return $this->hasMany(Service::class, 'store_id');
+    }
+
+    /**
+     * Catalog from the module-appropriate source: a service store uses its own Service rows
+     * (services), every other module keeps the shared item-based items().
+     */
+    public function module_items()
+    {
+        return $this->module?->module_type === 'service' ? $this->services() : $this->items();
+    }
+
+    /**
+     * Reviews from the module-appropriate source: a service store uses its own ServiceReview rows
+     * (service_reviews), every other module keeps the shared item-based reviews().
+     */
+    public function module_reviews()
+    {
+        return $this->module?->module_type === 'service' ? $this->service_reviews() : $this->reviews();
+    }
+
     public function reviews_comments()
     {
         return $this->reviews()->whereNotNull('comment');
@@ -504,7 +633,7 @@ class Store extends Model
 
     public function getScheduleOrderAttribute($value): bool
     {
-        return (bool) (\App\CentralLogics\Helpers::schedule_order() ? $value : 0);
+        return (bool) (Helpers::schedule_order() ? $value : 0);
     }
 
     public function getRatingAttribute($value): array
@@ -578,11 +707,17 @@ class Store extends Model
 
     public function scopeWithOpen($query, $longitude, $latitude): void
     {
+        $longitude = $longitude ? $longitude : 0;
+        $latitude = $latitude ? $latitude : 0;
+
         $query->selectRaw('*, IF(((select count(*) from `store_schedule` where `stores`.`id` = `store_schedule`.`store_id` and `store_schedule`.`day` = '.now()->dayOfWeek.' and `store_schedule`.`opening_time` < "'.now()->format('H:i:s').'" and `store_schedule`.`closing_time` >"'.now()->format('H:i:s').'") > 0), true, false) as open,ST_Distance_Sphere(point(longitude, latitude),point('.$longitude.', '.$latitude.')) as distance');
     }
 
     public function scopeWithOpenWithDeliveryTime($query, $longitude, $latitude): void
     {
+        $longitude = $longitude ? $longitude : 0;
+        $latitude = $latitude ? $latitude : 0;
+
         $query->selectRaw('*, IF(((select count(*) from `store_schedule` where `stores`.`id` = `store_schedule`.`store_id` and `store_schedule`.`day` = '.now()->dayOfWeek.' and `store_schedule`.`opening_time` < "'.now()->format('H:i:s').'" and `store_schedule`.`closing_time` >"'.now()->format('H:i:s').'") > 0), true, false) as open,ST_Distance_Sphere(point(longitude, latitude),point('.$longitude.', '.$latitude.')) as distance, CASE WHEN delivery_time IS NULL THEN 9999  WHEN delivery_time LIKE  "%hours%" THEN CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(delivery_time, "-", 1), " ", 1) AS UNSIGNED) * 60 WHEN delivery_time LIKE "%min%" OR delivery_time LIKE "%minute%" THEN CAST(SUBSTRING_INDEX(delivery_time, "-", 1) AS UNSIGNED) ELSE 9999 END AS min_delivery_time');
     }
 
@@ -674,25 +809,341 @@ class Store extends Model
 
     }
 
-    private function generateSlug($name): string
+    public function scopeApplyFilters($query, array $filters)
     {
-        $slug = Str::slug($name);
-        if ($max_slug = static::where('slug', 'like', "{$slug}%")->latest('id')->value('slug')) {
+        return $query->when(isset($filters['filter_by']) && is_array($filters['filter_by']), function ($q) use ($filters) {
+            foreach ($filters['filter_by'] as $item) {
+                $this->applyStoreFilterAction($q, $item);
+            }
+        });
+    }
 
-            if ($max_slug == $slug) {
-                return "{$slug}-2";
+    public function scopeApplySorting($query, $sortBy)
+    {
+        return $query->when($sortBy && $sortBy !== 'default', function ($q) use ($sortBy) {
+            $this->applySortValue($q, $sortBy);
+        });
+    }
+
+    public function scopeApplyRating($query, $request)
+    {
+        if (!$request) {
+            return $query;
+        }
+
+        $ratingPlus = $request->rating_plus ?? null;
+        if ($ratingPlus && !is_array($ratingPlus)) {
+            $ratingPlus = str_getcsv(trim($ratingPlus, "[]"), ',');
+        }
+        $ratingPlus = is_array($ratingPlus)
+            ? array_values(array_filter(array_map('intval', $ratingPlus), fn ($v) => $v > 0))
+            : [];
+
+        return $query->when($request->rating == 1, function ($query) {
+            return $query->withCount('reviews')->orderBy('reviews_count', 'desc');
+        })
+        ->when((!empty($ratingPlus) || $request->rating_count || $request->rating_1 == 1 || $request->rating_1_plus == 1 || $request->rating_2 == 1 || $request->rating_2_plus == 1 || $request->rating_3 == 1 || $request->rating_3_plus == 1 || $request->rating_4 == 1 || $request->rating_4_plus == 1 || $request->rating_5 == 1), function ($query) use ($request, $ratingPlus) {
+            $query->withItemRatingAvg('avg_rating_all')
+            ->when(!empty($ratingPlus), function ($query) use ($ratingPlus) {
+                $query->having('avg_rating_all', '>=', min($ratingPlus));
+            })
+            ->when($request->rating_count, function ($query) use ($request) {
+                $query->having('avg_rating_all', '>=', $request->rating_count);
+            })
+            ->when(($request->rating_1 == 1 || $request->rating_1_plus == 1), function ($query) {
+                $query->having('avg_rating_all', '>=', 1);
+            })
+            ->when(($request->rating_2 == 1 || $request->rating_2_plus == 1), function ($query) {
+                $query->having('avg_rating_all', '>=', 2);
+            })
+            ->when(($request->rating_3 == 1 || $request->rating_3_plus == 1), function ($query) {
+                $query->having('avg_rating_all', '>=', 3);
+            })
+            ->when(($request->rating_4 == 1 || $request->rating_4_plus == 1), function ($query) {
+                $query->having('avg_rating_all', '>=', 4);
+            })
+            ->when($request->rating_3_plus == 1, function ($query) {
+                $query->having('avg_rating_all', '>', 3);
+            })
+            ->when(($request->rating_4_plus == 1 && !($request->rating_5 == 1 || $request->rating_3_plus == 1) || ($request->rating_4_plus == 1 && $request->rating_5 == 1 && $request->rating_3_plus != 1)), function ($query) {
+                $query->having('avg_rating_all', '>', 4);
+            })
+            ->when($request->rating_5 == 1 && !($request->rating_4_plus == 1 || $request->rating_3_plus == 1), function ($query) {
+                $query->having('avg_rating_all', '>=', 5);
+            });
+        });
+    }
+
+    public function scopeApplyPriceRange($query, $request)
+    {
+        if (!$request) {
+            return $query;
+        }
+
+        $price = $request->price ?? null;
+        if (is_string($price)) {
+            $price = str_replace(['[', ']'], '', $price);
+            $price = explode(',', $price);
+        }
+
+        return $query->when(($price && count($price) == 2 && is_numeric($price[0]) && is_numeric($price[1])) || $request->min_price || $request->max_price, function ($query) use ($request) {
+            $query->whereHas('items', function ($q) use ($request) {
+                $q->applyPriceRange($request);
+            });
+        });
+    }
+
+
+    public function scopeApplyStoreFilter($query, array $filters)
+    {
+        $handlers = [
+            'search' => 'searchFilter',
+            'sort_by' => 'sortByFilter',
+            'quick_action' => 'quickActionFilter',
+            'price_min' => 'priceMinFilter',
+            'price_max' => 'priceMaxFilter',
+            'type' => 'typeFilter',
+            'category_ids' => 'categoryIdsFilter',
+            'rating' => 'ratingFilter',
+        ];
+
+        foreach ($handlers as $key => $scope) {
+            if (! array_key_exists($key, $filters)) {
+                continue;
             }
 
-            $max_slug = explode('-', $max_slug);
-            $count = array_pop($max_slug);
-            if (isset($count) && is_numeric($count)) {
-                $max_slug[] = ++$count;
+            $value = $filters[$key];
+            if ($value === null || $value === '' || $value === []) {
+                continue;
+            }
 
-                return implode('-', $max_slug);
+            $query->{$scope}($value);
+        }
+
+        return $query;
+    }
+
+    public function scopeSortByFilter($query, $value): void
+    {
+        $this->applySortValue($query, $value);
+    }
+
+    public function scopeQuickActionFilter($query, $value): void
+    {
+        foreach (static::normalizeFilterValues($value) as $action) {
+            match ($action) {
+                'offers' => $query->whereHas('discount', function ($q) {
+                    $q->validate();
+                }),
+                'free_delivery' => $query->where('free_delivery', 1),
+                'top_rated' => $query
+                    ->withItemRatingAvg('top_rated_avg')
+                    ->having('top_rated_avg', '>', 0)
+                    ->reorder()
+                    ->orderByDesc('top_rated_avg'),
+                'nearby' => $query->reorder()->orderBy('distance', 'asc'),
+                'verified_seller' => $query
+                    ->whereHas('storeConfig', fn ($q) => $q->where('verified_seller', 1))
+                    ->reorder()
+                    ->orderBy('name', 'asc'),
+                'popular' => $query
+                    ->withCount('orders')
+                    ->reorder()
+                    ->orderByDesc('orders_count'),
+                'newly_joined' => $query->reorder()->latest(),
+                default => null,
+            };
+        }
+    }
+
+    protected function applySortValue($query, $sortBy): void
+    {
+        $sortBy = self::normalizeSortValue($sortBy);
+
+        match ($sortBy) {
+            'fast_delivery' => $query->reorder()->orderBy('min_delivery_time'),
+            'a_to_z' => $query->reorder()->orderBy('name', 'asc'),
+            'z_to_a' => $query->reorder()->orderBy('name', 'desc'),
+            'distance' => $query->reorder()->orderBy('distance'),
+            'high_rated' => $query->withItemRatingAvg('avg_rating_all')->reorder()->orderBy('avg_rating_all', 'desc'),
+            'price_low_to_high' => $query->withItemPriceAggregate('MIN', 'min_item_price')->reorder()->orderBy('min_item_price', 'asc'),
+            'price_high_to_low' => $query->withItemPriceAggregate('MAX', 'max_item_price')->reorder()->orderBy('max_item_price', 'desc'),
+            default => null,
+        };
+    }
+
+    protected function applyStoreFilterAction($query, string $action): void
+    {
+        $action = $action === 'newly_joined' ? 'new_arrivals' : $action;
+
+        match ($action) {
+            'free_delivery' => $query->where('free_delivery', 1),
+            'discounted' => $query->whereHas('discount', function ($q) {
+                $q->validate();
+            }),
+            'popular' => $query->withCount('orders')->orderBy('orders_count', 'desc'),
+            'new_arrivals' => $query->latest(),
+            'top_rated' => $query->withItemRatingAvg('avg_rating_all')->having('avg_rating_all', '>', 0)->orderBy('avg_rating_all', 'desc'),
+            'veg' => $query->where('veg', 1),
+            'non_veg' => $query->where('non_veg', 1),
+            'currently_available' => $query->whereHas('schedules', function ($q) {
+                $q->where('day', now()->dayOfWeek)
+                    ->where('opening_time', '<', now()->format('H:i:s'))
+                    ->where('closing_time', '>', now()->format('H:i:s'));
+            }),
+            'halal' => $query->whereHas('items', function ($q) {
+                $q->where('is_halal', 1);
+            }),
+            'coupon' => $query->has('activeCoupons'),
+            'currently_open' => $query->having('open', '>', 0),
+            'nearby' => $query->orderBy('distance'),
+            'fast_delivery' => $query->orderBy('min_delivery_time'),
+            'offers' => $query->whereHas('items', function ($q) {
+                $q->Discounted();
+            }),
+            'verified_seller' => $query->whereHas('storeConfig', function ($q) {
+                $q->where('verified_seller', 1);
+            }),
+            default => null,
+        };
+    }
+
+    public function scopePriceMinFilter($query, $value): void
+    {
+        $query->whereHas('items', fn ($q) => $q->where('price', '>=', (float) $value));
+    }
+
+    public function scopePriceMaxFilter($query, $value): void
+    {
+        $query->whereHas('items', fn ($q) => $q->where('price', '<=', (float) $value));
+    }
+
+    public function scopeTypeFilter($query, $value): void
+    {
+        $module_type = config('module.current_module_data')['module_type'] ?? null;
+        if (! $module_type) {
+            return;
+        }
+
+        $halal_supported = (bool) config("module.{$module_type}.halal", false);
+        $veg_supported = (bool) config("module.{$module_type}.veg_non_veg", false);
+
+        if (! $halal_supported && ! $veg_supported) {
+            return;
+        }
+
+        $allowed = array_filter(static::normalizeFilterValues($value), function ($t) use ($halal_supported, $veg_supported) {
+            return ($t === 'halal' && $halal_supported)
+                || (($t === 'veg' || $t === 'non_veg') && $veg_supported);
+        });
+
+        if (empty($allowed)) {
+            return;
+        }
+
+        $query->where(function ($query) use ($allowed) {
+            foreach ($allowed as $t) {
+                match ($t) {
+                    'halal' => $query->orWhereHas('storeConfig', fn ($q) => $q->where('halal_tag_status', 1)),
+                    'veg' => $query->orWhere('veg', 1),
+                    'non_veg' => $query->orWhere('non_veg', 1),
+                    default => null,
+                };
+            }
+        });
+    }
+
+    public function scopeCategoryIdsFilter($query, $value): void
+    {
+        $ids = array_filter(array_map('intval', static::normalizeFilterValues($value)));
+        if (empty($ids)) {
+            return;
+        }
+
+        $query->whereHas('items.category', function ($q) use ($ids) {
+            $q->whereIn('id', $ids)->orWhereIn('parent_id', $ids);
+        });
+    }
+
+    public function scopeRatingFilter($query, $value): void
+    {
+        $exact5 = self::ratingIsExact($value);
+        $threshold = self::ratingThreshold($value);
+
+        if ($threshold <= 0) {
+            return;
+        }
+
+        $query->withItemRatingAvg('store_rating_avg')
+            ->having('store_rating_avg', $exact5 ? '=' : '>=', $threshold);
+    }
+
+    public function scopeSearchFilter($query, $value): void
+    {
+        $term = trim(is_array($value)
+            ? implode(' ', array_filter($value, fn ($v) => ! is_array($v) && $v !== null && $v !== ''))
+            : (string) $value);
+        if ($term === '') {
+            return;
+        }
+
+        $relationships = [
+            'translations' => 'value',
+            'visibleItems' => 'name',
+            'visibleItems.nutritions' => 'nutrition',
+            'visibleItems.allergies' => 'allergy',
+            'visibleItems.generic' => 'generic_name',
+            'visibleItems.ecommerce_item_details.brand' => 'name',
+            'visibleItems.pharmacy_item_details.common_condition' => 'name',
+        ];
+
+        $query->search(keywords: $term, relations: $relationships);
+    }
+
+    public function scopeWithItemRatingAvg($query, string $alias = 'avg_rating_all'): void
+    {
+        if (static::hasSelectAlias($query, $alias)) {
+            return;
+        }
+
+        $query->selectSub(function ($q) {
+            $q->selectRaw('AVG(reviews.rating)')
+                ->from('reviews')
+                ->join('items', 'items.id', '=', 'reviews.item_id')
+                ->whereColumn('items.store_id', 'stores.id')
+                ->groupBy('items.store_id');
+        }, $alias);
+    }
+
+    protected static function hasSelectAlias($query, string $alias): bool
+    {
+        $base = $query->getQuery();
+        $grammar = $base->getGrammar();
+        $suffix = ' as '.$grammar->wrap($alias);
+
+        foreach ($base->columns ?? [] as $column) {
+            $sql = $column instanceof ExpressionContract ? $column->getValue($grammar) : $column;
+            if (is_string($sql) && str_ends_with($sql, $suffix)) {
+                return true;
             }
         }
 
-        return $slug;
+        return false;
+    }
+
+    public function scopeWithItemPriceAggregate($query, string $aggregate, string $alias): void
+    {
+        if (static::hasSelectAlias($query, $alias)) {
+            return;
+        }
+
+        $aggregate = strtoupper($aggregate) === 'MAX' ? 'MAX' : 'MIN';
+
+        $query->selectSub(function ($q) use ($aggregate) {
+            $q->selectRaw("{$aggregate}(price)")
+                ->from('items')
+                ->whereColumn('items.store_id', 'stores.id');
+        }, $alias);
     }
 
     public function storage()
@@ -760,6 +1211,11 @@ class Store extends Model
     public function storeConfig(): HasOne
     {
         return $this->hasOne(StoreConfig::class);
+    }
+
+    public function getVerifiedSellerAttribute(): int
+    {
+        return Helpers::get_verified_seller_status($this, $this->storeConfig);
     }
 
     /**

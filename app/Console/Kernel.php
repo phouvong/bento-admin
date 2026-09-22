@@ -25,6 +25,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        // Personalization schedule moved to Modules/AI/app/Providers/AIServiceProvider.php
     }
 
     /**

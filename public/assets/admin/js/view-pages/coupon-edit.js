@@ -4,48 +4,53 @@ $(document).on('ready', function () {
     $('#discount').data('previous-value', $('#discount').val());
 
 
-    $('#discount_type').on('change', function() {
+    $('#discount_type').on('change', function () {
         discount_check();
     });
-    $('#discount').on('click', function() {
+    $('#discount').on('click', function () {
         discount_check();
     });
 
 
-    function discount_check(){
-        if($('#discount_type').val() == 'amount')
-        {
-            $('#max_discount').attr("readonly","true");
+    function discount_check() {
+        if ($('#discount_type').val() == 'amount') {
+            $('#max_discount').attr("readonly", "true").attr("min", 0).removeAttr("required");
             $('#max_discount').val(0);
-            $('#discount').attr('max', $('#min_purchase').val() || 0);
+            let minPurchase = parseFloat($('#min_purchase').val());
+            if (!isNaN(minPurchase) && minPurchase > 0) {
+                $('#discount').attr('max', minPurchase);
+            } else {
+                $('#discount').removeAttr('max');
+            }
             validateDiscount();
         }
-        else
-        {
-            if($('#discount_type').val() == 'percent'){
-                $('#max_discount').removeAttr("readonly");
+        else {
+            if ($('#discount_type').val() == 'percent') {
+                $('#max_discount').removeAttr("readonly").attr("min", "0.01").attr("required", "required");
+                if ((parseFloat($('#max_discount').val()) || 0) <= 0) {
+                    $('#max_discount').val('');
+                }
             }
             $('#discount').attr('max', 100);
         }
     }
 
     let module_id = 0;
-    $('#module_select').on('change', function(){
-        if($(this).val())
-        {
+    $('#module_select').on('change', function () {
+        if ($(this).val()) {
             module_id = $(this).val();
         }
     });
 });
 $("#date_from").on("change", function () {
-    $('#date_to').attr('min',$(this).val());
+    $('#date_to').attr('min', $(this).val());
 });
 
 $("#date_to").on("change", function () {
-    $('#date_from').attr('max',$(this).val());
+    $('#date_from').attr('max', $(this).val());
 });
 
-$('#coupon_type').on('change',function () {
+$('#coupon_type').on('change', function () {
     let coupon_type = $(this).val();
     coupon_type_change(coupon_type)
 })
@@ -53,7 +58,7 @@ $('#coupon_type').on('change',function () {
 function coupon_type_change(coupon_type) {
     $('#zone_wise, #store_wise, #customer_wise').hide();
     $('#coupon_limit').attr("readonly", false);
-     $('#limit_for_same_user').removeClass('d-none');
+    $('#limit_for_same_user').removeClass('d-none');
     switch (coupon_type) {
         case 'zone_wise':
             $('#zone_wise').show();
@@ -69,11 +74,26 @@ function coupon_type_change(coupon_type) {
             $('#limit_for_same_user').addClass('d-none');
             break;
 
+        case 'pro_customer':
+            $('#customer_wise').hide();
+            $('#select_customer').val(['all']).trigger('change');
+            break;
+
         default:
             $('#customer_wise').show();
             $('#coupon_limit').val($('#coupon_limit').data('value')).attr("readonly", false);
             $('#limit_for_same_user').removeClass('d-none');
             break;
+    }
+
+    // Pro Customer coupons apply to the customer's subscription window, not a fixed campaign
+    // date range — hide Start/Expire Date and stop requiring them for this type.
+    if (coupon_type === 'pro_customer') {
+        $('#start_date_wrap, #expire_date_wrap').hide();
+        $('#date_from, #date_to').val('').removeAttr('required');
+    } else {
+        $('#start_date_wrap, #expire_date_wrap').show();
+        $('#date_from, #date_to').attr('required', true);
     }
 
     if (coupon_type === 'free_delivery') {
@@ -89,12 +109,15 @@ function coupon_type_change(coupon_type) {
     }
 
     if ($('#discount_type').val() === 'amount') {
-        $('#max_discount').val(0).attr("readonly", true);
-    } else if($('#discount_type').val() === 'percent') {
-        $('#max_discount').removeAttr("readonly");
+        $('#max_discount').val(0).attr("readonly", true).attr("min", 0).removeAttr("required");
+    } else if ($('#discount_type').val() === 'percent') {
+        $('#max_discount').removeAttr("readonly").attr("min", "0.01").attr("required", "required");
+        if ((parseFloat($('#max_discount').val()) || 0) <= 0) {
+            $('#max_discount').val('');
+        }
     }
 }
-$('#reset_btn').click(function(){
+$('#reset_btn').click(function () {
     location.reload(true);
 })
 $('#select_customer').on('change', function () {
@@ -106,15 +129,33 @@ $('#select_customer').on('change', function () {
     } else {
         $('.select_customer_option').prop('disabled', false);
     }
-    });
-    function validateDiscount() {
-        let discountType = $('#discount_type').val();
-        let discountInput = $('#discount');
-        let minPurchase = parseFloat($('#min_purchase').val()) || 0;
-        let discountValue = parseFloat(discountInput.val()) || 0;
+});
+function validateDiscount() {
+    let discountType = $('#discount_type').val();
+    let discountInput = $('#discount');
+    let minPurchase = parseFloat($('#min_purchase').val()) || 0;
+    let discountValue = parseFloat(discountInput.val()) || 0;
 
-        if (discountType === 'amount' && discountValue > minPurchase) {
-            discountInput.val(discountValue);
-            toastr.error($('#min-purchase-toast').val());
-        }
+    if (discountType === 'amount' && discountValue > minPurchase) {
+        discountInput.val(discountValue);
+        toastr.error($('#min-purchase-toast').val());
     }
+}
+
+$(document).on('click', '#generate_code', function () {
+    let title = $('#default_title').val();
+    let url = $(this).data('url');
+    $.get({
+        url: url,
+        data: {
+            title: title
+        },
+        success: function (data) {
+            $('input[name="code"]').val(data);
+            toastr.success($('#generate_code').data('success-message'));
+        },
+        error: function (error) {
+            console.log(error);
+        }
+    });
+});

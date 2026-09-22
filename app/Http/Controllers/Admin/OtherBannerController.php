@@ -13,9 +13,19 @@ use Illuminate\Support\Facades\Config;
 
 class OtherBannerController extends Controller
 {
+    const COMBINED_PROMOTIONAL_BANNER_MODULE_TYPES = ['grocery', 'food', 'ecommerce', 'pharmacy', 'service'];
+
     function promotional_index()
     {
         $module_type = Config::get('module.current_module_type');
+
+        if (in_array($module_type, self::COMBINED_PROMOTIONAL_BANNER_MODULE_TYPES)) {
+            $module_id = Config::get('module.current_module_id');
+            $bottom_section_banner = ModuleWiseBanner::where('module_id', $module_id)->where('key', 'bottom_section_banner')->first();
+
+            return view('admin-views.other-banners.promotional-index', compact('bottom_section_banner'));
+        }
+
         return view("admin-views.other-banners.{$module_type}-index");
     }
     function promotional_why_choose()
@@ -81,7 +91,7 @@ class OtherBannerController extends Controller
 
     public function promotional_status(Request $request)
     {
-        if (env('APP_MODE') == 'demo' && $request->id == 1) {
+        if (getEnvMode() == 'demo' && $request->id == 1) {
             Toastr::warning('Sorry!You can not inactive this banner!');
             return back();
         }
@@ -94,7 +104,7 @@ class OtherBannerController extends Controller
 
     public function promotional_destroy(ModuleWiseBanner $banner)
     {
-        if (env('APP_MODE') == 'demo' && $banner->id == 1) {
+        if (getEnvMode() == 'demo' && $banner->id == 1) {
             Toastr::warning(translate('messages.you_can_not_delete_this_banner_please_add_a_new_banner_to_delete'));
             return back();
         }
@@ -152,7 +162,7 @@ class OtherBannerController extends Controller
 
     public function why_choose_status(Request $request)
     {
-        if (env('APP_MODE') == 'demo' && $request->id == 1) {
+        if (getEnvMode() == 'demo' && $request->id == 1) {
             Toastr::warning('Sorry!You can not inactive this banner!');
             return back();
         }
@@ -165,7 +175,7 @@ class OtherBannerController extends Controller
 
     public function why_choose_destroy(ModuleWiseWhyChoose $banner)
     {
-        if (env('APP_MODE') == 'demo' && $banner->id == 1) {
+        if (getEnvMode() == 'demo' && $banner->id == 1) {
             Toastr::warning(translate('messages.you_can_not_delete_this_banner_please_add_a_new_banner_to_delete'));
             return back();
         }
@@ -176,7 +186,7 @@ class OtherBannerController extends Controller
 
     function video_content_store(Request $request)
     {
-        if (env('APP_MODE') == 'demo') {
+        if (getEnvMode() == 'demo') {
             Toastr::info(translate('messages.update_option_is_disable_for_demo'));
             return back();
         }
@@ -264,7 +274,7 @@ class OtherBannerController extends Controller
     }
     function video_image_store(Request $request)
     {
-        if (env('APP_MODE') == 'demo') {
+        if (getEnvMode() == 'demo') {
             Toastr::info(translate('messages.update_option_is_disable_for_demo'));
             return back();
         }

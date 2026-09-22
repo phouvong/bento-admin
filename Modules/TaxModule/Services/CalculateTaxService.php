@@ -23,6 +23,7 @@ class CalculateTaxService
         $orderId = null,
         $countryCode = null,
         $storeId = null,
+        $taxTypeOverride = null,
     ) {
         $systemTaxVat = SystemTaxSetup::with('additionalData')
             ->when($countryCode, fn($query) => $query->where('country_code', $countryCode))
@@ -40,7 +41,7 @@ class CalculateTaxService
 
         try {
 
-            $taxType = $systemTaxVat->tax_type;
+            $taxType = $taxTypeOverride ?? $systemTaxVat->tax_type;
             $totalTaxamount = 0;
             $orderTaxIds = [];
 
@@ -59,7 +60,7 @@ class CalculateTaxService
             $productWiseData = [];
             $addonWiseData = [];
 
-            if (in_array($taxType, ['product_wise', 'category_wise'])) {
+            if (in_array($taxType, ['product_wise', 'category_wise', 'service_wise'])) {
                 [$productWiseData, $addonWiseData] = self::processProductAndAddonTaxes(
                     taxType: $taxType,
                     systemTaxVat: $systemTaxVat,
@@ -169,16 +170,25 @@ class CalculateTaxService
 
         if ($systemTaxVat?->tax_payer == 'parcel') {
             $dataType = self::getClassNames('parcel_category');
+        } else if($systemTaxVat?->tax_payer == 'ride_module'){
+            $dataType = self::getClassNames('ride');
+        } else if($systemTaxVat?->tax_payer == 'service_provider'){
+            $dataType = self::getClassNames(in_array($taxType, ['service_wise', 'product_wise']) ? 'service' : 'category');
         }  else {
             $dataType = self::getClassNames($taxType === 'product_wise' ? 'product' : 'category');
         }
 
-        foreach ($productIds as $product) {
+        $itemWiseTypes = ['product_wise', 'service_wise'];
+        $baseDataType = $dataType;
 
-            if($product['is_campaign_item'] == true ){
-                $dataType = self::getClassNames($taxType === 'product_wise' ? 'campaign_product' : 'category');
+        foreach ($productIds as $product) {
+            // Reset per iteration so a campaign line never leaks its class onto the next (non-campaign) line.
+            $dataType = $baseDataType;
+            if(($product['is_campaign_item'] ?? false) == true ){
+                $campaignClass = $systemTaxVat?->tax_payer == 'service_provider' ? 'campaign_service' : 'campaign_product';
+                $dataType = self::getClassNames(in_array($taxType, $itemWiseTypes) ? $campaignClass : 'category');
             }
-            $dataId = $taxType === 'product_wise' ? $product['id'] : $product['category_id'];
+            $dataId = in_array($taxType, $itemWiseTypes) ? $product['id'] : $product['category_id'];
             $taxVatIds = Taxable::where('taxable_type', $dataType)
                 ->where('taxable_id', $dataId)
                 ->where('system_tax_setup_id', $systemTaxVat->id)
@@ -267,7 +277,7 @@ class CalculateTaxService
                 $orderTaxData->tax_payer = $taxPayer;
                 $orderTaxData->country_code = $countryCode;
                 $orderTaxData->order_id = $orderId;
-                $orderTaxData->order_type = self::getClassNames($taxPayer == 'rental_provider' ?  'trip' : 'order');
+                $orderTaxData->order_type = self::getClassNames($taxPayer == 'rental_provider' ?  'trip' : ($taxPayer == 'ride_module' ? 'ride' : 'order'));
                 $orderTaxData->tax_id = $taxRate->id;
                 $orderTaxData->system_tax_setup_id = $systemTaxVat->id;
                 $orderTaxData->taxable_id = $data_id;
@@ -320,5 +330,72 @@ class CalculateTaxService
         }
 
         return $result;
+    }
+
+    public static function getTaxPercentage($taxPayer = 'ride_module')
+    {
+        $systemTaxVat = SystemTaxSetup::with('additionalData')
+            ->where('tax_payer', $taxPayer)
+            ->where('is_active', 1)
+            ->first();
+
+        if (empty($systemTaxVat) || $systemTaxVat?->is_included) {
+            return ['include' => 1, 'totalTaxPercent' => 0];
+        }
+
+        $taxIds = $systemTaxVat?->tax_ids ?? [];
+        $taxRatePercent = Tax::whereIn('id', $taxIds)->where('is_active', 1)->select('id', 'name', 'tax_rate')->get();
+        $totalTaxPercent = 0;
+        foreach ($taxRatePercent as $taxRate) {
+            $totalTaxPercent += $taxRate->tax_rate;
+        }
+
+        return  ['include' => $systemTaxVat?->is_included, 'totalTaxPercent' => $totalTaxPercent];
+    }
+
+    public static function storeRideTax($ride, $amount)
+    {
+        $systemTaxVat = SystemTaxSetup::with('additionalData')
+            ->where('tax_payer', 'ride_module')
+            ->where('is_active', 1)
+            ->first();
+
+        if (empty($systemTaxVat) || $systemTaxVat?->is_included) {
+            return false;
+        }
+
+        $taxIds = $systemTaxVat?->tax_ids ?? [];
+
+        $taxRatePercent = Tax::whereIn('id', $taxIds)->where('is_active', 1)->select('id', 'name', 'tax_rate')->get();
+        $totalTaxPercent = 0;
+        $totalTaxamount = 0;
+        $orderTaxIds = [];
+        OrderTax::where('order_id', $ride->id)->where('order_type', self::getClassNames('ride'))->delete();
+        foreach ($taxRatePercent as $taxRate) {
+            $taxData = self::getTaxAmount(amount: $amount, taxRatePercent: $taxRate->tax_rate, isInclude: $systemTaxVat->is_included);
+            $totalTaxPercent += $taxRate->tax_rate;
+            $taxAmount = $taxData['taxAmount'];
+            $totalTaxamount += $taxAmount;
+
+            $orderTaxData = new OrderTax();
+            $orderTaxData->tax_name = $taxRate->name;
+            $orderTaxData->tax_type = $systemTaxVat->tax_type;
+            $orderTaxData->tax_on = 'basic';
+            $orderTaxData->tax_rate = $taxRate->tax_rate;
+            $orderTaxData->tax_amount = $taxAmount;
+            $orderTaxData->before_tax_amount = $taxData['originalAmount'];
+            $orderTaxData->after_tax_amount = $taxData['totalAmount'];
+            $orderTaxData->tax_payer = 'ride_module';
+            $orderTaxData->order_id = $ride->id;
+            $orderTaxData->order_type = self::getClassNames('ride');
+            $orderTaxData->tax_id = $taxRate->id;
+            $orderTaxData->system_tax_setup_id = $systemTaxVat->id;
+            $orderTaxData->quantity = 1;
+            $orderTaxData->save();
+            $orderTaxIds[] = $orderTaxData->id;
+            
+        }
+
+        return  ['include' => $systemTaxVat?->is_included, 'totalTaxPercent' => $totalTaxPercent, 'totalTaxamount' => $totalTaxamount, 'orderTaxIds' => $orderTaxIds];
     }
 }

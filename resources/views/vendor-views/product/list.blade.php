@@ -105,9 +105,9 @@
                 <table id="datatable" class="table table-borderless table-thead-bordered table-nowrap table-align-middle card-table"
                     data-hs-datatables-options='{
                         "columnDefs": [{
-                            "targets": [],
+                            "targets": [1],
                             "width": "5%",
-                            "orderable": false
+                            "orderable": false,
                         }],
                         "order": [],
                         "info": {
@@ -127,6 +127,12 @@
                             @if ($store_data->module->module_type != 'food')
                             <th class="border-0 w-20p">{{translate('messages.quantity')}}</th>
                             @endif
+                            <th class="border-0">
+                                {{translate('messages.monthly recurring')}}
+                                <span class="form-label-secondary m-0" data-toggle="tooltip" data-placement="right" data-original-title="{{ translate('customer selected monthly repeat for this item') }}">
+                                    <i class="tio-info text-light-gray fs-14"></i>
+                                </span>
+                            </th>
                             <th class="border-0">{{translate('messages.price')}}</th>
                             <th class="border-0 text-center">{{translate('messages.Recommended')}}</th>
                              @if ($productWiseTax)
@@ -156,11 +162,14 @@
                             @if ($store_data->module->module_type != 'food')
                             <td>
                                 <div class="d-flex align-items-center gap-2">
-                                    <h5 class="text-hover-primary fw-medium mb-0">{{$item->stock}}</h5>
+                                    <h5 class="text-hover-primary fw-medium mb-0">{{ max((int) $item->stock, 0) }}</h5>
                                     <span data-toggle="modal"  data-id="{{ $item->id }}"  data-target="#update-quantity" class="text-primary tio-add-circle fs-22 cursor-pointer update-quantity"></span>
                                 </div>
                             </td>
                             @endif
+                            <td class="text-center">
+                                455
+                            </td>
                             <td>
                                 <div class="mw--85px">
                                     {{\App\CentralLogics\Helpers::format_currency($item['price'])}}

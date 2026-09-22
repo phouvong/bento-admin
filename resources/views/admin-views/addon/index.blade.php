@@ -151,7 +151,7 @@
                             data-placeholder="{{ translate('messages.select_store') }}"
                             class="js-data-example-ajax form-control store-filter" title="Select Restaurant">
                             @if (isset($store))
-                                <option value="{{ $store->id }}" selected>{{ $store->name }}</option>
+                                <option value="{{ $store->id }}" data-verified="{{ (int) $store->verified_seller }}" selected>{{ $store->name }}</option>
                             @else
                                 <option value="all" selected>{{ translate('messages.all_stores') }}</option>
                             @endif
@@ -196,7 +196,7 @@
                             <img class="avatar avatar-xss avatar-4by3 mr-2"
                                 src="{{ asset('public/assets/admin') }}/svg/components/placeholder-csv-format.svg"
                                 alt="Image Description">
-                            .{{ translate('messages.csv') }}
+                            {{ translate('messages.csv') }}
                         </a>
                     </div>
 
@@ -207,7 +207,7 @@
         </div>
         <div class="card-body p-0">
             <div class="table-responsive datatable-custom">
-                <table id="datatable"
+                <table id=""
                     class="table table-borderless table-thead-bordered table-nowrap table-align-middle card-table"
                     data-hs-datatables-options='{
                         "search": "#datatableSearch",
@@ -254,7 +254,7 @@
                                                 </span> </span>
                                             <br>
                                         @empty
-                                            <span> {{ translate('messages.no_tax') }} </span>
+                                            <span> {{ translate('N/A') }} </span>
                                         @endforelse
                                     </span>
                                 </td>
@@ -327,7 +327,7 @@
 function getStoreSelect2Config(showAll) {
     return {
         ajax: {
-            url: '{{ url('/') }}/admin/store/get-stores',
+            url: '{{ route('admin.store.get-stores') }}',
             dataType: 'json',
             delay: 250,
             data: function (params) {

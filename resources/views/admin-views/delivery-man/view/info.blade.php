@@ -610,7 +610,7 @@
                                     <img class="avatar avatar-xss avatar-4by3 mr-2"
                                         src="{{ asset('public/assets/admin') }}/svg/components/placeholder-csv-format.svg"
                                         alt="Image Description">
-                                    .{{ translate('messages.csv') }}
+                                    {{ translate('messages.csv') }}
                                 </a>
                             </div>
                         </div>
@@ -662,7 +662,7 @@
                                             <td>
                                                 @if ($review->customer)
                                                     <a class="d-flex align-items-center"
-                                                        href="{{ route('admin.customer.view', [$review['user_id']]) }}">
+                                                        href="{{ route('admin.users.customer.view', [$review['user_id']]) }}">
                                                         <span
                                                             class="text-dark fs-14 line--limit-1 max-w--220px min-w-135px text-wrap">
                                                             {{ $review->customer ? $review->customer['f_name'] . ' ' . $review->customer['l_name'] : '' }}

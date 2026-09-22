@@ -1,15 +1,18 @@
+@php($isServiceModule = \Illuminate\Support\Facades\Config::get('module.current_module_type') == 'service')
  <div class="modal-body">
      <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-15">
          <div>
              <h3 class="title-clr mb-0">{{ $coupon['title'] }}
                  {{ in_array($coupon['coupon_type'], ['free_delivery']) ? translate('messages.Free Delivery') : ($coupon['discount_type'] == 'amount' ? '(' . \App\CentralLogics\Helpers::format_currency($coupon['discount']) . ')' : '(' . $coupon['discount'] . '%)') }}
              </h3>
-             <div class="d-flex align-items-center gap-1">
-                 <span class="fs-14">{{ translate('Duration:') }}</span>
-                 <p class="fs-14 m-0 text-title">
-                     {{ \App\CentralLogics\Helpers::date_format($coupon['start_date']) . ' - ' . \App\CentralLogics\Helpers::date_format($coupon['expire_date']) }}
-                 </p>
-             </div>
+             @if ($coupon['coupon_type'] != 'pro_customer')
+                 <div class="d-flex align-items-center gap-1">
+                     <span class="fs-14">{{ translate('Duration:') }}</span>
+                     <p class="fs-14 m-0 text-title">
+                         {{ \App\CentralLogics\Helpers::date_format($coupon['start_date']) . ' - ' . \App\CentralLogics\Helpers::date_format($coupon['expire_date']) }}
+                     </p>
+                 </div>
+             @endif
          </div>
 
          @if (!in_array($coupon['coupon_type'], ['free_delivery']))
@@ -21,79 +24,17 @@
              </div>
          @endif
      </div>
-     <!-- <ul class="coupon-details-list d-flex flex-wrap bg-light rounded p-3 mb-3">
-         <li class="d-flex flex-sm-nowrap flex-wrap list-none li align-items-center gap-1">
-             <span class="fs-14 w-135px d-block min-w-135px">{{ translate('messages.coupon_type') }} </span>
-             <span>:</span>
-             <span class="fs-14 text-title">{{ translate($coupon['coupon_type']) }}</span>
-         </li>
-         @if ($coupon['coupon_type'] == 'store_wise')
-             <li class="d-flex flex-sm-nowrap flex-wrap list-none align-items-center gap-1">
-                 <span class="fs-14 w-135px d-block min-w-135px">{{ translate('Selected Store') }} </span>
-                 <span>:</span>
-                 <span class="fs-14 text-title">{{ $coupon?->store?->name }}</span>
-             </li>
-         @elseif(count($zoneData) > 0)
-             <li class="d-flex flex-sm-nowrap flex-wrap list-none align-items-center gap-1">
-                 <span class="fs-14 w-135px d-block min-w-135px">{{ translate('Selected Zones') }} </span>
-                 <span>:</span>
-                 <span class="fs-14 text-title">
-                     @foreach ($zoneData ?? [] as $zone)
-                         {{ $zone->name }} {{ !$loop->last ? ',' : '' }}
-                     @endforeach
-                 </span>
-             </li>
 
-
-         @endif
-
-         <li class="d-flex flex-sm-nowrap flex-wrap list-none align-items-center gap-1">
-             <span class="fs-14 w-135px d-block min-w-135px">{{ translate('Limit for same user') }} </span>
-             <span>:</span>
-             <span class="fs-14 text-title">{{ $coupon['limit'] }}</span>
-         </li>
-         <li class="d-flex flex-sm-nowrap flex-wrap list-none align-items-center gap-1">
-             <span
-                 class="fs-14 w-135px d-block min-w-135px">{{ translate('Max discount') }}({{ \App\CentralLogics\Helpers::currency_symbol() }})
-             </span>
-             <span>:</span>
-             <span
-                 class="fs-14 text-title">{{ \App\CentralLogics\Helpers::format_currency($coupon['max_discount']) }}</span>
-         </li>
-         <li class="d-flex flex-sm-nowrap flex-wrap list-none align-items-center gap-1">
-             <span
-                 class="fs-14 w-135px d-block min-w-135px">{{ translate('Min purchase') }}({{ \App\CentralLogics\Helpers::currency_symbol() }})
-             </span>
-             <span>:</span>
-             <span
-                 class="fs-14 text-title">{{ \App\CentralLogics\Helpers::format_currency($coupon['min_purchase']) }}</span>
-         </li>
-         <li class="d-flex flex-sm-nowrap flex-wrap list-none gap-1">
-             <span class="fs-14 w-135px d-block min-w-135px">{{ translate('selected customer') }} </span>
-             <span>:</span>
-             <span class="fs-14 text-title">
-                 @if ($selectedCustomers == 'all')
-                     {{ translate('All customers') }}
-                 @else
-                     @forelse ($selectedCustomers??[] as $customer)
-                         {{ $customer->f_name }} {{ $customer->l_name }} {{ !$loop->last ? ',' : '' }}
-                     @empty
-                         {{ translate('All customers') }}
-                     @endforelse
-                 @endif
-             </span>
-         </li>
-     </ul> -->
      <ul class="coupon-details-list d-flex flex-md-nowrap flex-wrap bg-light rounded p-3 mb-3">
         <div class="d-flex flex-column gap-2">
             <li class="d-flex flex-sm-nowrap flex-wrap list-none li align-items-center gap-1">
                 <span class="fs-14 w-135px d-block min-w-135px">{{ translate('messages.coupon_type') }} </span>
                 <span>:</span>
-                <span class="fs-14 text-title">{{ translate($coupon['coupon_type']) }}</span>
+                <span class="fs-14 text-title">{{ $isServiceModule && $coupon['coupon_type'] == 'store_wise' ? translate('Provider wise') : ($isServiceModule && $coupon['coupon_type'] == 'first_order' ? translate('First booking') : translate($coupon['coupon_type'])) }}</span>
             </li>
             @if ($coupon['coupon_type'] == 'store_wise')
                 <li class="d-flex flex-sm-nowrap flex-wrap list-none align-items-center gap-1">
-                    <span class="fs-14 w-135px d-block min-w-135px">{{ translate('Selected Store') }} </span>
+                    <span class="fs-14 w-135px d-block min-w-135px">{{ $isServiceModule ? translate('Selected Provider') : translate('Selected Store') }} </span>
                     <span>:</span>
                     <span class="fs-14 text-title">{{ $coupon?->store?->name }}</span>
                 </li>
@@ -107,10 +48,10 @@
                         @endforeach
                     </span>
                 </li>
-   
-   
+
+
             @endif
-   
+
             <li class="d-flex flex-sm-nowrap flex-wrap list-none align-items-center gap-1">
                 <span class="fs-14 w-135px d-block min-w-135px">{{ translate('Limit for same user') }} </span>
                 <span>:</span>
@@ -128,7 +69,7 @@
             </li>
             <li class="d-flex flex-sm-nowrap flex-wrap list-none align-items-center gap-1">
                 <span
-                    class="fs-14 w-135px d-block min-w-135px">{{ translate('Min purchase') }}({{ \App\CentralLogics\Helpers::currency_symbol() }})
+                    class="fs-14 w-135px d-block min-w-135px">{{ Config::get('module.current_module_type') == 'rental' ?  translate('Min Trip Amount') : translate('Min purchase') }}({{ \App\CentralLogics\Helpers::currency_symbol() }})
                 </span>
                 <span>:</span>
                 <span

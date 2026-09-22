@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Exports\ParcelWiseTaxExport;
+
 use App\Exports\VendorTaxExport;
 use App\Exports\VendorWiseTaxExport;
 use App\Http\Controllers\Controller;
@@ -24,7 +24,7 @@ class VendorTaxReportController extends Controller
     {
 
         $dateRange = $request->dates ?? now()->subDays(6)->format('m/d/Y') . ' - ' . now()->format('m/d/Y');
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
 
         list($startDate, $endDate) = explode(' - ', $dateRange);
         $startDate = Carbon::createFromFormat('m/d/Y', trim($startDate));
@@ -51,8 +51,9 @@ class VendorTaxReportController extends Controller
         $stores = $this->getOrderTaxData($startDate, $endDate, $storeIds, $storeQuery);
         // $time = microtime(true) - $start;
         // dd("Query took {$time} seconds", $stores);
-        $startDate = Carbon::parse($startDate)->toIso8601String();
-        $endDate = Carbon::parse($endDate)->toIso8601String();
+        $dateRange = $startDate->format('m/d/Y') . ' - ' . $endDate->format('m/d/Y');
+        $startDate = $startDate->toIso8601String();
+        $endDate = $endDate->toIso8601String();
         return view('admin-views.report.tax-report.vendor-tax-report', compact('totalOrders', 'totalOrderAmount', 'totalTax', 'store', 'stores', 'dateRange', 'startDate', 'endDate'));
     }
 
@@ -173,7 +174,7 @@ class VendorTaxReportController extends Controller
     public function vendorWiseTaxExport(Request $request)
     {
         $dateRange = $request->dates ?? now()->subDays(6)->format('m/d/Y') . ' - ' . now()->format('m/d/Y');
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
 
         list($startDate, $endDate) = explode(' - ', $dateRange);
         $startDate = Carbon::createFromFormat('m/d/Y', trim($startDate));

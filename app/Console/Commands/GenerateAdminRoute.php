@@ -40,7 +40,11 @@ class GenerateAdminRoute extends Command
             'print', 'download', 'export', 'edit', 'update', 'invoice', 'child', 'update-default-status', 'update-status',
             'system-currency', 'status', 'paidStatus', 'priority', 'remove-proof-image', 'select-customer', 'orders', 'logs',
             'refund_mode', 'account-transaction/create', 'provide-deliveryman-earnings/create', 'system-addons', 'social-media/create',
-            'drivemond'
+            'drivemond', 'trashed','admin/transactions/report/vendor-wise-taxes','admin/transactions/report/vendor-tax-report',
+            // Per-provider tax detail report requires an ?id= provider param (Store::findOrFail),
+            // so it must not be surfaced as a standalone search page — it 404s without a provider.
+            // Matches both the 'admin/transactions/service/report/...' and 'admin/service/report/...' prefixes.
+            'service/report/provider-tax-report',
         ];
 
         $excludeTermsAjax = $this->getAjaxRoutes($adminRoutes);
@@ -86,11 +90,13 @@ class GenerateAdminRoute extends Command
             if (!empty($newRoutes)) {
                 $updatedRoutes = array_merge($existingRoutes, $newRoutes);
                $updatedRoutes= $this->manualyAddedBladePartialsPath($updatedRoutes);
+                $updatedRoutes= $this->applyNavTitleOverrides($updatedRoutes);
                 file_put_contents($jsonFilePath, json_encode($updatedRoutes, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
             }
         } else {
-            $updatedRoutes= $this->manualyAddedBladePartialsPath($formattedRoutes);
-            file_put_contents($jsonFilePath, json_encode($formattedRoutes, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+            $updatedRoutes = $this->manualyAddedBladePartialsPath($formattedRoutes);
+            $updatedRoutes= $this->applyNavTitleOverrides($updatedRoutes);
+            file_put_contents($jsonFilePath, json_encode($updatedRoutes, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         }
 
         return 0;
@@ -145,38 +151,72 @@ class GenerateAdminRoute extends Command
             list($controllerClass, $method) = explode('@', $controller);
 
             if (class_exists($controllerClass) && method_exists($controllerClass, $method)) {
-                $reflectionMethod = new \ReflectionMethod($controllerClass, $method);
-                $filename = $reflectionMethod->getFileName();
-                $startLine = $reflectionMethod->getStartLine();
-                $endLine = $reflectionMethod->getEndLine();
+                return $this->extractViewPathFromMethod($controllerClass, $method, 0);
+            }
+        }
 
-                $file = file($filename);
-                $methodBody = implode('', array_slice($file, $startLine - 1, $endLine - $startLine + 1));
+        return null;
+    }
 
-                if (preg_match("/view\\(['\"](.*?)['\"]/", $methodBody, $matches)) {
-                    $bladePath = $matches[1];
+    private function extractViewPathFromMethod($controllerClass, $method, $depth)
+    {
+        if ($depth > 3 || !method_exists($controllerClass, $method)) {
+            return null;
+        }
 
-                    if (preg_match_all('/\{\$(\w+)\}/', $bladePath, $varMatches)) {
-                        $moduleTypes =config('module.module_type');
-                        $viewBasePaths =null;
+        $reflectionMethod = new \ReflectionMethod($controllerClass, $method);
+        $filename = $reflectionMethod->getFileName();
+        $startLine = $reflectionMethod->getStartLine();
+        $endLine = $reflectionMethod->getEndLine();
 
-                        foreach ($moduleTypes as $type) {
-                            $resolvedPath = $bladePath;
-                            foreach ($varMatches[1] as $varName) {
-                                $resolvedPath = str_replace('{$' . $varName . '}', $type, $resolvedPath);
-                            }
-                            $filePath = str_replace('.', '/', $resolvedPath);
-                            if (View::exists($filePath)) {
-                                $fullPath = View::getFinder()->find($filePath);
-                                if (file_exists($fullPath)) {
-                                    $viewBasePaths[$type] =$filePath;
-                                }
-                            }
-                        }
+        if (!$filename || !file_exists($filename)) {
+            return null;
+        }
 
-                        return $viewBasePaths;
+        $file = file($filename);
+        $methodBody = implode('', array_slice($file, $startLine - 1, $endLine - $startLine + 1));
+
+        if (preg_match("/view\\(['\"](.*?)['\"]/", $methodBody, $matches)) {
+            $bladePath = $matches[1];
+
+            if (preg_match_all('/\{\$(\w+)\}/', $bladePath, $varMatches)) {
+                $moduleTypes =config('module.module_type');
+                $viewBasePaths =null;
+
+                foreach ($moduleTypes as $type) {
+                    $resolvedPath = $bladePath;
+                    foreach ($varMatches[1] as $varName) {
+                        $resolvedPath = str_replace('{$' . $varName . '}', $type, $resolvedPath);
                     }
-                    return str_replace('.', '/', $bladePath);
+                    $filePath = str_replace('.', '/', $resolvedPath);
+                    if (View::exists($filePath)) {
+                        $fullPath = View::getFinder()->find($filePath);
+                        if (file_exists($fullPath)) {
+                            $viewBasePaths[$type] =$filePath;
+                        }
+                    }
+                }
+
+                return $viewBasePaths;
+            }
+            return str_replace('.', '/', $bladePath);
+        }
+
+        if (preg_match('/view\(\s*([\\\\A-Za-z0-9_]+)::([A-Za-z0-9_]+)\s*\[\s*VIEW\s*\]/', $methodBody, $enumMatches)) {
+            $enumViewPath = $this->resolveEnumViewPath($controllerClass, $enumMatches[1], $enumMatches[2]);
+            if ($enumViewPath) {
+                return str_replace('.', '/', $enumViewPath);
+            }
+        }
+
+        if (preg_match_all('/\$this->(\w+)\s*\(/', $methodBody, $calls)) {
+            foreach (array_unique($calls[1]) as $calledMethod) {
+                if ($calledMethod === $method) {
+                    continue;
+                }
+                $result = $this->extractViewPathFromMethod($controllerClass, $calledMethod, $depth + 1);
+                if ($result) {
+                    return $result;
                 }
             }
         }
@@ -184,7 +224,49 @@ class GenerateAdminRoute extends Command
         return null;
     }
 
-    function getTextDataFromBladeFile($viewPath): ? string
+    private function resolveEnumViewPath($controllerClass, $classRef, $const)
+    {
+        try {
+            $fqcn = $this->resolveClassReference($controllerClass, $classRef);
+            if ($fqcn && defined("$fqcn::$const")) {
+                $value = constant("$fqcn::$const");
+                if (is_array($value) && !empty($value['view'])) {
+                    return $value['view'];
+                }
+            }
+        } catch (\Throwable $exception) {
+        }
+        return null;
+    }
+
+    private function resolveClassReference($controllerClass, $classRef)
+    {
+        $classRef = ltrim($classRef, '\\');
+        if (str_contains($classRef, '\\')) {
+            return $classRef;
+        }
+        if (in_array($classRef, ['self', 'static'])) {
+            return $controllerClass;
+        }
+        $file = (new \ReflectionClass($controllerClass))->getFileName();
+        if (!$file || !file_exists($file)) {
+            return null;
+        }
+        $contents = file_get_contents($file);
+        if (preg_match_all('/use\s+([^\s;]+?)(?:\s+as\s+(\w+))?\s*;/', $contents, $uses, PREG_SET_ORDER)) {
+            foreach ($uses as $use) {
+                $fqcn = $use[1];
+                $alias = $use[2] ?? null;
+                $name = $alias ?: substr(strrchr('\\' . $fqcn, '\\'), 1);
+                if ($name === $classRef) {
+                    return $fqcn;
+                }
+            }
+        }
+        return null;
+    }
+
+    function getTextDataFromBladeFile($viewPath, $depth = 0): ? string
     {
         try {
             if (!$viewPath) {
@@ -198,24 +280,19 @@ class GenerateAdminRoute extends Command
                 return null;
             }
 
-            $pattern = "/translate\('([^']+)'\)/";
-            $textData = [];
-
             $content = File::get($viewFilePath);
-            preg_match_all($pattern, $content, $matches);
+            $textData = $this->extractTranslateStrings($content);
 
-            if (!empty($matches[1])) {
-                foreach ($matches[1] as $text) {
-                    $cleanedText = preg_replace("/^messages\./", "", $text);
-                    $cleanedText = preg_replace("/[_:\?\.,-]+/", " ", $cleanedText);
-                    $cleanedText = preg_replace("/\d+/", "", $cleanedText);
-                    $cleanedText = preg_replace("/\s+/", " ", trim($cleanedText));
-
-                    $textData[] = $cleanedText;
+            if ($depth < 2 && preg_match_all("/@include(?:If|First)?\(\s*['\"]([^'\"]+)['\"]/", $content, $includeMatches)) {
+                foreach (array_unique($includeMatches[1]) as $partialPath) {
+                    $partialText = $this->getTextDataFromBladeFile($partialPath, $depth + 1);
+                    if ($partialText) {
+                        $textData = array_merge($textData, explode(' ', $partialText));
+                    }
                 }
             }
 
-            $textData = array_unique($textData);
+            $textData = array_values(array_unique(array_filter($textData)));
             $finalText = implode(" ", $textData);
 
             return trim($finalText);
@@ -224,6 +301,24 @@ class GenerateAdminRoute extends Command
             info([$exception->getFile(), $exception->getLine(), $exception->getMessage()]);
             return null;
         }
+    }
+
+    private function extractTranslateStrings($content): array
+    {
+        $textData = [];
+        if (preg_match_all("/translate\('([^']+)'\)/", $content, $matches) && !empty($matches[1])) {
+            foreach ($matches[1] as $text) {
+                $cleanedText = preg_replace("/^messages\./", "", $text);
+                $cleanedText = preg_replace("/[_:\?\.,-]+/", " ", $cleanedText);
+                $cleanedText = preg_replace("/\d+/", "", $cleanedText);
+                $cleanedText = preg_replace("/\s+/", " ", trim($cleanedText));
+
+                if ($cleanedText !== '') {
+                    $textData[] = $cleanedText;
+                }
+            }
+        }
+        return $textData;
     }
 
     private function manualyAddedBladePartialsPath(array $formattedArray): array
@@ -280,7 +375,7 @@ class GenerateAdminRoute extends Command
                     $keywords = $item['keywords'] ?? '';
                     foreach ($bladePartials[$bladePath] as $partialPath) {
                         $text = $this->getTextDataFromBladeFile($partialPath);
-                        if ($text) {
+                        if ($text && ! str_contains($keywords, $text)) {
                             $keywords .= ' ' . $text;
                         }
                     }
@@ -293,9 +388,12 @@ class GenerateAdminRoute extends Command
         }
         return $formattedArray;
     }
+
     private function manualyAddedBladePath($formattedRoutes): array
     {
         $array = [
+            'ride-share::admin.rider-management.rider-vehicle-management.vehicle.list' => ['admin/users/rider/vehicle'],
+            'ride-share::admin.rider-management.rider-vehicle-management.vehicle.request-list' => ['admin/users/rider/vehicle/request/list/pending'],
             'admin-views.order.offline_verification_list' => ['admin/order/offline/payment/list/all'],
             'admin-views.order.list' => ['admin/refund/requested'],
             'admin-views.zone.index' => ['admin/business-settings/zone'],
@@ -373,6 +471,8 @@ class GenerateAdminRoute extends Command
             'admin-views.unit.index' => ['admin/unit'],
             'admin-views.common-condition.index' => ['admin/common-condition'],
             'admin-views.brand.index' => ['admin/brand'],
+            'admin-views.store-category.index' => ['admin/store-category/list'],
+            'admin-views.pro-customer.list' => ['admin/pro-customer/list'],
             'admin-views.order.distaptch_list' => ['admin/parcel/dispatch/searching_for_deliverymen'],
             'admin-views.order.distaptch_list' => ['admin/parcel/dispatch/on_going'],
             'rental::admin.dashboard-rental' => ['admin/rental'],
@@ -386,13 +486,74 @@ class GenerateAdminRoute extends Command
             'rental::admin.vehicle.review-list' => ['admin/rental/provider/vehicle/review-list'],
             'rental::admin.vehicle.bulk-import' => ['admin/rental/provider/vehicle/bulk-import'],
             'rental::admin.vehicle.bulk-export' => ['admin/rental/provider/vehicle/bulk-export'],
-            'rental::admin.provider.new-reques' => ['admin/rental/provider/new-requests'],
+            'rental::admin.provider.new-request' => ['admin/rental/provider/new-requests'],
+            'rental::admin.home-page-setup.vendor-registration' => ['admin/rental/settings/vendors-registration'],
             'rental::admin.provider.create' => ['admin/rental/provider/create'],
             'rental::admin.provider.list' => ['admin/rental/provider/list'],
             'rental::admin.provider.bulk-export' => ['dmin/rental/provider/bulk-export'],
             'rental::admin.provider.bulk-import' => ['admin/rental/provider/bulk-import'],
             'rental::admin.home-page-setup.download-app' => ['admin/rental/settings'],
+            'ride-share::admin.maps.fleet-map' => ['admin/ride-share/fleet-map/all-driver','admin/ride-share/fleet-map/driver-on-trip','admin/ride-share/fleet-map/driver-idle','admin/ride-share/fleet-map/all-customer'],
+            'ride-share::admin.trip-management.index' => ['admin/ride-share/ride/list/all','admin/ride-share/ride/list/pending','admin/ride-share/ride/list/accepted','admin/ride-share/ride/list/ongoing','admin/ride-share/ride/list/completed','admin/ride-share/ride/list/cancelled'],
+            'ride-share::admin.safety-alert.index' => ['admin/ride-share/safety-alert/list/customer','admin/ride-share/safety-alert/list/driver'],
+            'ride-share::admin.business-management.business-setup.safety-precaution' => ['admin/business-settings/safety-precaution/safety-alert'],
+            'ride-share::admin.business-management.business-setup.precautions' => ['admin/business-settings/safety-precaution/precaution'],
+            'ride-share::admin.rider-management.rider.list' => ['admin/users/rider'],
+            'ride-share::admin.rider-management.rider.index' => ['admin/users/rider/add'],
+            'ride-share::admin.rider-management.rider.new' => ['admin/users/rider/new'],
+            'ride-share::admin.rider-management.rider.deny' => ['admin/users/rider/deny'],
+            'admin-views.report.admin-earning-report' => ['admin/transactions/report/admin-earning-report?tab=all','admin/transactions/report/admin-earning-report?tab=parcel'],
+            'rental::admin.report.earning-report.partials.render._earning-transaction-table' => ['admin/transactions/report/admin-earning-report?tab=rental'],
+            // 'ride-share::admin.reports.admin-earning-report' => ['admin/transactions/ride-share/report/admin-earning-report']
+            'rental::provider.report.earning-report.partials.render._earning-transaction-table' => ['admin/transactions/report/store-earning-report?tab=rental'],
 
+            // Service module admin pages (list/datatable pages excluded from auto-scan because their controllers return response()->json for ajax filtering)
+            'service::admin.dashboard' => ['admin/service'],
+            'service::admin.service.list' => ['admin/service/list'],
+            'service::admin.service.index' => ['admin/service/add'],
+            'service::admin.service.gallery' => ['admin/service/gallery'],
+            'service::admin.service.bulk-import' => ['admin/service/bulk-import'],
+            'service::admin.service.bulk-export' => ['admin/service/bulk-export'],
+            'service::admin.service.request-list' => ['admin/service/request-list'],
+            'service::admin.service.reviews-list' => ['admin/service/reviews'],
+            'service::admin.service.service-request-list' => ['admin/service/service-request-list'],
+            'service::admin.keyword-search-analytics' => ['admin/service/keyword-search-analytics'],
+            'service::admin.customer-search-analytics' => ['admin/service/customer-search-analytics'],
+            'service::admin.booking.list' => ['admin/service/booking/list'],
+            'service::admin.booking.offline-payment-list' => ['admin/service/booking/offline-payment-list'],
+            'service::admin.provider.list' => ['admin/service/provider/list'],
+            'service::admin.provider.create' => ['admin/service/provider/create'],
+            'service::admin.provider.request-list' => ['admin/service/provider/request-list', 'admin/service/provider/deny-requests'],
+            'service::admin.provider.recommended' => ['admin/service/provider/recommended'],
+            'service::admin.provider.bulk-import' => ['admin/service/provider/bulk-import'],
+            'service::admin.provider.bulk-export' => ['admin/service/provider/bulk-export'],
+            'service::admin.campaign.list' => ['admin/service/campaign/list'],
+            'service::admin.campaign.create' => ['admin/service/campaign/create'],
+            'service::admin.cashback.list' => ['admin/service/cashback'],
+            'service::admin.custom-service.list' => ['admin/service/custom-request/list'],
+            'service::admin.report.booking-report' => ['admin/service/report/booking-report'],
+            'service::admin.report.earning-report.index' => ['admin/service/report/earning-report'],
+            'service::admin.report.tax-report.provider-tax-report' => ['admin/service/report/provider-wise-taxes'],
+
+            'admin-views.refund.index' => ['admin/refund/settings'],
+            'ride-share::admin.maps.fleet-map' => [
+                'admin/ride-share/fleet-map/all-driver',
+                'admin/ride-share/fleet-map/driver-on-trip',
+                'admin/ride-share/fleet-map/driver-idle',
+                'admin/ride-share/fleet-map/all-customer',
+            ],
+            'ride-share::admin.trip-management.index' => [
+                'admin/ride-share/ride/list/all',
+                'admin/ride-share/ride/list/pending',
+                'admin/ride-share/ride/list/accepted',
+                'admin/ride-share/ride/list/ongoing',
+                'admin/ride-share/ride/list/completed',
+                'admin/ride-share/ride/list/cancelled',
+            ],
+            'ride-share::admin.safety-alert.index' => [
+                'admin/ride-share/safety-alert/list/customer',
+                'admin/ride-share/safety-alert/list/driver',
+            ],
 
         ];
 
@@ -454,6 +615,50 @@ class GenerateAdminRoute extends Command
         return $formattedRoutes;
     }
 
+    /**
+     * Force the search title of specific pages to match their side-nav label verbatim, so a
+     * keyword search surfaces them under the exact name the user sees in the navigation
+     * (see Modules/Service/Resources/views/admin/partials/_sidebar_v2_service.blade.php).
+     * Keyed by URI so it corrects both auto-scanned and manually-added entries without
+     * touching their keywords (content matching is preserved).
+     */
+    private function applyNavTitleOverrides(array $routes): array
+    {
+        $overrides = $this->navTitleOverrides();
+
+        foreach ($routes as &$route) {
+            $uri = $route['URI'] ?? null;
+            if ($uri !== null && isset($overrides[$uri])) {
+                $route['routeName'] = $overrides[$uri];
+            }
+        }
+
+        return $routes;
+    }
+
+    private function navTitleOverrides(): array
+    {
+        return [
+            // Service module – "Service Management" side-nav section
+            'admin/service/add'                  => 'Add new',
+            'admin/service/list'                 => 'List',
+            'admin/service/gallery'              => 'Service Gallery',
+            'admin/service/request-list'         => 'New Service Request',
+            'admin/service/service-request-list' => 'Customer Service Request',
+            'admin/service/reviews'              => 'Review',
+            'admin/service/bulk-import'          => 'Bulk import',
+            'admin/service/bulk-export'          => 'Bulk export',
+
+            // Service module – "Provider management" side-nav section
+            'admin/service/provider/list'         => 'Providers list',
+            'admin/service/provider/create'       => 'Add Provider',
+            'admin/service/provider/request-list' => 'New Providers',
+            'admin/service/provider/recommended'  => 'Recommended Provider',
+            'admin/service/provider/bulk-import'  => 'Bulk import',
+            'admin/service/provider/bulk-export'  => 'Bulk export',
+        ];
+    }
+
     private function getRouteName($actualRouteName){
         $routeNameParts = explode('.', $actualRouteName);
         if (count($routeNameParts) >= 2) {
@@ -481,7 +686,7 @@ class GenerateAdminRoute extends Command
             }
 
             $uniqueWords = array_filter($uniqueWords, function ($word) {
-                return strtolower($word) !== 'rental';
+                return strtolower($word) !== 'rental' && !str_contains($word, '::');
             });
 
             $routeName = ucwords(implode(' ', $uniqueWords));

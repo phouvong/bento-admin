@@ -6,6 +6,10 @@
 <link rel="stylesheet" href="{{asset('public/assets/admin/css/radio-image.css')}}">
 @endpush
 
+@section('edit_module')
+active
+@endsection
+
 @section('content')
     <div class="content container-fluid">
         <!-- Page Header -->
@@ -53,6 +57,10 @@
                                         alt="{{ translate('messages.veg_non_veg') }}"></span></label>
                                 <textarea  data-value="{!! $module->description ?? '' !!}" id="description"  class="ckeditor form-control" name="description[]">{!! $module?->getRawOriginal('description') ?? '' !!}</textarea>
                             </div>
+                            <div class="form-group">
+                                <label class="input-label d-flex">{{ translate('Short_description') }} ({{ translate('messages.default') }})</label>
+                                <textarea class="form-control" name="short_description[]" maxlength="100" rows="2" placeholder="{{ translate('messages.Write_a_short_description') }}">{{ $module?->getRawOriginal('short_description') }}</textarea>
+                            </div>
                         </div>
 
                         <input type="hidden" name="lang[]" value="default">
@@ -68,6 +76,10 @@
 
                                         if($t->locale == $lang && $t->key=="description"){
                                             $translate[$lang]['description'] = $t->value;
+                                        }
+
+                                        if($t->locale == $lang && $t->key=="short_description"){
+                                            $translate[$lang]['short_description'] = $t->value;
                                         }
                                     }
                                 }
@@ -85,6 +97,10 @@
                                             alt="{{ translate('messages.veg_non_veg') }}"></span></label>
                                     <textarea  data-value="{!! $translate[$lang]['description']??'' !!}" id="description{{ $lang }}" class="ckeditor form-control" name="description[]">{!! $translate[$lang]['description']??'' !!}</textarea>
                                 </div>
+                                <div class="form-group">
+                                    <label class="input-label d-flex">{{ translate('Short_description') }} ({{strtoupper($lang)}})</label>
+                                    <textarea class="form-control" name="short_description[]" maxlength="100" rows="2" placeholder="{{ translate('messages.Write_a_short_description') }}">{{ $translate[$lang]['short_description']??'' }}</textarea>
+                                </div>
                             </div>
 
                             <input type="hidden" name="lang[]" value="{{$lang}}">
@@ -97,6 +113,10 @@
                         <div class="form-group">
                             <label class="input-label" for="module_type">{{translate('messages.description')}}</label>
                             <textarea  data-value="{!! $module->description !!}" id="description" class="ckeditor form-control" name="description">{!! $module->description !!}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="input-label">{{ translate('Short_description') }}</label>
+                            <textarea class="form-control" name="short_description" maxlength="100" rows="2" placeholder="{{ translate('messages.Write_a_short_description') }}">{{ $module?->getRawOriginal('short_description') }}</textarea>
                         </div>
                         <input type="hidden" name="lang[]" value="default">
                     @endif

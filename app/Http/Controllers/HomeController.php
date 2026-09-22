@@ -10,6 +10,8 @@ use App\Models\Contact;
 use App\Models\DataSetting;
 use App\Models\AdminFeature;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use App\CentralLogics\Helpers;
 use App\Models\BusinessSetting;
 use App\Models\AdminTestimonial;
@@ -24,6 +26,7 @@ use App\Models\DeliverymanLoyaltyPointHistory;
 use App\Models\DeliverymanReferralHistory;
 use App\Models\SubscriptionTransaction;
 use App\Traits\ActivationClass;
+use FontLib\Table\Type\name;
 use Illuminate\Support\Facades\Session;
 
 class HomeController extends Controller
@@ -97,10 +100,7 @@ class HomeController extends Controller
             'feature_short_description' => (isset($settings['feature_short_description']))  ? $settings['feature_short_description'] : null,
             'earning_title' => (isset($settings['earning_title']))  ? $settings['earning_title'] : null,
             'earning_sub_title' => (isset($settings['earning_sub_title']))  ? $settings['earning_sub_title'] : null,
-            'earning_seller_image' => (isset($settings['earning_seller_image']))  ? $settings['earning_seller_image'] : null,
-            'earning_seller_image_storage' => (isset($settings['earning_seller_image_storage']))  ? $settings['earning_seller_image_storage'] : 'public',
-            'earning_delivery_image' => (isset($settings['earning_delivery_image']))  ? $settings['earning_delivery_image'] : null,
-            'earning_delivery_image_storage' => (isset($settings['earning_delivery_image_storage']))  ? $settings['earning_delivery_image_storage'] : 'public',
+
             'why_choose_title' => (isset($settings['why_choose_title']))  ? $settings['why_choose_title'] : null,
             'download_user_app_title' => (isset($settings['download_user_app_title']))  ? $settings['download_user_app_title'] : null,
             'download_user_app_sub_title' => (isset($settings['download_user_app_sub_title']))  ? $settings['download_user_app_sub_title'] : null,
@@ -121,9 +121,38 @@ class HomeController extends Controller
             'testimonials' => (isset($testimonials))  ? $testimonials : null,
 
             'counter_section' => (isset($settings['counter_section']))  ? json_decode($settings['counter_section'], true) : null,
-            'seller_app_earning_links' => (isset($settings['seller_app_earning_links']))  ? json_decode($settings['seller_app_earning_links'], true) : null,
-            'dm_app_earning_links' => (isset($settings['dm_app_earning_links']))  ? json_decode($settings['dm_app_earning_links'], true) : null,
-            'download_user_app_links' => (isset($settings['download_user_app_links']))  ? json_decode($settings['download_user_app_links'], true) : null,
+            'seller_app_earning_links' => (function() use ($settings) {
+                $links = isset($settings['seller_app_earning_links']) ? json_decode($settings['seller_app_earning_links'], true) : [];
+                $links['playstore_url_status'] = (int)($links['playstore_url_status'] ?? 0);
+                $links['apple_store_url_status'] = (int)($links['apple_store_url_status'] ?? 0);
+                $links['playstore_url'] = BusinessSetting::where('key', 'app_url_android_store')->value('value');
+                $links['apple_store_url'] = BusinessSetting::where('key', 'app_url_ios_store')->value('value');
+                return $links;
+            })(),
+            'dm_app_earning_links' => (function() use ($settings) {
+                $links = isset($settings['dm_app_earning_links']) ? json_decode($settings['dm_app_earning_links'], true) : [];
+                $links['playstore_url_status'] = (int)($links['playstore_url_status'] ?? 0);
+                $links['apple_store_url_status'] = (int)($links['apple_store_url_status'] ?? 0);
+                $links['playstore_url'] = BusinessSetting::where('key', 'app_url_android_deliveryman')->value('value');
+                $links['apple_store_url'] = BusinessSetting::where('key', 'app_url_ios_deliveryman')->value('value');
+                return $links;
+            })(),
+            'rider_app_earning_links' => (function() use ($settings) {
+                $links = isset($settings['rider_app_earning_links']) ? json_decode($settings['rider_app_earning_links'], true) : [];
+                $links['playstore_url_status'] = (int)($links['playstore_url_status'] ?? 0);
+                $links['apple_store_url_status'] = (int)($links['apple_store_url_status'] ?? 0);
+                $links['playstore_url'] = BusinessSetting::where('key', 'app_url_android_rider')->value('value');
+                $links['apple_store_url'] = BusinessSetting::where('key', 'app_url_ios_rider')->value('value');
+                return $links;
+            })(),
+            'download_user_app_links' => (function() use ($settings) {
+                $links = isset($settings['download_user_app_links']) ? json_decode($settings['download_user_app_links'], true) : [];
+                $links['playstore_url_status'] = (int)($links['playstore_url_status'] ?? 0);
+                $links['apple_store_url_status'] = (int)($links['apple_store_url_status'] ?? 0);
+                $links['playstore_url'] = BusinessSetting::where('key', 'app_url_android')->value('value');
+                $links['apple_store_url'] = BusinessSetting::where('key', 'app_url_ios')->value('value');
+                return $links;
+            })(),
             'fixed_link' => (isset($settings['fixed_link']))  ? json_decode($settings['fixed_link'], true) : null,
 
             'available_zone_status' => (int)((isset($settings['available_zone_status'])) ? $settings['available_zone_status'] : 0),
@@ -132,6 +161,17 @@ class HomeController extends Controller
             'available_zone_image' => (isset($settings['available_zone_image'])) ? $settings['available_zone_image'] : null,
             'available_zone_image_full_url' => Helpers::get_full_url('available_zone_image', (isset($settings['available_zone_image'])) ? $settings['available_zone_image'] : null, (isset($settings['available_zone_image_storage'])) ? $settings['available_zone_image_storage'] : 'public'),
             'available_zone_list' => $zones,
+
+            // Earn section card content
+            'seller_card_title' => (isset($settings['seller_app_earning_title'])) ? $settings['seller_app_earning_title'] : null,
+            'seller_card_subtitle' => (isset($settings['seller_app_earning_sub_title'])) ? $settings['seller_app_earning_sub_title'] : null,
+            'seller_card_image' => (isset($settings['seller_app_earning_image'])) ? Helpers::get_full_url('seller_app_earning_image', $settings['seller_app_earning_image'], (isset($settings['seller_app_earning_image_storage'])) ? $settings['seller_app_earning_image_storage'] : 'public', 'aspect_1') : null,
+            'dm_card_title' => (isset($settings['dm_app_earning_title'])) ? $settings['dm_app_earning_title'] : null,
+            'dm_card_subtitle' => (isset($settings['dm_app_earning_sub_title'])) ? $settings['dm_app_earning_sub_title'] : null,
+            'dm_card_image' => (isset($settings['dm_app_earning_image'])) ? Helpers::get_full_url('dm_app_earning_image', $settings['dm_app_earning_image'], (isset($settings['dm_app_earning_image_storage'])) ? $settings['dm_app_earning_image_storage'] : 'public', 'aspect_1') : null,
+            'rider_card_title' => (isset($settings['rider_app_earning_title'])) ? $settings['rider_app_earning_title'] : null,
+            'rider_card_subtitle' => (isset($settings['rider_app_earning_sub_title'])) ? $settings['rider_app_earning_sub_title'] : null,
+            'rider_card_image' => (isset($settings['rider_app_earning_image'])) ? Helpers::get_full_url('rider_app_earning_image', $settings['rider_app_earning_image'], (isset($settings['rider_app_earning_image_storage'])) ? $settings['rider_app_earning_image_storage'] : 'public', 'aspect_1') : null,
         ];
 
 
@@ -395,6 +435,26 @@ class HomeController extends Controller
     }
 
 
+    public function maintenanceMode()
+    {
+        if (!Helpers::is_vendor_panel_maintenance_active()) {
+            return to_route('home');
+        }
+
+        $maintenance_mode_data = DataSetting::where('type', 'maintenance_mode')
+            ->whereIn('key', ['maintenance_message_setup'])
+            ->pluck('value', 'key')
+            ->map(fn ($value) => json_decode($value, true))
+            ->toArray();
+
+        $selectedMaintenanceMessage = data_get($maintenance_mode_data, 'maintenance_message_setup', []);
+
+        $email = Helpers::get_business_settings('email_address');
+        $phone = Helpers::get_business_settings('phone');
+
+        return view('maintenance-mode', compact('email', 'phone', 'selectedMaintenanceMessage'));
+    }
+
     public function subscription_invoice($id)
     {
         $id = base64_decode($id);
@@ -487,6 +547,8 @@ class HomeController extends Controller
     public function activationCheck(Request $request)
     {
         $response = $this->getRequestConfig(
+            name: $request['name'],
+            email: $request['email'],
             username: $request['username'],
             purchaseKey: $request['purchase_key'],
             softwareType: $request->get('software_type', base64_decode('cHJvZHVjdA=='))

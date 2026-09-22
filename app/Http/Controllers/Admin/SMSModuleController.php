@@ -26,7 +26,7 @@ class SMSModuleController extends Controller
                 }
             }
         }
-        $data_values=  Setting::where('settings_type','sms_config')->whereIn('key_name', ['twilio','nexmo','2factor','msg91','alphanet_sms'])->get() ?? [];
+        $data_values=  Setting::where('settings_type','sms_config')->whereIn('key_name', ['twilio','nexmo','2factor','msg91','alphanet_sms'])->orderByDesc('is_active')->get() ?? [];
         return view('admin-views.business-settings.sms-index',compact('data_values','published_status','payment_url'));
     }
 

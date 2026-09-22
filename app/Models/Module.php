@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
+use App\Traits\GeneratesSlug;
 
 /**
  * Class Module
@@ -31,7 +31,7 @@ use Illuminate\Support\Str;
  */
 class Module extends Model
 {
-    use HasFactory;
+    use HasFactory, GeneratesSlug;
     protected $with = ['translations','storage'];
     /**
      * The attributes that are mass assignable.
@@ -47,6 +47,7 @@ class Module extends Model
         'icon',
         'theme_id',
         'description',
+        'short_description',
         'all_zone_service',
     ];
 
@@ -122,6 +123,19 @@ class Module extends Model
         return $value;
     }
 
+    public function getShortDescriptionAttribute($value): mixed
+    {
+        if (count($this->translations) > 0) {
+            foreach ($this->translations as $translation) {
+                if ($translation['key'] == 'short_description') {
+                    return $translation['value'];
+                }
+            }
+        }
+
+        return $value;
+    }
+
 
     /**
      * @param $query
@@ -144,6 +158,20 @@ class Module extends Model
     {
         return $query->where('module_type', '!=' ,'rental');
     }
+    public function scopeWithoutAdditionalModules($query): mixed
+    {
+        return $query->whereNotIn('module_type',  ['rental','ride-share','service']);
+    }
+
+    public function scopeNotServiceAndRideShare($query)
+    {
+        return $query->whereNotIn('module_type', ['service', 'ride-share']);
+    }
+
+    public function scopeNotRideShare($query): mixed
+    {
+        return $query->where('module_type', '!=', 'ride-share');
+    }
 
     /**
      * @param $query
@@ -152,6 +180,124 @@ class Module extends Model
     public function scopeActive($query): mixed
     {
         return $query->where('status', '=', 1);
+    }
+
+    /**
+     * Back-compat shim. Earlier versions attached top_offer_value /
+     * top_offer_type as scalar subqueries via selectSub, but the SQL
+     * lateral-referenced `modules.id` from inside a derived table — a
+     * pattern that only works on MySQL 8.0.14+ with implicit lateral and
+     * fails on MariaDB and older MySQL ("Unknown column 'modules.id' in
+     * WHERE"). The replacement is `Module::attachTopOffers($collection,
+     * $zoneIds)` which is portable. This scope is now a no-op so existing
+     * callers don't break; call attachTopOffers() after ->get().
+     */
+    public function scopeWithTopOffer($query, array $zoneIds = []): mixed
+    {
+        return $query;
+    }
+
+    /**
+     * Populate `top_offer_value` and `top_offer_type` on each module in
+     * the given collection, using a single UNION ALL query that never
+     * cross-references the outer modules row. Works on every MySQL ≥ 5.7
+     * and MariaDB ≥ 10.x.
+     *
+     * Result attribute semantics match the old scope: the highest discount
+     * across (a) item-level discounts on active items in active stores,
+     * (b) currently-active store-wide discounts, and (c) live flash sale
+     * items — restricted to the supplied zones.
+     *
+     * @param  \Illuminate\Database\Eloquent\Collection<int, self>  $modules
+     * @param  int[]  $zoneIds
+     */
+    public static function attachTopOffers($modules, array $zoneIds = []): void
+    {
+        if ($modules->isEmpty()) {
+            return;
+        }
+
+        $moduleIds = $modules->pluck('id')->filter()->map(fn ($id) => (int) $id)->all();
+        if (empty($moduleIds)) {
+            return;
+        }
+
+        $zones = empty($zoneIds) ? null : array_values(array_map('intval', $zoneIds));
+
+        // Each leg returns (module_id, discount, discount_type) and reuses the
+        // same visibility scopes the listing and details endpoints apply, so a
+        // module can never advertise a discount the customer cannot reach.
+        $visibleItems = Item::query()
+            ->active(zone_ids: $zones)
+            ->whereIn('items.module_id', $moduleIds);
+
+        $visibleStoreIds = Store::query()
+            ->Active()
+            ->whereIn('stores.module_id', $moduleIds)
+            ->when($zones, fn ($q) => $q->whereIn('stores.zone_id', $zones))
+            ->select('stores.id')
+            ->toBase();
+
+        $topPriceByStore = (clone $visibleItems)
+            ->selectRaw('items.store_id AS store_id, MAX(items.price) AS max_price')
+            ->groupBy('items.store_id')
+            ->toBase();
+
+        $itemLeg = (clone $visibleItems)
+            ->where('items.discount', '>', 0)
+            ->selectRaw(self::offerColumns('items.discount', 'items.discount_type', 'items.price', 'items.module_id'))
+            ->toBase();
+
+        $storeDiscountLeg = Discount::query()
+            ->validate()
+            ->join('stores', 'stores.id', '=', 'discounts.store_id')
+            ->joinSub($topPriceByStore, 'store_top_price', 'store_top_price.store_id', '=', 'stores.id')
+            ->whereIn('discounts.store_id', $visibleStoreIds)
+            ->selectRaw('stores.module_id AS module_id, discounts.discount AS discount, '
+                ."'percent' AS discount_type, "
+                .'CASE WHEN discounts.max_discount > 0 '
+                .'THEN LEAST(store_top_price.max_price * discounts.discount / 100, discounts.max_discount) '
+                .'ELSE store_top_price.max_price * discounts.discount / 100 END AS saving')
+            ->toBase();
+
+        $flashLeg = DB::table('flash_sale_items')
+            ->join('flash_sales', 'flash_sales.id', '=', 'flash_sale_items.flash_sale_id')
+            ->join('items', 'items.id', '=', 'flash_sale_items.item_id')
+            ->whereIn('flash_sale_items.item_id', (clone $visibleItems)->select('items.id')->toBase())
+            ->where('flash_sales.is_publish', 1)
+            ->whereDate('flash_sales.start_date', '<=', now()->format('Y-m-d'))
+            ->whereDate('flash_sales.end_date', '>=', now()->format('Y-m-d'))
+            ->selectRaw(self::offerColumns('flash_sale_items.discount', 'flash_sale_items.discount_type', 'items.price', 'items.module_id'));
+
+        $rows = $itemLeg->unionAll($storeDiscountLeg)->unionAll($flashLeg)->get();
+
+        // Rank by the money a customer actually saves so a flat amount and a
+        // percentage are never compared as bare numbers. Done in PHP to avoid
+        // window functions (MySQL 8.0+ / MariaDB 10.2+).
+        $byModule = [];
+        foreach ($rows as $r) {
+            $mid = (int) $r->module_id;
+            $val = (float) $r->saving;
+            if (! isset($byModule[$mid]) || $val > (float) $byModule[$mid]->saving) {
+                $byModule[$mid] = $r;
+            }
+        }
+
+        foreach ($modules as $module) {
+            $entry = $byModule[(int) $module->id] ?? null;
+            $module->top_offer_value = $entry?->discount;
+            $module->top_offer_type  = $entry?->discount_type;
+        }
+    }
+
+    private static function offerColumns(string $discount, string $type, string $price, string $moduleId): string
+    {
+        $capped = "LEAST({$discount}, {$price})";
+
+        return "{$moduleId} AS module_id, "
+            ."CASE WHEN {$type} = 'percent' THEN {$discount} ELSE {$capped} END AS discount, "
+            ."{$type} AS discount_type, "
+            ."CASE WHEN {$type} = 'percent' THEN {$price} * {$discount} / 100 ELSE {$capped} END AS saving";
     }
 
     public function getIconFullUrlAttribute(){
@@ -184,23 +330,6 @@ class Module extends Model
         return $this->morphMany(Storage::class, 'data');
     }
 
-    private function generateSlug($name)
-    {
-        $slug = Str::slug($name);
-        if ($max_slug = static::where('slug', 'like', "{$slug}%")->latest('id')->value('slug')) {
-
-            if ($max_slug == $slug) return "{$slug}-2";
-
-            $max_slug = explode('-', $max_slug);
-            $count = array_pop($max_slug);
-            if (isset($count) && is_numeric($count)) {
-                $max_slug[] = ++$count;
-                return implode('-', $max_slug);
-            }
-        }
-        return $slug;
-    }
-
     protected static function booted()
     {
         static::addGlobalScope('storage', function ($builder) {
@@ -225,9 +354,17 @@ class Module extends Model
                 'maximum_shipping_charge',
                 'maximum_cod_order_amount',
                 'delivery_charge_type',
-                'fixed_shipping_charge'
+                'fixed_shipping_charge',
+                'additional_delivery_option_status',
+                'minimum_delivery_time',
+                'minimum_delivery_charge',
             ])
             ->using(ModuleZone::class);
+    }
+
+    public function zoneDeliveryOptions(): HasMany
+    {
+        return $this->hasMany(ModuleZoneDeliveryOption::class);
     }
 
     protected static function boot()

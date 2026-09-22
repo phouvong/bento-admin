@@ -104,13 +104,18 @@ class Admin extends Authenticatable
         return $maskedEmail ?? $this->email;
     }
 
+    // public function account()
+    // {
+    //     return $this->hasOne(UserAccount::class, 'user_id', 'id')->where('user_type', 'admin');
+    // }
+
     /**
      * @param $query
      * @return mixed
      */
     public function scopeZone($query): mixed
     {
-        if(isset(auth('admin')->user()->zone_id))
+        if(auth('admin')?->user() && auth('admin')->user()->zone_id)
         {
             return $query->where('zone_id', auth('admin')->user()->zone_id);
         }

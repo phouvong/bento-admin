@@ -48,7 +48,7 @@ class DeliveryManController extends Controller
             $referal_user = DeliveryMan::where('ref_code',$request->referral_code)->first();
             if (!$referal_user || !$referal_user->status) {
                     Toastr::error(translate('referer_code_not_found'));
-                    return back();
+                    return back()->withInput();
             }
             Helpers::deliverymanReferralNotification($referal_user);
         }
@@ -75,7 +75,7 @@ class DeliveryManController extends Controller
         } else if(session('six_captcha') != $request->custome_recaptcha)
         {
             Toastr::error(translate('messages.ReCAPTCHA Failed'));
-            return back();
+            return back()->withInput();
         }
 
         $request->validate([
@@ -135,15 +135,15 @@ class DeliveryManController extends Controller
             $admin= Admin::where('role_id', 1)->first();
 
             if(config('mail.status') &&  Helpers::get_mail_status('registration_mail_status_dm') == '1' && Helpers::getNotificationStatusData('deliveryman','deliveryman_registration','mail_status')  ){
-                Mail::to($request->email)->send(new \App\Mail\DmSelfRegistration('pending', $dm->f_name.' '.$dm->l_name));
+                Mail::to($request->email)->send(new \App\Mail\DmSelfRegistration('pending', $dm));
             }
             if(config('mail.status') && Helpers::get_mail_status('dm_registration_mail_status_admin') == '1' && Helpers::getNotificationStatusData('admin','deliveryman_self_registration','mail_status')) {
-                Mail::to($admin?->getRawOriginal('email'))->send(new \App\Mail\DmRegistration('pending', $dm->f_name.' '.$dm->l_name));
+                Mail::to($admin?->getRawOriginal('email'))->send(new \App\Mail\DmRegistration('pending', $dm));
             }
         }catch(\Exception $ex){
             info($ex->getMessage());
         }
         Toastr::success(translate('messages.application_placed_successfully'));
-        return back();
+        return redirect()->route('home');
     }
 }

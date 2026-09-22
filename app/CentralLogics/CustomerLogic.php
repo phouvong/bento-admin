@@ -15,6 +15,10 @@ class CustomerLogic
 
     public static function create_wallet_transaction($user_id, float $amount, $transaction_type, $reference)
     {
+        // Storefront customers are blocked from any wallet transaction when
+        // the Builder wallet-features master switch is off. Host customers
+        // (tenant_id = sub_tenant_id = 0) are unaffected.
+        if (storefront_wallet_disabled_for_user($user_id)) return false;
         if (BusinessSetting::where('key', 'wallet_status')->first()->value != 1) return false;
         $user = User::find($user_id);
         $current_balance = $user->wallet_balance;
@@ -46,7 +50,7 @@ class CustomerLogic
                     $credit = (int)($amount / BusinessSetting::where('key', 'loyalty_point_exchange_rate')->first()->value);
                 }
             }
-        } else if (in_array($transaction_type, ['order_place','trip_booking'])) {
+        } else if (in_array($transaction_type, ['order_place','trip_booking','ride_booking','service_booking'])) {
             $debit = $amount;
         } else if ($transaction_type == 'partial_payment') {
             $debit = $amount;
@@ -66,9 +70,11 @@ class CustomerLogic
             $wallet_transaction->save();
             if ($admin_bonus>0) {
                 Helpers::expenseCreate(amount:$admin_bonus,type:'add_fund_bonus',created_by:'admin',user_id:$user->id,datetime:now());
+            } elseif($transaction_type == 'referrer'){
+                Helpers::expenseCreate(amount:$amount,type:'referrer',created_by:'admin',user_id:$user->id,datetime:now());
             }
             DB::commit();
-            if (in_array($transaction_type, ['loyalty_point', 'trip_booking', 'order_place', 'add_fund_by_admin', 'referrer','partial_payment'])) return $wallet_transaction;
+            if (in_array($transaction_type, ['loyalty_point', 'trip_booking', 'order_place', 'add_fund_by_admin', 'referrer','partial_payment','service_booking'])) return $wallet_transaction;
             return true;
         } catch (\Exception $ex) {
             info($ex->getMessage());
@@ -81,6 +87,10 @@ class CustomerLogic
 
     public static function create_loyalty_point_transaction($user_id, $reference, $amount, $transaction_type)
     {
+        // Storefront customers are blocked from any loyalty transaction when
+        // the Builder wallet-features master switch is off. Host customers
+        // (tenant_id = sub_tenant_id = 0) are unaffected.
+        if (storefront_wallet_disabled_for_user($user_id)) return false;
         $settings = array_column(BusinessSetting::whereIn('key', ['loyalty_point_status', 'loyalty_point_exchange_rate', 'loyalty_point_item_purchase_point'])->get()->toArray(), 'value', 'key');
         if ($settings['loyalty_point_status'] != 1) {
             return false;
@@ -96,10 +106,14 @@ class CustomerLogic
         $loyalty_point_transaction->reference = $reference;
         $loyalty_point_transaction->transaction_type = $transaction_type;
 
-        if ( in_array($transaction_type, ['order_place','trip_booking']) ) {
+        if ( in_array($transaction_type, ['order_place','trip_booking','service_booking']) ) {
             $credit = (int)($amount * $settings['loyalty_point_item_purchase_point'] / 100);
         } else if ($transaction_type == 'point_to_wallet') {
             $debit = $amount;
+        }
+
+        if ($credit <= 0 && $debit <= 0) {
+            return false;
         }
 
         $current_balance = $user->loyalty_point + $credit - $debit;

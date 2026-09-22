@@ -1,6 +1,6 @@
 @extends('layouts.admin.app')
 
-@section('title',translate('messages.Recommended_stores'))
+@section('title', translate('messages.Recommended_stores'))
 
 @push('css_or_js')
 
@@ -85,13 +85,13 @@
                                         {{translate('Shuffle_store_when_page_reload?')}}
                                     </label>
                             </div>
-                            <form  action="{{ route('admin.store.shuffle_recommended_store',['status' => $shuffle_recommended_store ?? 0]) }}" method="get" id="store_shffle_form">
+                            <form  action="{{ route('admin.store.shuffle_recommended_store', ['status' => $shuffle_recommended_store ?? 0]) }}" method="get" id="store_shffle_form">
                             </form>
 
-                            <form  class="search-form">
+                            <form  class="search-form" id="storeSearchForm">
                                 <!-- Search -->
                                 <div class="input-group input--group">
-                                    <input id="datatableSearch_" value="{{ request()?->search ?? null }}" type="search" name="search" class="form-control"
+                                    <input id="datatableSearch_" value="{{ request()?->search ?? '' }}" type="search" name="search" class="form-control"
                                             placeholder="{{translate('ex_:_Store_name')}}" aria-label="Search" >
                                     <button type="submit" class="btn btn--secondary"><i class="tio-search"></i></button>
                                 </div>
@@ -122,11 +122,11 @@
                             </thead>
 
                             <tbody id="set-rows">
-                            @foreach($stores as $key=>$store)
+                            @foreach($stores as $key => $store)
                                 <tr>
                                     <td >
                                         <span class="mr-3">
-                                            {{$key+$stores->firstItem()}}
+                                            {{$key + $stores->firstItem()}}
                                         </span>
                                     </td>
                                     <td >
@@ -135,7 +135,7 @@
                                                 <img class="img--60 circle onerror-image" data-onerror-image="{{asset('public/assets/admin/img/160x160/img1.jpg')}}"
                                                 src="{{ $store['logo_full_url'] ?? asset('public/assets/admin/img/160x160/img1.jpg') }}"  >
                                                 <div class="info"><div class="text--title">
-                                                    {{Str::limit($store->name,20,'...')}}
+                                                    {{Str::limit($store->name, 20, '...')}}
                                                     </div>
                                                     <div class="font-light">
                                                         {{translate('messages.id')}}:{{$store->id}}
@@ -148,7 +148,7 @@
                                     <td >
                                         <i class="fs-13 tio-star"></i>
                                         @php
-                                        $ratings= \App\CentralLogics\StoreLogic::calculate_store_rating($store['rating'])
+    $ratings = \App\CentralLogics\StoreLogic::calculate_store_rating($store['rating'])
                                         @endphp
                                         {{ $ratings['rating'] }}
                                         </td>
@@ -163,7 +163,7 @@
 
                                     <td  >
                                         <label class="toggle-switch toggle-switch-sm" for="publishCheckbox{{$store->id}}">
-                                            <input type="checkbox" data-url="{{route('admin.store.recommended_store_status',[$store['id'],$store->storeConfig->is_recommended?0:1])}}" class="toggle-switch-input redirect-url" id="publishCheckbox{{$store->id}}" {{$store->storeConfig->is_recommended?'checked':''}}>
+                                            <input type="checkbox" data-url="{{route('admin.store.recommended_store_status', [$store['id'], $store->storeConfig->is_recommended ? 0 : 1])}}" class="toggle-switch-input redirect-url" id="publishCheckbox{{$store->id}}" {{$store->storeConfig->is_recommended ? 'checked' : ''}}>
                                             <span class="toggle-switch-label mx-auto">
                                                 <span class="toggle-switch-indicator"></span>
                                             </span>
@@ -173,7 +173,7 @@
                                         <div class="btn--container justify-content-center">
                                             <a class="btn action-btn btn--danger btn-outline-danger form-alert" href="javascript:" data-id="item-{{$store['id']}}" data-message="{{ translate('Want_to_remove_the_store_from_the_list?') }}" title="{{translate('messages.delete')}}"><i class="tio-delete-outlined"></i>
                                             </a>
-                                            <form action="{{route('admin.store.recommended_store_remove',[$store['id']])}}"
+                                            <form action="{{route('admin.store.recommended_store_remove', [$store['id']])}}"
                                                     method="post" id="item-{{$store['id']}}">
                                                 @csrf @method('delete')
                                             </form>
@@ -215,25 +215,29 @@
         let name = $(this).val();
         if (name.length > 0) {
             $("#hide_class").addClass('d-flex search-result-box').removeClass('d-none');
-            $("#hide_class_2").addClass('d-none');
 
-            $.get("{{ route('admin.get_all_stores') }}", { name: name }, function(response) {
+            $.get("{{ route('admin.get_all_stores') }}", { name: name, exclude_recommended: 1 }, function(response) {
                 $('.search-result-box').empty().html(response.result);
             });
+        }else{
+            $("#hide_class").empty().removeClass('d-flex search-result-box').addClass('d-none');
         }
     });
 
 
         function selected_stores(key, remove=false) {
+            key = parseInt(key);
             if(remove == true){
                 selected_store_ids = selected_store_ids.filter(function(e) { return e !== key })
             }else{
+                if(selected_store_ids.includes(key)){
+                    return;
+                }
                 selected_store_ids.push(key);
             }
 
-            $("#hide_class").removeClass('d-flex');
-            $("#hide_class").removeClass('search-result-box');
-            $("#hide_class").addClass('d-none');
+            $('.search-bar-input').val('');
+            $("#hide_class").empty().removeClass('d-flex search-result-box').addClass('d-none');
             $("#hide_class_2").removeClass('d-none');
 
             $('#store_ids').val(selected_store_ids);
@@ -244,10 +248,9 @@
 
 
         $('.remove_all_data').on('click', function () {
-            $("#hide_class").removeClass('d-flex');
-            $("#hide_class").removeClass('search-result-box');
-            $("#hide_class").addClass('d-none');
-            $("#hide_class_2").addClass('d-none');
+            $("#hide_class").empty().removeClass('d-flex search-result-box').addClass('d-none');
+            $("#hide_class_2").empty().addClass('d-none');
+            $('.search-bar-input').val('');
             selected_store_ids = [];
             $('#store_ids').val(null);
         })

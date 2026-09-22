@@ -17,11 +17,8 @@
                         <div class="col-lg-4 col-md-6">
                             <label class="form-label">{{ translate('Date Range') }}</label>
                             <div class="position-relative">
-                                @php
-                                    $dataRange = Carbon\Carbon::parse($startDate)->format('m/d/Y') . ' - ' . Carbon\Carbon::parse($endDate)->format('m/d/Y');
-                                @endphp
                                 <i class="tio-calendar-month icon-absolute-on-right"></i>
-                                <input type="text" data-title="{{ translate('Select_Date_Range') }}" name="dates" value="{{ $dataRange  ?? null }}" class="date-range-picker form-control">
+                                <input type="text" data-title="{{ translate('Select_Date_Range') }}" name="dates" value="{{ $dateRange ?? null }}" class="date-range-picker form-control">
                             </div>
                         </div>
                         <div class="col-lg-4 col-md-6">
@@ -29,7 +26,7 @@
                             <select name="store_id" data-placeholder="{{ translate('Select Vendor') }}"
                                 class="js-data-example-ajax form-control  custom-select custom-select-color border rounded w-100">
                                 @if (isset($store))
-                                    <option value="{{ $store->id }}" selected>{{ $store->name }}</option>
+                                    <option value="{{ $store->id }}" data-verified="{{ (int) $store->verified_seller }}" selected>{{ $store->name }}</option>
                                 @else
                                     <option value="all" selected>{{ translate('messages.all_vendors') }}</option>
                                 @endif
@@ -94,7 +91,7 @@
                                 <button type="submit" class="btn btn--secondary"><i class="tio-search"></i></button>
                             </div>
                         </form>
-                        @if (request()->get('search'))
+                        @if (request()->input('search'))
                             <button type="reset" class="btn btn--primary ml-2 location-reload-to-base"
                                 data-url="{{ url()->full() }}">{{ translate('messages.reset') }}</button>
                         @endif
@@ -107,7 +104,7 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="hs-unfold mr-2">
+                        <div class="hs-unfold mr-2 flex-grow-0">
                             <a class="js-hs-unfold-invoker btn btn-sm btn-white dropdown-toggle h--40px" href="javascript:;"
                                 data-hs-unfold-options='{
                             "target": "#usersExportDropdown", "type": "css-animation" }'>
@@ -126,7 +123,7 @@
                                     <img class="avatar avatar-xss avatar-4by3 mr-2"
                                         src="{{ asset('public/assets/admin') }}/svg/components/placeholder-csv-format.svg"
                                         alt="Image Description">
-                                    .{{ translate('messages.csv') }}
+                                    {{ translate('messages.csv') }}
                                 </a>
                             </div>
                         </div>
@@ -240,11 +237,20 @@
     <script>
 
         "use strict";
-
+        $(function() {
+            $('input[name="dates"]').daterangepicker({
+                startDate: moment('{{ $startDate }}'),
+                endDate: moment('{{ $endDate }}'),
+                maxDate: moment(),
+                locale: {
+                    format: 'MM/DD/YYYY'
+                }
+            });
+        });
         $(document).on('ready', function() {
             $('.js-data-example-ajax').select2({
                 ajax: {
-                    url: '{{ url('/') }}/admin/store/get-stores',
+                    url: '{{ route('admin.store.get-stores') }}',
                     data: function(params) {
                         return {
                             q: params.term, // search term

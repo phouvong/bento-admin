@@ -2,17 +2,22 @@
 
 namespace App\Models;
 
+use App\Traits\HandlesMissingAddonRelations;
+use App\Traits\ReportFilter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Rental\Entities\Trips;
+use Modules\RideShare\Entities\TripManagement\RideRequest;
+use Modules\Service\Entities\ServiceBooking;
 
 class Expense extends Model
 {
-    use HasFactory;
+    use HandlesMissingAddonRelations, HasFactory, ReportFilter;
     protected $casts = [
         'id' => 'integer',
         'order_id' => 'integer',
         'store_id' => 'integer',
+        'ride_id' => 'integer',
         'amount' => 'float',
         'created_at' => 'datetime',
     ];
@@ -43,6 +48,36 @@ class Expense extends Model
 
     public function trip()
     {
+        if (! addon_published_status('Rental')) {
+            return $this->missingAddonRelation('trip_id');
+        }
+
         return $this->belongsTo(Trips::class, 'trip_id');
+    }
+
+    public function ride()
+    {
+        if (! addon_published_status('RideShare')) {
+            return $this->missingAddonRelation('ride_id');
+        }
+
+        return $this->belongsTo(RideRequest::class, 'ride_id');
+    }
+
+    public function serviceBooking()
+    {
+        if (! addon_published_status('Service')) {
+            return $this->missingAddonRelation('service_booking_id');
+        }
+
+        return $this->belongsTo(ServiceBooking::class, 'service_booking_id');
+    }
+
+    public function scopeWithoutAddon($query)
+    {
+        return $query
+            ->whereNull('ride_id')
+            ->whereNull('trip_id')
+            ->whereNull('service_booking_id');
     }
 }

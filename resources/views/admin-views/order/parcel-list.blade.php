@@ -47,7 +47,7 @@
                         <!-- End Search -->
                     </form>
 
-                    @if(request()->get('search'))
+                    @if(request()->input('search'))
                         <button type="reset" class="btn btn--primary ml-2 location-reload-to-base"
                                 data-url="{{url()->full()}}">{{translate('messages.reset')}}</button>
                     @endif
@@ -304,7 +304,7 @@
                                     </a>
                                 @elseif($order->customer)
 
-                                    <a class="text-body" href="{{route('admin.customer.view',[$order['user_id']])}}">
+                                    <a class="text-body" href="{{route('admin.users.customer.view',[$order['user_id']])}}">
                                         <strong>
                                             <div> {{$order->customer['f_name'].' '.$order->customer['l_name']}}</div>
                                         </strong>

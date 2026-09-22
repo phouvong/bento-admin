@@ -45,6 +45,8 @@ trait ActivationClass
         foreach ($apps as $app) {
             $appConfig[$app] = [
                 "active" => "0",
+                "name" => "",
+                "email" => "",
                 "username" => "",
                 "purchase_key" => "",
                 "software_id" => "",
@@ -60,12 +62,14 @@ trait ActivationClass
         return 60 * 60 * 24 * $days;
     }
 
-    public function getRequestConfig(string|null $username = null, string|null $purchaseKey = null, string|null $softwareId = null, string|null $softwareType = null): array
+    public function getRequestConfig(string|null $name = null, string|null $email = null, string|null $username = null, string|null $purchaseKey = null, string|null $softwareId = null, string|null $softwareType = null): array
     {
         $activeStatus = base64_encode(1);
         if(!$this->is_local()) {
             try {
                 $response = Http::post(base64_decode('aHR0cHM6Ly9jaGVjay42YW10ZWNoLmNvbS9hcGkvdjIvcmVnaXN0ZXItZG9tYWlu'), [
+                    base64_decode('bmFtZQ==') => trim($name),
+                    base64_decode('ZW1haWw=') => trim($email),
                     base64_decode('dXNlcm5hbWU=') => trim($username),
                     base64_decode('cHVyY2hhc2Vfa2V5') => $purchaseKey,
                     base64_decode('c29mdHdhcmVfaWQ=') => base64_decode($softwareId ?? SOFTWARE_ID),
@@ -80,6 +84,8 @@ trait ActivationClass
 
         return [
             "active" => base64_decode($activeStatus),
+            "name" => trim($name),
+            "email" => trim($email),
             "username" => trim($username),
             "purchase_key" => $purchaseKey,
             "software_id" => $softwareId ?? SOFTWARE_ID,

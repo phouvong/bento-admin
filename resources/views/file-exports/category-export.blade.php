@@ -1,6 +1,9 @@
+@php
+    $isSubCategory = $data['isSubCategory'] ?? false;
+@endphp
 <div class="row">
     <div class="col-lg-12 text-center ">
-        <h1> {{ translate('Category_List') }}
+        <h1> {{ $isSubCategory ? translate('Sub_Category_List') : translate('Category_List') }}
         </h1>
     </div>
     <div class="col-lg-12">
@@ -20,11 +23,14 @@
 
                 <tr>
                     <th>{{ translate('sl') }}</th>
-                    <th>{{ translate('Category_Name') }}</th>
-                    <th>{{ translate('Category_ID') }}</th>
+                    <th>{{ $isSubCategory ? translate('Sub_Category_Name') : translate('Category_Name') }}</th>
+                    <th>{{ $isSubCategory ? translate('Sub_Category_ID') : translate('Category_ID') }}</th>
                     <th>{{ translate('Module') }}</th>
                     <th>{{ translate('Priority') }}</th>
+                    @if (isset($data['module'])  && $data['module'] == 'ecommerce')
                     <th>{{ translate('Featured') }}</th>
+
+                    @endif
                     @if ($data['categoryWiseTax'])
                         <th class="border-0 w--1">{{ translate('messages.Vat/Tax') }}</th>
                     @endif
@@ -46,7 +52,9 @@
                             };
                         @endphp
                         <td>{{ $return_value }}</td>
-                        <td>{{ $category->featured == 1 ? translate('messages.Yes') : '--' }} </td>
+                         @if (isset($data['module'])  && $data['module'] == 'ecommerce')
+                         <td>{{ $category->featured == 1 ? translate('messages.Yes') : '--' }} </td>
+                        @endif
                         @if ($data['categoryWiseTax'])
                         <td>
                             <span class="d-block font-size-sm text-body">

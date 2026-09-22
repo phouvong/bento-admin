@@ -25,9 +25,9 @@ class DeliveryManController extends Controller
 
     public function list(Request $request)
     {
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
         $delivery_men = DeliveryMan::where('store_id', Helpers::get_store_id())
-                 ->when( isset($key) , function($query) use($key){
+                 ->when( $request['search'] , function($query) use($key){
                     $query->where(function ($q) use ($key) {
                         foreach ($key as $value) {
                             $q->orWhere('f_name', 'like', "%{$value}%")
@@ -72,6 +72,7 @@ class DeliveryManController extends Controller
             'email' => 'required|unique:delivery_men',
             'phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|unique:delivery_men',
             'password' => ['required', Password::min(8)->mixedCase()->letters()->numbers()->symbols()->uncompromised()],
+            'image' => 'required|image|max:2048|mimes:'.IMAGE_FORMAT_FOR_VALIDATION,
         ]);
 
         if ($validator->fails()) {
@@ -111,7 +112,10 @@ class DeliveryManController extends Controller
         $dm->password = bcrypt($request->password);
         $dm->save();
 
-        return response()->json(['message' => translate('messages.deliveryman_added_successfully')], 200);
+        return response()->json([
+            'message' => translate('messages.deliveryman_added_successfully'),
+            'redirect' => route('vendor.delivery-man.list')
+        ], 200);
 
     }
 
@@ -252,7 +256,10 @@ class DeliveryManController extends Controller
             $userinfo->save();
         }
 
-        return response()->json(['message' => translate('messages.deliveryman_updated_successfully')], 200);
+        return response()->json([
+            'message' => translate('messages.deliveryman_updated_successfully'),
+            'redirect' => route('vendor.delivery-man.list')
+        ], 200);
 
     }
 
@@ -315,7 +322,7 @@ class DeliveryManController extends Controller
 
 
     public function transaction_search(Request $request){
-        $key = explode(' ', $request['search']);
+        $key = explode(' ', $request['search'] ?? '');
         $digital_transaction=OrderTransaction::where(function ($q) use ($key) {
             foreach ($key as $value) {
                 $q->orWhere('order_id', 'like', "%{$value}%");

@@ -11,17 +11,16 @@ use App\Exports\CouponExport;
 use App\Http\Controllers\BaseController;
 use App\Http\Requests\Admin\CouponAddRequest;
 use App\Http\Requests\Admin\CouponUpdateRequest;
-use App\Models\Coupon as ModelsCoupon;
 use App\Models\User;
 use App\Models\Zone;
 use App\Services\CouponService;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 use Maatwebsite\Excel\Facades\Excel;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -37,8 +36,13 @@ class CouponController extends BaseController
     {
     }
 
-    public function index(?Request $request): View|Collection|LengthAwarePaginator|null
+    public function index(?Request $request): View|Collection|LengthAwarePaginator|RedirectResponse|null
     {
+        if (Config::get('module.current_module_type') === 'parcel') {
+            Toastr::error(translate('messages.coupon_is_not_available_for_parcel_module'));
+            return back();
+        }
+
         return $this->getAddView($request);
     }
 
@@ -84,6 +88,11 @@ class CouponController extends BaseController
 
     public function updateStatus(Request $request): RedirectResponse
     {
+        $coupon = $this->couponRepo->getFirstWhere(params: ['id' => $request['id']]);
+        if ($request['status'] == 1 && Carbon::parse($coupon->expire_date)->startOfDay() < Carbon::today()) {
+            Toastr::warning(translate('messages.this_coupon_is_expired_and_cannot_be_activated'));
+            return back();
+        }
         $this->couponRepo->update(id: $request['id'] ,data: ['status'=>$request['status']]);
         Toastr::success(translate('messages.coupon_status_updated'));
         return back();
@@ -123,5 +132,11 @@ class CouponController extends BaseController
           return response()->json([
             'view' => view('admin-views.coupon._view', compact('coupon','selectedCustomers','zoneData'))->render(),
         ]);
+    }
+
+    public function generateCheckCode(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $code = $this->couponService->getUniqueCouponCode(title: $request['title']);
+        return response()->json($code);
     }
 }

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\CentralLogics\Helpers;
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
+use App\Models\AutomatedMessage;
 use App\Models\Conversation;
 use App\Models\DeliveryMan;
 use App\Models\UserInfo;
@@ -13,9 +15,10 @@ use App\Models\Vendor;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Modules\Rental\Entities\Trips;
+use Modules\Service\Entities\ServiceBooking;
+use Modules\RideShare\Entities\TripManagement\RideRequest;
 
 class ConversationController extends Controller
 {
@@ -152,7 +155,7 @@ class ConversationController extends Controller
                 if($request->receiver_type == 'admin' || $receiver_id == 0){
                     $data = [
                         'title' =>translate('messages.message'),
-                        'description' =>translate('messages.message_description'),
+                        'description' =>$message->message ?? translate('attachment'),
                         'order_id' => '',
                         'image' => '',
                         'message' => json_encode($message) ,
@@ -162,7 +165,7 @@ class ConversationController extends Controller
                 }else if($request->receiver_type == 'vendor' || $request->receiver_type == 'delivery_man'){
                     $data = [
                         'title' =>translate('messages.message'),
-                        'description' =>translate('messages.message_description'),
+                        'description' =>$message->message ?? translate('attachment'),
                         'order_id' => '',
                         'image' => '',
                         'message' => json_encode($message) ,
@@ -214,9 +217,15 @@ class ConversationController extends Controller
         }else if($conv->sender_type == 'delivery_man' && $conversation->sender){
             $user2 = DeliveryMan::find($conv->sender->deliveryman_id);
             $order = Order::where('user_id',$request->user()->id)->where('delivery_man_id', $user2->id)->whereIn('order_status', ['pending','accepted','confirmed','processing','handover','picked_up'])->count();
+            if(($order <= 0) && addon_published_status('RideShare')){
+                $order = RideRequest::where('customer_id',$request->user()->id)->where('driver_id', $user2->id)->whereIn('current_status', ['pending','accepted','ongoing'])->count();
+            }
         }else if($conv->receiver_type == 'delivery_man' && $conversation->receiver){
             $user2 = DeliveryMan::find($conv->receiver->deliveryman_id);
             $order = Order::where('user_id',$request->user()->id)->where('delivery_man_id', $user2->id)->whereIn('order_status', ['pending','accepted','confirmed','processing','handover','picked_up'])->count();
+            if(($order <= 0) && addon_published_status('RideShare')){
+                $order = RideRequest::where('customer_id',$request->user()->id)->where('driver_id', $user2->id)->whereIn('current_status', ['pending','accepted','ongoing'])->count();
+            }
         }
         else{
             $order=1;
@@ -378,11 +387,11 @@ class ConversationController extends Controller
                 $vd = Vendor::find($request->vendor_id);
                 $vendor = new UserInfo();
                 $vendor->vendor_id = $vd->id;
-                $vendor->f_name = $vd->stores[0]->name;
+                $vendor->f_name = $vd->store?->name;
                 $vendor->l_name = '';
                 $vendor->phone = $vd->phone;
                 $vendor->email = $vd->email;
-                $vendor->image = $vd->stores[0]->logo;
+                $vendor->image = $vd->store?->logo;
                 $vendor->save();
             }
             $conversation = Conversation::with(['sender','receiver','last_message'])->WhereConversation($user->id,$vendor->id)->first();
@@ -407,6 +416,8 @@ class ConversationController extends Controller
                 $vd = Vendor::find($conversation->sender->vendor_id);
                 if($vd?->store?->module_type == 'rental' && addon_published_status('Rental')){
                     $order = Trips::where('user_id',$request->user()->id)->where('provider_id', $vd->store->id)->whereIn('trip_status',['pending','confirmed','ongoing','completed'])->where('payment_status' ,'unpaid')->count();
+                } else if($vd?->store?->module_type == 'service' && addon_published_status('Service')){
+                    $order = ServiceBooking::where('user_id',$request->user()->id)->where('provider_id', $vd->store->id)->whereIn('booking_status', ServiceBooking::ACTIVE_STATUSES)->count();
                 } else{
                     $order = Order::where('user_id',$request->user()->id)->where('store_id', $vd->stores[0]->id)->whereIn('order_status', ['pending','accepted','confirmed','processing','handover','picked_up'])->count();
                 }
@@ -415,15 +426,23 @@ class ConversationController extends Controller
                 $vd = Vendor::find($conversation->receiver->vendor_id);
                 if($vd?->store?->module_type == 'rental' && addon_published_status('Rental')){
                     $order = Trips::where('user_id',$request->user()->id)->where('provider_id', $vd->store->id)->whereIn('trip_status',['pending','confirmed','ongoing','completed'])->where('payment_status' ,'unpaid')->count();
+                } else if($vd?->store?->module_type == 'service' && addon_published_status('Service')){
+                    $order = ServiceBooking::where('user_id',$request->user()->id)->where('provider_id', $vd->store->id)->whereIn('booking_status', ServiceBooking::ACTIVE_STATUSES)->count();
                 } else{
                     $order = Order::where('user_id',$request->user()->id)->where('store_id', $vd->stores[0]->id)->whereIn('order_status', ['pending','accepted','confirmed','processing','handover','picked_up'])->count();
                 }
             }else if($conversation->sender_type == 'delivery_man' && $conversation->sender){
                 $user2 = DeliveryMan::find($conversation->sender->deliveryman_id);
                 $order = Order::where('user_id',$user->user_id)->where('delivery_man_id', $user2->id)->whereIn('order_status', ['pending','accepted','confirmed','processing','handover','picked_up'])->count();
+                if(($order <= 0) && addon_published_status('RideShare')){
+                    $order = RideRequest::where('driver_id',$user2->id)->where('customer_id', $user->user_id)->whereIn('current_status', ['pending','accepted','ongoing'])->count();
+                }
             }else if($conversation->receiver_type == 'delivery_man' && $conversation->receiver){
                 $user2 = DeliveryMan::find($conversation->receiver->deliveryman_id);
                 $order = Order::where('user_id',$user->user_id)->where('delivery_man_id', $user2->id)->whereIn('order_status', ['pending','accepted','confirmed','processing','handover','picked_up'])->count();
+                if(($order <= 0) && addon_published_status('RideShare')){
+                    $order = RideRequest::where('driver_id',$user2->id)->where('customer_id', $user->user_id)->whereIn('current_status', ['pending','accepted','ongoing'])->count();
+                }
             }
             else{
                 $order=1;
@@ -509,6 +528,8 @@ class ConversationController extends Controller
                 }elseif($receiver->user_id){
                     $user = User::find($receiver->user_id);
                     $fcm_token=$user->cm_firebase_token;
+                }elseif($receiver->admin_id){
+                    $receiver_id = 0;
                 }
             }else{
                 $receiver_id =$conversation->sender_id;
@@ -520,10 +541,14 @@ class ConversationController extends Controller
                 }elseif($receiver->user_id){
                     $user = User::find($receiver->user_id);
                     $fcm_token=$user->cm_firebase_token;
+                }elseif($receiver->admin_id){
+                    $receiver_id = 0;
                 }
             }
         }else{
-            if($request->receiver_type == 'vendor'){
+            if($request->receiver_type == 'admin'){
+                $receiver_id = 0;
+            }else if($request->receiver_type == 'vendor'){
                 $receiver = UserInfo::where('vendor_id',$request->receiver_id)->first();
                 $vendor = Vendor::find($request->receiver_id);
 
@@ -566,7 +591,7 @@ class ConversationController extends Controller
             $conversation = new Conversation;
             $conversation->sender_id = $sender->id;
             $conversation->sender_type = 'delivery_man';
-            $conversation->receiver_id = $receiver->id;
+            $conversation->receiver_id = $receiver_id;
             $conversation->receiver_type = $request->receiver_type;
             $conversation->unread_message_count = 0;
             $conversation->last_message_time = Carbon::now()->toDateTimeString();
@@ -583,25 +608,37 @@ class ConversationController extends Controller
             $message->file = json_encode($image_name, JSON_UNESCAPED_SLASHES);
         }
         try {
-            if($message->save())
-            $conversation->unread_message_count = $conversation->unread_message_count? $conversation->unread_message_count+1:1;
-            $conversation->last_message_id=$message->id;
-            $conversation->last_message_time = Carbon::now()->toDateTimeString();
-            $conversation->save();
-            {
-                $data = [
-                    'title' =>translate('messages.message_from')." ".$sender->f_name,
-                    'description' => $message->message ?? translate('attachment'),
-                    'order_id' => '',
-                    'image' => '',
-                    'message' => json_encode($message) ,
-                    'type'=> 'message',
-                    'conversation_id'=> $conversation->id,
-                    'sender_type'=> 'delivery_man'
-                ];
-                Helpers::send_push_notif_to_device($fcm_token, $data);
-                if($fcm_token_web){
-                    Helpers::send_push_notif_to_topic($data, $fcm_token_web, 'message');
+            if($message->save()) {
+                $conversation->unread_message_count = $conversation->unread_message_count? $conversation->unread_message_count+1:1;
+                $conversation->last_message_id=$message->id;
+                $conversation->last_message_time = Carbon::now()->toDateTimeString();
+                if($conversation->save()) {
+                    if($request->receiver_type == 'admin' || $receiver_id == 0){
+                        $data = [
+                            'title' =>translate('messages.message'),
+                            'description' =>$message->message ?? translate('attachment'),
+                            'order_id' => '',
+                            'image' => '',
+                            'message' => json_encode($message) ,
+                            'type'=> 'message'
+                        ];
+                        Helpers::send_push_notif_to_topic($data,'admin_message','message');
+                    }else {
+                        $data = [
+                            'title' =>translate('messages.message_from')." ".$sender->f_name,
+                            'description' => $message->message ?? translate('attachment'),
+                            'order_id' => '',
+                            'image' => '',
+                            'message' => json_encode($message) ,
+                            'type'=> 'message',
+                            'conversation_id'=> $conversation->id,
+                            'sender_type'=> 'delivery_man'
+                        ];
+                        Helpers::send_push_notif_to_device($fcm_token, $data);
+                        if($fcm_token_web){
+                            Helpers::send_push_notif_to_topic($data, $fcm_token_web, 'message');
+                        }
+                    }
                 }
             }
 
@@ -622,12 +659,18 @@ class ConversationController extends Controller
         }else if($conv->sender_type == 'customer' && $conversation->sender){
             $user = User::find($conv->sender->user_id);
             $order = Order::where('delivery_man_id',$dm->id)->where('user_id', $user->id)->whereIn('order_status', ['pending','accepted','confirmed','processing','handover','picked_up'])->count();
+            if(($order <= 0) && addon_published_status('RideShare')){
+                $order = RideRequest::where('driver_id',$dm->id)->where('customer_id', $user->id)->whereIn('current_status', ['pending','accepted','ongoing'])->count();
+            }
         }else if($conv->receiver_type == 'customer' && $conversation->receiver){
             $user = User::find($conv->receiver->user_id);
             $order = Order::where('delivery_man_id',$dm->id)->where('user_id', $user->id)->whereIn('order_status', ['pending','accepted','confirmed','processing','handover','picked_up'])->count();
+            if(($order <= 0) && addon_published_status('RideShare')){
+                $order = RideRequest::where('driver_id',$dm->id)->where('customer_id', $user->id)->whereIn('current_status', ['pending','accepted','ongoing'])->count();
+            }
         }
         else{
-            $order=0;
+            $order=1;
         }
 
 
@@ -773,6 +816,9 @@ class ConversationController extends Controller
 
         if($request->conversation_id){
             $conversation = Conversation::with(['sender','receiver','last_message'])->find($request->conversation_id);
+        }else if($request->has('admin_id')){
+            $conversation = Conversation::with(['sender','receiver','last_message'])->WhereConversation($delivery_man->id,0)->first();
+            $order=0;
         }else if($request->vendor_id){
             $vendor = UserInfo::where('vendor_id', $request->vendor_id)->first();
             if(!$vendor){
@@ -815,12 +861,18 @@ class ConversationController extends Controller
             }else if($conversation->sender_type == 'customer' && $conversation->sender){
                 $user = User::find($conversation->sender->user_id);
                 $order = Order::where('delivery_man_id',$dm->id)->where('user_id', $user->id)->whereIn('order_status', ['pending','accepted','confirmed','processing','handover','picked_up'])->count();
+                if(($order <= 0) && addon_published_status('RideShare')){
+                    $order = RideRequest::where('driver_id',$dm->id)->where('customer_id', $user->id)->whereIn('current_status', ['pending','accepted','ongoing'])->count();
+                }
             }else if($conversation->receiver_type == 'customer' && $conversation->receiver){
                 $user = User::find($conversation->receiver->user_id);
                 $order = Order::where('delivery_man_id',$dm->id)->where('user_id', $user->id)->whereIn('order_status', ['pending','accepted','confirmed','processing','handover','picked_up'])->count();
+                if(($order <= 0) && addon_published_status('RideShare')){
+                    $order = RideRequest::where('driver_id',$dm->id)->where('customer_id', $user->id)->whereIn('current_status', ['pending','accepted','ongoing'])->count();
+                }
             }
             else{
-                $order=0;
+                $order=1;
             }
 
 
@@ -834,7 +886,7 @@ class ConversationController extends Controller
             $messages = Message::where(['conversation_id' => $conversation->id])->latest()->paginate($limit, ['*'], 'page', $offset);
         }else{
             $messages =[];
-            $order=0;
+            $order=1;
         }
 
         $data =  [
@@ -844,6 +896,128 @@ class ConversationController extends Controller
             'status' => ($order>0)?true:false,
             'messages' => $messages? $messages->items():[],
             'conversation' => $conversation
+        ];
+        return response()->json($data, 200);
+    }
+
+
+    public function dm_auto_messages_store(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'question_id' => 'required'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => Helpers::error_processor($validator)], 403);
+        }
+
+        $limit = $request['limit']??10;
+        $offset = $request['offset']??1;
+
+        $dm = DeliveryMan::where(['auth_token' => $request['token']])->first();
+
+        $sender = UserInfo::where('deliveryman_id', $dm->id)->first();
+        if(!$sender){
+            $sender = new UserInfo();
+            $sender->deliveryman_id = $dm->id;
+            $sender->f_name = $dm->f_name;
+            $sender->l_name = $dm->l_name;
+            $sender->phone = $dm->phone;
+            $sender->email = $dm->email;
+            $sender->image = $dm->image;
+            $sender->save();
+        }
+
+        $admin = Admin::where('role_id',1)->first();
+        $receiver = UserInfo::where('admin_id',$admin->id)->first();
+        if(!$receiver){
+            $receiver = new UserInfo();
+            $receiver->admin_id = $admin->id;
+            $receiver->f_name = $admin->f_name;
+            $receiver->l_name = $admin->l_name;
+            $receiver->phone = $admin->phone;
+            $receiver->email = $admin->email;
+            $receiver->image = $admin->image;
+            $receiver->save();
+        }
+
+        $receiver_id = 0;
+
+        $conversation = Conversation::WhereConversation($sender->id,$receiver_id)->first();
+
+        if(!$conversation){
+            $conversation = new Conversation;
+            $conversation->sender_id = $sender->id;
+            $conversation->sender_type = 'delivery_man';
+            $conversation->receiver_id = $receiver_id;
+            $conversation->receiver_type = 'admin';
+            $conversation->unread_message_count = 0;
+            $conversation->last_message_time = Carbon::now()->toDateTimeString();
+            $conversation->save();
+            $conversation= Conversation::find($conversation->id);
+        }
+
+        $automated_message = AutomatedMessage::rider()->where('id', $request->question_id)->first();
+
+        $message = new Message();
+        $message->conversation_id = $conversation->id;
+        $message->sender_id = $sender->id;
+        $message->message = $automated_message->question;
+        try {
+            if($message->save())
+            $reply_time = Carbon::now()->addSeconds(2);
+            $message = new Message();
+            $message->conversation_id = $conversation->id;
+            $message->sender_id = $receiver->id;
+            $message->message = $automated_message->message;
+            $message->created_at = $reply_time;
+            $message->updated_at = $reply_time;
+            $message->save();
+            $conversation->unread_message_count = $conversation->unread_message_count? $conversation->unread_message_count+1:1;
+            $conversation->last_message_id=$message->id;
+            $conversation->last_message_time = $reply_time;
+            $conversation->save();
+            {
+                $data = [
+                    'title' =>translate('messages.message'),
+                    'description' =>$message->message ?? translate('attachment'),
+                    'order_id' => '',
+                    'image' => '',
+                    'message' => json_encode($message) ,
+                    'type'=> 'message'
+                ];
+                Helpers::send_push_notif_to_topic($data,'admin_message','message');
+
+                $data = [
+                    'title' =>translate('messages.message_from_admin'),
+                    'description' => $message->message ?? translate('attachment'),
+                    'order_id' => '',
+                    'image' => '',
+                    'message' => json_encode($message),
+                    'type'=> 'message',
+                    'conversation_id'=> $conversation->id,
+                    'sender_type'=> 'admin'
+                ];
+                Helpers::send_push_notif_to_device($dm->fcm_token, $data);
+
+            }
+
+        } catch (\Exception $e) {
+            info($e->getMessage());
+        }
+
+        $messages = Message::where(['conversation_id' => $conversation->id])->latest()->paginate($limit, ['*'], 'page', $offset);
+
+        $conv = Conversation::with('sender','receiver','last_message')->find($conversation->id);
+
+        $data =  [
+            'total_size' => intval($messages->total()),
+            'limit' => intval($limit),
+            'offset' => intval($offset),
+            'status' => true,
+            'message' => 'successfully sent!',
+            'messages' => $messages->items(),
+            'conversation' => $conv,
         ];
         return response()->json($data, 200);
     }

@@ -94,8 +94,9 @@
                             <tr>
                                 <td>{{ translate('messages.delivery_charge') }}</td>
                                 <td class="text-center">1</td>
-                                <td>{{ \App\CentralLogics\Helpers::format_currency($order->delivery_charge) }}</td>
+                                <td>{{ \App\CentralLogics\Helpers::format_currency(\App\CentralLogics\DeliveryFeeLogic::proDeliveryBreakdown($order)['original_fee']) }}</td>
                             </tr>
+                            @include('partials.pro-delivery-discount-row', ['order' => $order, 'layout' => 'tr_parcel'])
                         @else
                             @php($sub_total = 0)
                             @php($total_tax = 0)
@@ -213,6 +214,13 @@
                                 -
                                 {{ \App\CentralLogics\Helpers::format_currency($order['coupon_discount_amount']) }}
                             </dd>
+                            @if (($order->orderProDiscount?->amount_saved ?? 0) > 0)
+                                <dt class="col-6">{{ translate('messages.Pro_Discount') }}:</dt>
+                                <dd class="col-6">
+                                    -
+                                    {{ \App\CentralLogics\Helpers::format_currency($order->orderProDiscount->amount_saved) }}
+                                </dd>
+                            @endif
                             @if ($order->tax_status == 'excluded' || $order->tax_status == null)
                                 <dt class="col-6">{{ translate('messages.vat/tax') }}:</dt>
                                 <dd class="col-6">+
@@ -225,9 +233,11 @@
                             </dd>
                             <dt class="col-6">{{ translate('messages.delivery_charge') }}:</dt>
                             <dd class="col-6">
-                                @php($del_c = $order['delivery_charge'])
+                                @php($del_c = \App\CentralLogics\DeliveryFeeLogic::proDeliveryBreakdown($order)['original_fee'])
                                 {{ \App\CentralLogics\Helpers::format_currency($del_c) }}
                             </dd>
+                            @include('partials.pro-delivery-discount-row', ['order' => $order, 'layout' => 'dl'])
+                            @include('partials.delivery-type-row', ['order' => $order, 'layout' => 'dl'])
                         @else
                             <dt class="col-6">{{ translate('messages.delivery_man_tips') }}:</dt>
                             <dd class="col-6">
@@ -243,9 +253,11 @@
                         <div class="d-flex flex-row justify-content-between border-top">
                             <span>{{ translate('messages.Paid by') }}:
                                 {{ translate('messages.' . $order->payment_method) }}</span>
-                            <span>{{ translate('messages.amount') }}:
-                                {{ $order->adjusment + $order->order_amount }}</span>
-                            <span>{{ translate('messages.change') }}: {{ abs($order->adjusment) }}</span>
+                                @if ($order->payment_method != 'wallet')
+                                    <span>{{ translate('messages.amount') }}:
+                                        {{ $order->adjusment + $order->order_amount }}</span>
+                                    <span>{{ translate('messages.change') }}: {{ abs($order->adjusment) }}</span>
+                                @endif
                         </div>
                     @endif
                 </div>

@@ -43,7 +43,7 @@
                             <option {{  request()?->get('job_type') == 'salary_base' ? 'selected' : '' }}  value="salary_base">{{ translate('messages.Salary_Base') }}</option>
                         </select>
                     </div>
-                    @if(!isset(auth('admin')->user()->zone_id))
+                    @if(!auth('admin')?->user()?->zone_id)
                     <div class="min--200">
                         <select name="zone_id" class="form-control js-select2-custom set-filter" data-filter="zone_id"
                         data-url="{{ url()->full() }}">
@@ -61,13 +61,13 @@
                     <form class="search-form">
                         <div class="input-group input--group">
                             <input id="datatableSearch_" type="search" name="search" class="form-control h--45px"
-                            placeholder="{{translate('ex:_DM_name_email_or_phone')}}" value="{{ request()->get('search') }}" aria-label="Search" required>
+                            placeholder="{{translate('ex:_DM_name_email_or_phone')}}" value="{{ request()->input('search') }}" aria-label="Search" required>
                             <button type="submit" class="btn btn--secondary h--45px"><i class="tio-search"></i></button>
 
                         </div>
                         <!-- End Search -->
                     </form>
-                    @if(request()->get('search'))
+                    @if(request()->input('search'))
                     <button type="reset" class="btn btn--primary ml-2 location-reload-to-base" data-url="{{url()->full()}}">{{translate('messages.reset')}}</button>
                     @endif
 
@@ -94,7 +94,7 @@
                                 <img class="avatar avatar-xss avatar-4by3 mr-2"
                                     src="{{ asset('public/assets/admin') }}/svg/components/placeholder-csv-format.svg"
                                     alt="Image Description">
-                                .{{ translate('messages.csv') }}
+                                {{ translate('messages.csv') }}
                             </a>
                         </div>
                     </div>
@@ -110,7 +110,8 @@
                         data-hs-datatables-options='{
                             "order": [],
                             "orderCellsTop": true,
-                            "paging":false
+                            "paging":false,
+                            "columnDefs":[{"targets":[7],"orderable":false}]
                         }'>
                     <thead class="thead-light">
                     <tr>

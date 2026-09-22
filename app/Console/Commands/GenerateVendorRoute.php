@@ -141,38 +141,72 @@ class GenerateVendorRoute extends Command
             list($controllerClass, $method) = explode('@', $controller);
 
             if (class_exists($controllerClass) && method_exists($controllerClass, $method)) {
-                $reflectionMethod = new \ReflectionMethod($controllerClass, $method);
-                $filename = $reflectionMethod->getFileName();
-                $startLine = $reflectionMethod->getStartLine();
-                $endLine = $reflectionMethod->getEndLine();
+                return $this->extractViewPathFromMethod($controllerClass, $method, 0);
+            }
+        }
 
-                $file = file($filename);
-                $methodBody = implode('', array_slice($file, $startLine - 1, $endLine - $startLine + 1));
+        return null;
+    }
 
-                if (preg_match("/view\\(['\"](.*?)['\"]/", $methodBody, $matches)) {
-                    $bladePath = $matches[1];
+    private function extractViewPathFromMethod($controllerClass, $method, $depth)
+    {
+        if ($depth > 3 || !method_exists($controllerClass, $method)) {
+            return null;
+        }
 
-                    if (preg_match_all('/\{\$(\w+)\}/', $bladePath, $varMatches)) {
-                        $moduleTypes =config('module.module_type');
-                        $viewBasePaths =null;
+        $reflectionMethod = new \ReflectionMethod($controllerClass, $method);
+        $filename = $reflectionMethod->getFileName();
+        $startLine = $reflectionMethod->getStartLine();
+        $endLine = $reflectionMethod->getEndLine();
 
-                        foreach ($moduleTypes as $type) {
-                            $resolvedPath = $bladePath;
-                            foreach ($varMatches[1] as $varName) {
-                                $resolvedPath = str_replace('{$' . $varName . '}', $type, $resolvedPath);
-                            }
-                            $filePath = str_replace('.', '/', $resolvedPath);
-                            if (View::exists($filePath)) {
-                                $fullPath = View::getFinder()->find($filePath);
-                                if (file_exists($fullPath)) {
-                                    $viewBasePaths[$type] =$filePath;
-                                }
-                            }
-                        }
+        if (!$filename || !file_exists($filename)) {
+            return null;
+        }
 
-                        return $viewBasePaths;
+        $file = file($filename);
+        $methodBody = implode('', array_slice($file, $startLine - 1, $endLine - $startLine + 1));
+
+        if (preg_match("/view\\(['\"](.*?)['\"]/", $methodBody, $matches)) {
+            $bladePath = $matches[1];
+
+            if (preg_match_all('/\{\$(\w+)\}/', $bladePath, $varMatches)) {
+                $moduleTypes =config('module.module_type');
+                $viewBasePaths =null;
+
+                foreach ($moduleTypes as $type) {
+                    $resolvedPath = $bladePath;
+                    foreach ($varMatches[1] as $varName) {
+                        $resolvedPath = str_replace('{$' . $varName . '}', $type, $resolvedPath);
                     }
-                    return str_replace('.', '/', $bladePath);
+                    $filePath = str_replace('.', '/', $resolvedPath);
+                    if (View::exists($filePath)) {
+                        $fullPath = View::getFinder()->find($filePath);
+                        if (file_exists($fullPath)) {
+                            $viewBasePaths[$type] =$filePath;
+                        }
+                    }
+                }
+
+                return $viewBasePaths;
+            }
+            return str_replace('.', '/', $bladePath);
+        }
+
+        if (preg_match('/view\(\s*([\\\\A-Za-z0-9_]+)::([A-Za-z0-9_]+)\s*\[\s*VIEW\s*\]/', $methodBody, $enumMatches)) {
+            $enumViewPath = $this->resolveEnumViewPath($controllerClass, $enumMatches[1], $enumMatches[2]);
+            if ($enumViewPath) {
+                return str_replace('.', '/', $enumViewPath);
+            }
+        }
+
+        if (preg_match_all('/\$this->(\w+)\s*\(/', $methodBody, $calls)) {
+            foreach (array_unique($calls[1]) as $calledMethod) {
+                if ($calledMethod === $method) {
+                    continue;
+                }
+                $result = $this->extractViewPathFromMethod($controllerClass, $calledMethod, $depth + 1);
+                if ($result) {
+                    return $result;
                 }
             }
         }
@@ -180,7 +214,49 @@ class GenerateVendorRoute extends Command
         return null;
     }
 
-    function getTextDataFromBladeFile($viewPath): ? string
+    private function resolveEnumViewPath($controllerClass, $classRef, $const)
+    {
+        try {
+            $fqcn = $this->resolveClassReference($controllerClass, $classRef);
+            if ($fqcn && defined("$fqcn::$const")) {
+                $value = constant("$fqcn::$const");
+                if (is_array($value) && !empty($value['view'])) {
+                    return $value['view'];
+                }
+            }
+        } catch (\Throwable $exception) {
+        }
+        return null;
+    }
+
+    private function resolveClassReference($controllerClass, $classRef)
+    {
+        $classRef = ltrim($classRef, '\\');
+        if (str_contains($classRef, '\\')) {
+            return $classRef;
+        }
+        if (in_array($classRef, ['self', 'static'])) {
+            return $controllerClass;
+        }
+        $file = (new \ReflectionClass($controllerClass))->getFileName();
+        if (!$file || !file_exists($file)) {
+            return null;
+        }
+        $contents = file_get_contents($file);
+        if (preg_match_all('/use\s+([^\s;]+?)(?:\s+as\s+(\w+))?\s*;/', $contents, $uses, PREG_SET_ORDER)) {
+            foreach ($uses as $use) {
+                $fqcn = $use[1];
+                $alias = $use[2] ?? null;
+                $name = $alias ?: substr(strrchr('\\' . $fqcn, '\\'), 1);
+                if ($name === $classRef) {
+                    return $fqcn;
+                }
+            }
+        }
+        return null;
+    }
+
+    function getTextDataFromBladeFile($viewPath, $depth = 0): ? string
     {
         try {
             if (!$viewPath) {
@@ -194,24 +270,19 @@ class GenerateVendorRoute extends Command
                 return null;
             }
 
-            $pattern = "/translate\('([^']+)'\)/";
-            $textData = [];
-
             $content = File::get($viewFilePath);
-            preg_match_all($pattern, $content, $matches);
+            $textData = $this->extractTranslateStrings($content);
 
-            if (!empty($matches[1])) {
-                foreach ($matches[1] as $text) {
-                    $cleanedText = preg_replace("/^messages\./", "", $text);
-                    $cleanedText = preg_replace("/[_:\?\.,-]+/", " ", $cleanedText);
-                    $cleanedText = preg_replace("/\d+/", "", $cleanedText);
-                    $cleanedText = preg_replace("/\s+/", " ", trim($cleanedText));
-
-                    $textData[] = $cleanedText;
+            if ($depth < 2 && preg_match_all("/@include(?:If|First)?\(\s*['\"]([^'\"]+)['\"]/", $content, $includeMatches)) {
+                foreach (array_unique($includeMatches[1]) as $partialPath) {
+                    $partialText = $this->getTextDataFromBladeFile($partialPath, $depth + 1);
+                    if ($partialText) {
+                        $textData = array_merge($textData, explode(' ', $partialText));
+                    }
                 }
             }
 
-            $textData = array_unique($textData);
+            $textData = array_values(array_unique(array_filter($textData)));
             $finalText = implode(" ", $textData);
 
             return trim($finalText);
@@ -222,12 +293,35 @@ class GenerateVendorRoute extends Command
         }
     }
 
+    private function extractTranslateStrings($content): array
+    {
+        $textData = [];
+        if (preg_match_all("/translate\('([^']+)'\)/", $content, $matches) && !empty($matches[1])) {
+            foreach ($matches[1] as $text) {
+                $cleanedText = preg_replace("/^messages\./", "", $text);
+                $cleanedText = preg_replace("/[_:\?\.,-]+/", " ", $cleanedText);
+                $cleanedText = preg_replace("/\d+/", "", $cleanedText);
+                $cleanedText = preg_replace("/\s+/", " ", trim($cleanedText));
+
+                if ($cleanedText !== '') {
+                    $textData[] = $cleanedText;
+                }
+            }
+        }
+        return $textData;
+    }
+
     private function manualyAddedBladePath($formattedRoutes): array
     {
         $array = [
             'vendor-views.product.bulk-export' => ['vendor-panel/item/bulk-export'],
             'vendor-views.messages.index' => ['vendor-panel/message/list'],
             'vendor-views.business-settings.restaurant-index' => ['vendor-panel/business-settings/store-setup'],
+            'vendor-views.order.list' => ['vendor-panel/order/list/all','vendor-panel/order/list/pending','vendor-panel/order/list/confirmed','vendor-panel/order/list/cooking','vendor-panel/order/list/ready_for_delivery','vendor-panel/order/list/item_on_the_way','vendor-panel/order/list/delivered','vendor-panel/order/list/refunded','vendor-panel/order/list/scheduled'],
+
+            // Service module vendor dashboard (excluded from auto-scan because the controller returns response()->json for ajax stats)
+            'service::vendor.dashboard' => ['vendor-panel/service/dashboard'],
+
         ];
 
         foreach ($array as $bladePath => $value) {
@@ -295,7 +389,7 @@ class GenerateVendorRoute extends Command
             }
 
             $uniqueWords = array_filter($uniqueWords, function ($word) {
-                return strtolower($word) !== 'rental';
+                return strtolower($word) !== 'rental' && !str_contains($word, '::');
             });
 
             $routeName = ucwords(implode(' ', $uniqueWords));

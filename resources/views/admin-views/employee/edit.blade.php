@@ -4,6 +4,10 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 @endpush
 
+@section('employee_list')
+active
+@endsection
+
 @section('content')
 <div class="content container-fluid">
     <!-- Page Heading -->
@@ -58,8 +62,8 @@
                             data-original-title="{{ translate('messages.Required.')}}"> *
                             </span> </label>
                                     <select name="zone_id" id="zone_id" class="form-control js-select2-custom">
-                                        @if(!isset(auth('admin')->user()->zone_id))
-                                            <option value="" {{!isset($employee->zone_id)?'selected':''}}>{{translate('messages.all')}}</option>
+                                        @if(!auth('admin')?->user()?->zone_id)
+                                            <option value="" {{!$employee->zone_id?'selected':''}}>{{translate('messages.all')}}</option>
                                         @endif
                                         @foreach($zones as $zone)
                                             <option value="{{$zone['id']}}" {{$employee->zone_id == $zone->id?'selected':''}}>{{$zone['name']}}</option>
@@ -86,7 +90,7 @@
                             data-toggle="tooltip" data-placement="right"
                             data-original-title="{{ translate('messages.Required.')}}"> *
                             </span> </label>
-                                <input type="number" value="{{$employee['phone']}}" required name="phone" class="form-control" id="phone"
+                                <input type="tel" value="{{$employee['phone']}}" required name="phone" class="form-control" id="phone"
                                         placeholder="{{ translate('messages.Ex:') }} +88017********">
                             </div>
                         </div>

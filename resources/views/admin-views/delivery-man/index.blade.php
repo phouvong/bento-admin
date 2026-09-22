@@ -17,6 +17,7 @@
         <!-- End Page Header -->
         <form class="validate-form global-ajax-form" action="{{ route('admin.users.delivery-man.store') }}" method="post" enctype="multipart/form-data">
             @csrf
+            <input type="hidden" name="serve_for[]" value="delivery">
             <div class="card mb-20">
                 <div class="card-header">
                    <div>
@@ -120,7 +121,7 @@
                                                 <option value="" readonly="true" hidden="true">
                                                     {{ translate('messages.select_zone') }}</option>
                                                 @foreach (\App\Models\Zone::all() as $zone)
-                                                    @if (isset(auth('admin')->user()->zone_id))
+                                                    @if (auth('admin')?->user()?->zone_id)
                                                         @if (auth('admin')->user()->zone_id == $zone->id)
                                                             <option value="{{ $zone->id }}" selected>{{ $zone->name }}
                                                             </option>
@@ -374,21 +375,6 @@
     <script>
         "use strict";
 
-        function readURL(input) {
-            if (input.files && input.files[0]) {
-                let reader = new FileReader();
-
-                reader.onload = function(e) {
-                    $('#viewer').attr('src', e.target.result);
-                }
-
-                reader.readAsDataURL(input.files[0]);
-            }
-        }
-
-        $("#customFileEg1").change(function() {
-            readURL(this);
-        });
 
         $(function() {
             $("#coba").spartanMultiImagePicker({
@@ -490,13 +476,13 @@
     });
 
     if (identity_image === 0) {
-        e.preventDefault();  
-        e.stopImmediatePropagation(); 
+        e.preventDefault();
+        e.stopImmediatePropagation();
         toastr.error(`{{ translate('messages.please_upload_at_least_one_identity_image') }}`, {
             closeButton: true,
             progressBar: true
         });
-        return false; 
+        return false;
     }
 });
 

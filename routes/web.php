@@ -16,6 +16,8 @@ use App\Http\Controllers\PaypalPaymentController;
 use App\Http\Controllers\StripePaymentController;
 use App\Http\Controllers\SslCommerzPaymentController;
 use Illuminate\Support\Facades\Http;
+use App\Http\Controllers\RiderRegistrationController;
+use Illuminate\Support\Facades\Artisan;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +33,7 @@ use Illuminate\Support\Facades\Http;
 
 Route::post('/subscribeToTopic', [FirebaseController::class, 'subscribeToTopic']);
 Route::get('/', 'HomeController@index')->name('home');
+Route::get('maintenance-mode', 'HomeController@maintenanceMode')->name('maintenance_mode');
 Route::get('lang/{locale}', 'HomeController@lang')->name('lang');
 Route::get('terms-and-conditions', 'HomeController@terms_and_conditions')->name('terms-and-conditions');
 Route::get('about-us', 'HomeController@about_us')->name('about-us');
@@ -51,8 +54,8 @@ Route::get('login/{tab}', 'LoginController@login')->name('login');
 Route::post('login_submit', 'LoginController@submit')->name('login_post')->middleware('actch');
 Route::get('logout', 'LoginController@logout')->name('logout');
 Route::get('/reload-captcha', 'LoginController@reloadCaptcha')->name('reload-captcha');
-Route::get('/reset-password', 'LoginController@reset_password_request')->name('reset-password');
-Route::post('/vendor-reset-password', 'LoginController@vendor_reset_password_request')->name('vendor-reset-password');
+Route::post('/reset-password', 'LoginController@reset_password_request')->name('reset-password')->middleware('throttle:3,60');
+Route::post('/vendor-reset-password', 'LoginController@vendor_reset_password_request')->name('vendor-reset-password')->middleware('throttle:3,60');
 Route::get('/password-reset', 'LoginController@reset_password')->name('change-password');
 Route::post('verify-otp', 'LoginController@verify_token')->name('verify-otp');
 Route::post('reset-password-submit', 'LoginController@reset_password_submit')->name('reset-password-submit');
@@ -196,7 +199,19 @@ if (!$is_published) {
 
 
 Route::get('/test', function () {
-dd('Hello tester');
+    Artisan::call('optimize:clear');
+    dd('Hello tester');
+
+
+    $homeRoute = app('router')->getRoutes()->getByName('home');
+
+    dd([
+        'step_1'                    => 'optimize:clear DONE — now reload your admin page',
+        'config(app.host_domain)'   => config('app.host_domain') ?: '(EMPTY — this is the bug: stale config cache on web)',
+        'home_route_this_request'   => $homeRoute
+            ? 'registered on domain [' . ($homeRoute->getDomain() ?: 'NONE — domainless, will be overwritten') . '] uri /' . $homeRoute->uri()
+            : 'MISSING — home name not defined (overwritten by storefront /)',
+    ]);
 });
 
 Route::get('module-test', function () {
@@ -215,6 +230,12 @@ Route::group(['prefix' => 'vendor', 'as' => 'restaurant.'], function () {
     Route::get('business-plan', 'VendorController@secondStep')->name('secondStep');
     Route::post('payment', 'VendorController@payment')->name('payment');
     Route::get('final-step', 'VendorController@final_step')->name('final_step');
+});
+
+//Rider Registration
+Route::group(['prefix' => 'rider', 'as' => 'rider.'], function () {
+    Route::get('apply', [RiderRegistrationController::class, 'create'])->name('create');
+    Route::post('apply', [RiderRegistrationController::class, 'store'])->name('store');
 });
 
 //Deliveryman Registration

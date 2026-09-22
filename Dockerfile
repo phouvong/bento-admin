@@ -1,12 +1,6 @@
-# -----------------------------------------------------------------------------
-# Base Image: PHP 8.2 FPM (Debian)
-# -----------------------------------------------------------------------------
-FROM php:8.2-fpm
+FROM php:8.2-cli
 
-# Set working directory
-WORKDIR /var/www/html
-
-# Install system dependencies
+# 1. ติดตั้ง System Dependencies และ PHP Extensions ที่ 6amMart ต้องใช้
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -15,84 +9,30 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
-    nginx \
-    supervisor \
     libzip-dev \
-    libfreetype6-dev \
     libjpeg62-turbo-dev \
-    libwebp-dev \
-    libicu-dev \
-    locales \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    libfreetype6-dev
 
-# Configure and install PHP extensions required by 6amMart & Laravel
-RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
-    && docker-php-ext-install -j$(nproc) \
-        pdo_mysql \
-        mbstring \
-        exif \
-        pcntl \
-        bcmath \
-        gd \
-        zip \
-        intl \
-        opcache
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip
 
-# Get latest Composer
+# 2. ติดตั้ง Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Copy existing application directory contents
-COPY . /var/www/html
+WORKDIR /var/www/html
 
-# Set permissions for Laravel storage & bootstrap cache
-RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
+# 3. คัดลอก Source Code ทั้งหมด
+COPY . .
+
+# 4. ติดตั้ง PHP Dependencies (ป้องกันปัญหา vendor/autoload.php หาย)
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# 5. ตั้งค่า Permissions ให้กับโฟลเดอร์ Storage และ Cache
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /var/www/html/public \
     && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Configure Nginx
-RUN rm /etc/nginx/sites-enabled/default
-COPY <<EOF /etc/nginx/conf.d/default.conf
-server {
-    listen 80;
-    index index.php index.html;
-    error_log  /var/log/nginx/error.log;
-    access_log /var/log/nginx/access.log;
-    root /var/www/html/public;
-
-    client_max_body_size 100M;
-
-    location ~ \.php$ {
-        try_files \$uri =404;
-        fastcgi_split_path_info ^(.+\.php)(/.+)\$;
-        fastcgi_pass 127.0.0.1:9000;
-        fastcgi_index index.php;
-        include fastcgi_params;
-        fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
-        fastcgi_param PATH_INFO \$fastcgi_path_info;
-    }
-
-    location / {
-        try_files \$uri \$uri/ /index.php?\$query_string;
-        gzip_static on;
-    }
-}
-EOF
-
-# Configure Supervisor to run both Nginx and PHP-FPM
-COPY <<EOF /etc/supervisor/conf.d/supervisord.conf
-[supervisord]
-nodaemon=true
-
-[program:nginx]
-command=nginx -g "daemon off;"
-autostart=true
-autorestart=true
-
-[program:php-fpm]
-command=php-fpm
-autostart=true
-autorestart=true
-EOF
-
+# 6. เปิด Port 80 สำหรับ Web Server
 EXPOSE 80
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
+# 7. คำสั่งสร้าง storage link และเริ่มรัน Laravel Server
+CMD php artisan storage:link && php artisan serve --host=0.0.0.0 --port=80
